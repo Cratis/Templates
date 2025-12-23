@@ -4,6 +4,10 @@
 
 This repository contains all creation templates used by Cratis. It holds project and item templates you can use to scaffold new Cratis-based applications, components, and sample projects.
 
+## Builds
+
+[![Publish](https://github.com/Cratis/Templates/actions/workflows/publish.yml/badge.svg)](https://github.com/Cratis/Templates/actions/workflows/publish.yml)
+
 ## How to use
 
 Quick steps to scaffold projects from these templates:
