@@ -1,6 +1,33 @@
 # Cratis Templates
 
+[![Nuget](https://img.shields.io/nuget/v/Cratis.Templates?logo=nuget)](http://nuget.org/packages/Cratis.Templates)
+
 This repository contains all creation templates used by Cratis. It holds project and item templates you can use to scaffold new Cratis-based applications, components, and sample projects.
+
+## How to use
+
+Quick steps to scaffold projects from these templates:
+
+- Install the templates locally (one-time):
+
+```bash
+dotnet new install Cratis.Templates
+```
+
+- List available templates and note the `Short Name` you want:
+
+```bash
+dotnet new --list
+```
+
+- Create a new project from a template (replace `<shortname>`):
+
+```bash
+dotnet new <shortname> -n MyApp -o MyApp
+```
+
+- Many templates accept parameters; run `dotnet new <shortname> --help` to see available options.
+
 
 ## Build & Test Locally
 
