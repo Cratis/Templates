@@ -1,0 +1,72 @@
+name: .NET Build
+
+env:
+  DOTNET8_VERSION: "8.0.407"
+  DOTNET9_VERSION: "9.0.x"
+  DOTNET10_VERSION: "10.0.x"
+
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+        - info
+        - warning
+        - debug
+  push:
+    branches:
+      - "main"
+    paths:
+      - "Source/DotNET/**"
+      - "Specifications/**"
+  pull_request:
+    branches:
+      - "**"
+    paths:
+      - "Source/DotNET/**"
+      - "Specifications/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .Net
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            ${{ env.DOTNET8_VERSION }}
+            ${{ env.DOTNET9_VERSION }}
+            ${{ env.DOTNET10_VERSION }}
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 23.x
+          registry-url: "https://registry.npmjs.org"
+
+      - uses: actions/cache@v3
+        id: yarn-cache
+        with:
+          path: |
+            .yarn/cache
+            **/node_modules
+            **/.eslintcache
+            **/yarn.lock
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}
+
+      - name: Yarn install
+        run: yarn
+
+      - name: Build
+        run: dotnet build --configuration Release
+
+      - name: Test
+        run: dotnet test --configuration Release --no-build
