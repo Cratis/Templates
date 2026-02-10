@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Cratis",
+  "classifications": [
+    "Asp.NET Core",
+    "Web",
+    "Cratis",
+    "Chronicle"
+  ],
+  "identity": "Cratis.Templates.ChronicleWeb",
+  "name": "Cratis Chronicle Web",
+  "shortName": "cratis-chronicle-web",
+  "description": "A simple web app template that connects to Cratis Chronicle",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "ChronicleWeb",
+  "preferNameDirectory": true,
+  "primaryOutputs": [
+    {
+      "path": "ChronicleWeb.csproj"
+    },
+    {
+      "path": "ChronicleWeb.sln"
+    }
+  ],
+  "symbols": {
+    "Framework": {
+      "type": "parameter",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "net8.0",
+          "description": ".NET 8"
+        },
+        {
+          "choice": "net9.0",
+          "description": ".NET 9"
+        },
+        {
+          "choice": "net10.0",
+          "description": ".NET 10"
+        }
+      ],
+      "defaultValue": "net10.0",
+      "description": "Target framework",
+      "prompt": "Select target framework",
+      "replaces": "TARGET_FRAMEWORK"
+    },
+    "ProjectGuid": {
+      "type": "generated",
+      "generator": "guid",
+      "replaces": "PROJECT_GUID"
+    }
+  },
+  "sources": [
+    {
+      "exclude": [
+        "**/[Bb]in/**",
+        "**/[Oo]bj/**"
+      ]
+    }
+  ]
+}
