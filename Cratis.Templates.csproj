@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
         <PackageType>Template</PackageType>
         <PackageId>Cratis.Templates</PackageId>
         <PackageVersion>1.0.0</PackageVersion>
@@ -15,11 +16,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Remove="Cratis\**\*" />
-        <None Remove="Cratis\**\*" />
+        <Compile Remove="Templates\**\*" />
+        <None Remove="Templates\**\*" />
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="Cratis/**/*" />
+        <Content Include="Templates/**/*" />
     </ItemGroup>
 </Project>
