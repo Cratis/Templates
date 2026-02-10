@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Cratis",
+  "classifications": [
+    "Console",
+    "Cratis",
+    "Chronicle"
+  ],
+  "identity": "Cratis.Templates.ChronicleConsole",
+  "name": "Cratis Chronicle Console",
+  "shortName": "cratis-chronicle-console",
+  "description": "A console app template that connects to Cratis Chronicle",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "ChronicleConsole",
+  "preferNameDirectory": true,
+  "primaryOutputs": [
+    {
+      "path": "ChronicleConsole.csproj"
+    },
+    {
+      "path": "ChronicleConsole.sln"
+    }
+  ],
+  "symbols": {
+    "Framework": {
+      "type": "parameter",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "net8.0",
+          "description": ".NET 8"
+        },
+        {
+          "choice": "net9.0",
+          "description": ".NET 9"
+        },
+        {
+          "choice": "net10.0",
+          "description": ".NET 10"
+        }
+      ],
+      "defaultValue": "net10.0",
+      "description": "Target framework",
+      "prompt": "Select target framework",
+      "replaces": "TARGET_FRAMEWORK"
+    },
+    "ProjectGuid": {
+      "type": "generated",
+      "generator": "guid",
+      "replaces": "PROJECT_GUID"
+    }
+  },
+  "sources": [
+    {
+      "exclude": [
+        "**/[Bb]in/**",
+        "**/[Oo]bj/**"
+      ]
+    }
+  ]
+}
