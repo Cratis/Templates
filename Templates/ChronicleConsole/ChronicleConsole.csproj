@@ -8,8 +8,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Cratis.Chronicle" Version="15.1.4" />
-  </ItemGroup>
-
 </Project>
