@@ -80,5 +80,5 @@ The application will be available at:
 
 ## Learn More
 
-- [Cratis Arc Documentation](https://github.com/Cratis/Arc)
-- [Chronicle Documentation](https://github.com/Cratis/Chronicle)
+- [Cratis Arc Documentation](https://www.cratis.io/docs/Arc/)
+- [Chronicle Documentation](https://www.cratis.io/docs/Chronicle/)
