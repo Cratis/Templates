@@ -1,3 +1,5 @@
+using AnApp.Features.SomeFeature.Registration;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.AddCratis();
 
@@ -16,10 +18,18 @@ app.UseWebSockets();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-//#if (EnableFrontend)
 app.UseDefaultFiles();
 app.UseStaticFiles();
 app.MapFallbackToFile("/index.html");
-//#endif
 
 await app.RunAsync();
+
+
+public class RegistrationReactor(ILogger<RegistrationReactor> logger) : IReactor
+{
+    public Task Handle(Registered evt)
+    {
+        logger.LogInformation("Registered: {Name}", evt.Name);
+        return Task.CompletedTask;
+    }
+}

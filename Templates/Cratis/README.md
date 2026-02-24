@@ -78,7 +78,68 @@ The application will be available at:
 - `docker-compose.yml` - Infrastructure services
 - `wwwroot/` - Built frontend files (generated)
 
+## Cratis Build Tool (Proxy Generation)
+
+This template is designed to work with `Cratis.Arc.ProxyGenerator.Build`, which generates TypeScript command/query proxies during `dotnet build`.
+
+### Add package reference
+
+If not already present, add the build package to your `.csproj`:
+
+```xml
+<ItemGroup>
+  <PackageReference Include="Cratis.Arc.ProxyGenerator.Build" Version="<version>" />
+</ItemGroup>
+```
+
+### Required setting
+
+`CratisProxiesOutputPath` tells the build tool where generated TypeScript proxies should be written.
+
+```xml
+<PropertyGroup>
+  <CratisProxiesOutputPath>$(MSBuildThisFileDirectory)Features</CratisProxiesOutputPath>
+</PropertyGroup>
+```
+
+### Common configuration
+
+```xml
+<PropertyGroup>
+  <CratisProxiesOutputPath>$(MSBuildThisFileDirectory)Features</CratisProxiesOutputPath>
+  <CratisProxiesSegmentsToSkip>1</CratisProxiesSegmentsToSkip>
+  <CratisProxiesSkipOutputDeletion>true</CratisProxiesSkipOutputDeletion>
+  <CratisProxiesSkipCommandNameInRoute>true</CratisProxiesSkipCommandNameInRoute>
+  <CratisProxiesSkipQueryNameInRoute>false</CratisProxiesSkipQueryNameInRoute>
+  <CratisProxiesApiPrefix>api</CratisProxiesApiPrefix>
+  <CratisProxiesSkipFileIndexTracking>false</CratisProxiesSkipFileIndexTracking>
+  <CratisProxiesSkipIndexGeneration>false</CratisProxiesSkipIndexGeneration>
+</PropertyGroup>
+```
+
+### What each setting does
+
+- `CratisProxiesOutputPath`: Output directory for generated proxies.
+- `CratisProxiesSegmentsToSkip`: Skips namespace segments when creating folder paths.
+- `CratisProxiesSkipOutputDeletion`: When `false` (default), output folder is deleted on each build; set `true` for incremental generation.
+- `CratisProxiesSkipCommandNameInRoute`: Excludes command names from generated routes when possible.
+- `CratisProxiesSkipQueryNameInRoute`: Excludes query names from generated routes when possible.
+- `CratisProxiesApiPrefix`: API prefix used in generated routes (default `api`).
+- `CratisProxiesSkipFileIndexTracking`: Disables orphan-file tracking when `true`.
+- `CratisProxiesSkipIndexGeneration`: Disables `index.ts` generation when `true`.
+
+### Verify generation
+
+Run:
+
+```bash
+dotnet build
+```
+
+Then inspect your configured `CratisProxiesOutputPath` directory for generated proxies.
+
 ## Learn More
 
 - [Cratis Arc Documentation](https://www.cratis.io/docs/Arc/)
+- [Cratis Arc Proxy Generation Configuration](https://www.cratis.io/docs/Arc/backend/proxy-generation/index.html)
 - [Chronicle Documentation](https://www.cratis.io/docs/Chronicle/)

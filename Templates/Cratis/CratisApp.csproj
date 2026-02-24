@@ -4,5 +4,10 @@
         <RootNamespace>CratisApp</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+
+        <CratisProxiesOutputPath>$(MSBuildThisFileDirectory)/Features</CratisProxiesOutputPath>
+        <CratisProxiesSegmentsToSkip>2</CratisProxiesSegmentsToSkip>
+        <CratisProxiesSkipOutputDeletion>true</CratisProxiesSkipOutputDeletion>
+        <CratisProxiesSkipCommandNameInRoute>true</CratisProxiesSkipCommandNameInRoute>
     </PropertyGroup>
 </Project>
