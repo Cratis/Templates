@@ -6,10 +6,8 @@ A web application built with Cratis Arc and Chronicle.
 
 - .NET 9.0 or later
 - Docker and Docker Compose (for running Chronicle and Aspire Dashboard)
-//#if (EnableFrontend)
 - Node.js 20 or later
 - Yarn
-//#endif
 
 ## Getting Started
 
@@ -20,10 +18,10 @@ docker-compose up -d
 ```
 
 This will start:
+
 - Chronicle (with MongoDB on port 27017)
 - Aspire Dashboard (on port 18888)
 
-//#if (EnableFrontend)
 2. Install frontend dependencies:
 
 ```bash
@@ -43,40 +41,46 @@ dotnet run
 ```
 
 The application will be available at:
+
 - Backend API: http://localhost:5000
 - Swagger UI: http://localhost:5000/swagger
 - Frontend: http://localhost:5173 (Vite dev server)
 - Aspire Dashboard: http://localhost:18888
 
-//#else
-2. Run the application:
-
-```bash
-dotnet run
-```
-
-The application will be available at:
-- API: http://localhost:5000
-- Swagger UI: http://localhost:5000/swagger
-- Aspire Dashboard: http://localhost:18888
-//#endif
-
 ## Project Structure
 
-- `Source/` - All source code (backend and frontend side by side)
-  - `Program.cs` - Application entry point
-  - `appsettings.json` - Configuration
-  - `CratisApp.csproj` - .NET project file
-  //#if (EnableFrontend)
-  - `index.html` - Frontend entry point
-  - `App.tsx`, `main.tsx` - Frontend components
-  - `App.css`, `index.css` - Styles
-  - `package.json` - Node.js dependencies
-  - `vite.config.ts` - Vite configuration
-  - `tsconfig.json` - TypeScript configuration
-  //#endif
-- `docker-compose.yml` - Infrastructure services
-- `wwwroot/` - Built frontend files (generated)
+```shell
+CratisApp.csproj          - .NET project file
+Program.cs                - Application entry point
+GlobalUsings.cs           - Global using directives
+appsettings.json          - Configuration
+package.json              - Node.js dependencies
+tsconfig.json             - TypeScript configuration
+docker-compose.yml        - Infrastructure services
+.frontend/                - Frontend application shell
+  index.html              - HTML entry point
+  main.tsx                - React entry point
+  App.tsx                 - Root React component
+  index.css               - Global styles
+  vite.config.ts          - Vite configuration
+<Module>/                 - A domain module
+  <Feature>/              - A vertical slice
+    <Feature>.tsx         - React composition page
+    <Feature>.cs          - Backend C# code
+    index.ts              - TypeScript barrel export
+    <Slice>/              - Sub-slice
+      ...
+```
+
+## Vertical Slices
+
+This template follows a **vertical slice architecture** where backend and frontend code live side by side in the same folder. Each feature folder holds all the artifacts needed for that slice — C# commands, queries, events, and React components — rather than separating them by layer (e.g. `Controllers/`, `Services/`, `Components/`).
+
+This makes it easy to reason about a feature, evolve it independently, and keep related code together.
+
+- Each slice is a self-contained unit of functionality from UI to backend.
+- C# and TypeScript files coexist in the same directory.
+- Run `dotnet build` after backend changes to regenerate the TypeScript proxies used by the frontend.
 
 ## Cratis Build Tool (Proxy Generation)
 

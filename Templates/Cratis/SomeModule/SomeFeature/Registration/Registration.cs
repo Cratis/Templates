@@ -1,4 +1,3 @@
-
 namespace CratisApp.SomeModule.SomeFeature.Registration;
 
 [Command]
@@ -17,7 +16,6 @@ public record Registered(SomeName Name);
 
 public partial class RegistrationReactor(ILogger<RegistrationReactor> logger) : IReactor
 {
-    // readonly ILogger<RegistrationReactor> _logger = logger;
     public Task Handle(Registered evt)
     {
         LogRegistered(evt.Name);
