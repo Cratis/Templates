@@ -96,6 +96,20 @@
             "continueOnError": true
         },
         {
+            "description": "Add Cratis Arc MongoDB package.",
+            "manualInstructions": [
+                {
+                    "text": "Run 'dotnet add package Cratis.Arc.MongoDB'"
+                }
+            ],
+            "actionId": "b78c91b8-0a23-41dd-bff7-cbba696e9c54",
+            "args": {
+                "executable": "dotnet",
+                "args": "add package Cratis.Arc.MongoDB"
+            },
+            "continueOnError": true
+        },
+        {
             "condition": "(EnableFrontend)",
             "description": "Add Cratis ProxyGenerator package.",
             "manualInstructions": [
