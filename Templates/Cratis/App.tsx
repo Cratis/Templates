@@ -1,25 +1,18 @@
-import { useState } from 'react'
-import './App.css'
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { DialogComponents } from '@cratis/arc.react/dialogs';
+import { BusyIndicatorDialog, ConfirmationDialog } from '@cratis/components/Dialogs';
+import { SomeFeature } from './Features/SomeFeature';
 
 function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <h1>CratisApp</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Built with Cratis Arc and Chronicle
-      </p>
-    </>
-  )
+    return (
+        <DialogComponents confirmation={ConfirmationDialog} busyIndicator={BusyIndicatorDialog}>
+            <BrowserRouter>
+                <Routes>
+                    <Route path='/' element={<SomeFeature />} />
+                </Routes>
+            </BrowserRouter>
+        </DialogComponents>
+    );
 }
 
-export default App
+export default App;

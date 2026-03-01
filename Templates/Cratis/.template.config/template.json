@@ -122,52 +122,7 @@
         },
         {
             "condition": "(EnableFrontend)",
-            "description": "Add frontend runtime dependencies.",
-            "manualInstructions": [
-                {
-                    "text": "Run 'yarn add react react-dom'"
-                }
-            ],
-            "actionId": "3A7C4B45-1F5D-4A30-959A-51B88E82B5D2",
-            "args": {
-                "executable": "yarn",
-                "args": "add react react-dom"
-            },
-            "continueOnError": true
-        },
-        {
-            "condition": "(EnableFrontend)",
-            "description": "Add frontend development dependencies.",
-            "manualInstructions": [
-                {
-                    "text": "Run 'yarn add --dev @types/react @types/react-dom @vitejs/plugin-react typescript vite'"
-                }
-            ],
-            "actionId": "3A7C4B45-1F5D-4A30-959A-51B88E82B5D2",
-            "args": {
-                "executable": "yarn",
-                "args": "add --dev @types/react @types/react-dom @vitejs/plugin-react typescript vite"
-            },
-            "continueOnError": true
-        },
-        {
-            "condition": "(EnableFrontend)",
-            "description": "Add latest Cratis packages.",
-            "manualInstructions": [
-                {
-                    "text": "Run 'yarn add @cratis/arc @cratis/arc.react'"
-                }
-            ],
-            "actionId": "3A7C4B45-1F5D-4A30-959A-51B88E82B5D2",
-            "args": {
-                "executable": "yarn",
-                "args": "add @cratis/arc @cratis/arc.react"
-            },
-            "continueOnError": true
-        },
-        {
-            "condition": "(EnableFrontend)",
-            "description": "Install frontend dependencies with yarn.",
+            "description": "Install all frontend dependencies with yarn.",
             "manualInstructions": [
                 {
                     "text": "Run 'yarn install'"

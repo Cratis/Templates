@@ -1,11 +1,12 @@
 
-namespace AnApp.Features.SomeFeature.Registration;
+namespace CratisApp.Features.SomeFeature.Registration;
 
 [Command]
-public record Register(string Name)
+public record Register(SomeName Name)
 {
     public Registered Handle() => new(Name);
 }
 
 [EventType]
-public record Registered(string Name);
+public record Registered(SomeName Name);
+

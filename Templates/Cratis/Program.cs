@@ -1,4 +1,4 @@
-using AnApp.Features.SomeFeature.Registration;
+using CratisApp.Features.SomeFeature.Registration;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddCratis();
