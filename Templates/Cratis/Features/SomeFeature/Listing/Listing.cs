@@ -1,16 +1,18 @@
-using AnApp.Features.SomeFeature.Registration;
+using CratisApp.Features.SomeFeature.Registration;
+using MongoDB.Driver;
 
-namespace AnApp.Features.SomeFeature.Listing;
+namespace CratisApp.Features.SomeFeature.Listing;
 
-[ReadModel, FromEvent<Registered>]
-public record Listing(string Name, [SetFromContext<Registered>]EventSourceId EventSourceId)
+[ReadModel]
+public record Listing(SomeName Name, EventSourceId EventSourceId)
 {
-    public static Task<Listing> GetByEventSourceId(EventSourceId eventSourceId, IReadModels readModels)
-        => readModels.GetInstanceById<Listing>(eventSourceId);
+    public static ISubject<IEnumerable<Listing>> AllListings(IMongoCollection<Listing> collection) =>
+        collection.Observe();
+}
 
-    // public static ISubject<Listing> ObserveAll(IReadModels readModels)
-    //     => ClientObservable< readModels.Watch<Listing>();
-
-    public static Task<IEnumerable<Listing>> GetAll(IReadModels readModels)
-        => readModels.GetInstances<Listing>();
+public class ListingProjection : IProjectionFor<Listing>
+{
+    public void Define(IProjectionBuilderFor<Listing> builder) => builder
+        .AutoMap()
+        .From<Registered>();
 }

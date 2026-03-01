@@ -13,6 +13,7 @@
         <License>MIT</License>
         <IncludeContentInPack>true</IncludeContentInPack>
         <NoWarn>$(NoWarn);CS8805;CS0103;IDE0073;SA1512;SA1515;SA1005</NoWarn>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
     </PropertyGroup>
 
     <ItemGroup>

@@ -1,3 +1,4 @@
+using CratisApp.Features.SomeFeature.Registration;
 using Cratis.Arc.MongoDB;
 
 var builder = WebApplication.CreateBuilder(args);

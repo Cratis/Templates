@@ -10,4 +10,9 @@
         <CratisProxiesSkipOutputDeletion>true</CratisProxiesSkipOutputDeletion>
         <CratisProxiesSkipCommandNameInRoute>true</CratisProxiesSkipCommandNameInRoute>
     </PropertyGroup>
+
+    <ItemGroup>
+        <Content Remove="package.json" />
+        <None Remove="package.json" />
+    </ItemGroup>
 </Project>
