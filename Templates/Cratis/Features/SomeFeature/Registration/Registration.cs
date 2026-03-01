@@ -1,5 +1,5 @@
 
-namespace AnApp.Features.SomeFeature.Registration;
+namespace CratisApp.Features.SomeFeature.Registration;
 
 [Command]
 public record Register(SomeName Name)

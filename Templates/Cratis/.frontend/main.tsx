@@ -6,7 +6,7 @@ import './index.css';
 import React from 'react';
 import App from './App.tsx';
 import { configure as configureMobx } from 'mobx';
-import { Bindings } from './Bindings';
+import { Bindings } from '../Bindings';
 
 Bindings.initialize();
 

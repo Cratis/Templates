@@ -74,7 +74,8 @@
                         "**/*.tsx",
                         "**/*.css",
                         "package.json",
-                        "tsconfig.json"
+                        "tsconfig.json",
+                        ".frontend/**"
                     ]
                 }
             ]

@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import 'primereact/resources/themes/lara-dark-blue/theme.css';
+@source '../';
 
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
