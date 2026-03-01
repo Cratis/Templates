@@ -8,3 +8,4 @@ global using Cratis.Chronicle.Keys;
 global using Cratis.Chronicle.Projections;
 global using Cratis.Chronicle.ReadModels;
 global using Cratis.Concepts;
+global using MongoDB.Driver;
