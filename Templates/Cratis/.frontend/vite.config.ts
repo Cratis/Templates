@@ -34,6 +34,7 @@ export default defineConfig({
         EmitMetadataPlugin({ tsconfigPath: fileURLToPath(new URL('./tsconfig.json', import.meta.url)) }) as any
     ],
     server: {
+        port: 9000,
         open: false,
         proxy: {
             '/api': {

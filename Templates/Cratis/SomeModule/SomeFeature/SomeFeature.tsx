@@ -1,11 +1,10 @@
-import { useState } from 'react';
 import { Button } from 'primereact/button';
-
 import { Registration } from './Registration/Registration';
 import { ListingDataTable } from './Listing/ListingDataTable';
+import { useDialog } from '@cratis/arc.react/dialogs';
 
 export const SomeFeature = () => {
-    const [showRegister, setShowRegister] = useState(false);
+    const [RegistrationDialog, showRegistrationDialog] = useDialog(Registration);
 
     return (
         <div className='p-4'>
@@ -14,10 +13,10 @@ export const SomeFeature = () => {
                 <Button
                     label='Register'
                     icon='pi pi-plus'
-                    onClick={() => setShowRegister(true)} />
+                    onClick={() => showRegistrationDialog()} />
             </div>
-            <ListingDataTable/>
-            <Registration showRegister={showRegister} setShowRegister={setShowRegister} />
+            <ListingDataTable />
+            <RegistrationDialog />
         </div>
     );
 };
