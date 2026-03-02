@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { DialogComponents } from '@cratis/arc.react/dialogs';
 import { BusyIndicatorDialog, ConfirmationDialog } from '@cratis/components/Dialogs';
-import { SomeFeature } from '../Features/SomeFeature';
+import { SomeFeature } from '../SomeModule/SomeFeature';
 
 function App() {
     return (
