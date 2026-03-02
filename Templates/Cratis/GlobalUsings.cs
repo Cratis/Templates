@@ -1,12 +1,3 @@
 global using System.Reactive.Subjects;
-global using Cratis.Arc.Commands;
-global using Cratis.Arc.Commands.ModelBound;
 global using Cratis.Arc.MongoDB;
-global using Cratis.Arc.Queries;
-global using Cratis.Arc.Queries.ModelBound;
-global using Cratis.Chronicle.Events;
-global using Cratis.Chronicle.Keys;
-global using Cratis.Chronicle.Projections;
-global using Cratis.Chronicle.ReadModels;
-global using Cratis.Concepts;
 global using MongoDB.Driver;
