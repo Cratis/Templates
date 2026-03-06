@@ -13,7 +13,7 @@ class AllListingsSortBy {
 class AllListingsSortByWithoutQuery {}
 
 export class AllListings extends ObservableQueryFor<Listing[]> {
-    readonly route: string = '/api/some-feature/listing/all-listings';
+    readonly route: string = '/api/some-module/some-feature/listing/all-listings';
     readonly defaultValue: Listing[] = [];
     private readonly _sortBy: AllListingsSortBy;
     private static readonly _sortBy: AllListingsSortByWithoutQuery = new AllListingsSortByWithoutQuery();

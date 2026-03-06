@@ -21,9 +21,6 @@
     "primaryOutputs": [
         {
             "path": "CratisApp.csproj"
-        },
-        {
-            "path": "README.md"
         }
     ],
     "symbols": {

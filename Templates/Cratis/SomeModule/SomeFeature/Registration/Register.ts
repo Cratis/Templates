@@ -18,7 +18,7 @@ export class RegisterValidator extends CommandValidator<IRegister> {
 }
 
 export class Register extends Command<IRegister, Guid> implements IRegister {
-    readonly route: string = '/api/some-feature/registration';
+    readonly route: string = '/api/some-module/some-feature/registration';
     readonly validation: CommandValidator = new RegisterValidator();
     readonly propertyDescriptors: PropertyDescriptor[] = [
         new PropertyDescriptor('name', String, false),
