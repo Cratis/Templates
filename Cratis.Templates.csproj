@@ -4,6 +4,7 @@
         <PackageType>Template</PackageType>
         <PackageId>Cratis.Templates</PackageId>
         <PackageVersion>1.0.0</PackageVersion>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <Title>Cratis Templates</Title>
         <Description>A collection of templates for creating applications with Cratis Arc and Chronicle</Description>
         <Author>Cratis</Author>
@@ -23,5 +24,9 @@
 
     <ItemGroup>
         <Content Include="Templates/**/*" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="README.md" Pack="true" PackagePath="/" />
     </ItemGroup>
 </Project>
