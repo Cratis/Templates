@@ -79,11 +79,9 @@ jobs:
           validation_root="$(mktemp -d)"
           echo "Using validation root: $validation_root"
 
-          # Copy NuGet.config to the validation root so that dotnet add package
-          # post-actions (which run inside subdirectories of validation_root) can
-          # walk up and find it.  Without this the commands fall back to the global
-          # NuGet config, which on GitHub-hosted Ubuntu runners may contain
-          # additional or authenticated sources that cause dotnet add package to hang.
+          # Copy NuGet.config to the validation root so that dotnet restore
+          # (which runs inside subdirectories of validation_root) can walk up
+          # and find it, ensuring only nuget.org is used as a package source.
           cp NuGet.config "$validation_root/NuGet.config"
 
           run_dotnet_new() {
@@ -97,7 +95,8 @@ jobs:
 
             solution_file="$(find "$project_root" -maxdepth 1 -name '*.sln' | head -n 1)"
             if [[ -n "$solution_file" ]]; then
-              dotnet build "$solution_file" --configuration Release
+              dotnet restore "$solution_file" --configfile "$validation_root/NuGet.config"
+              dotnet build "$solution_file" --configuration Release --no-restore
               return
             fi
 
@@ -107,14 +106,15 @@ jobs:
               return 1
             fi
 
-            dotnet build "$project_file" --configuration Release
+            dotnet restore "$project_file" --configfile "$validation_root/NuGet.config"
+            dotnet build "$project_file" --configuration Release --no-restore
           }
 
-          run_dotnet_new dotnet new cratis-chronicle-console -n ValidateChronicleConsole -o "$validation_root/ValidateChronicleConsole" --Framework net10.0 --allow-scripts Yes
+          run_dotnet_new dotnet new cratis-chronicle-console -n ValidateChronicleConsole -o "$validation_root/ValidateChronicleConsole" --Framework net10.0
           build_generated_project "$validation_root/ValidateChronicleConsole"
 
-          run_dotnet_new dotnet new cratis-chronicle-web -n ValidateChronicleWeb -o "$validation_root/ValidateChronicleWeb" --Framework net10.0 --allow-scripts Yes
+          run_dotnet_new dotnet new cratis-chronicle-web -n ValidateChronicleWeb -o "$validation_root/ValidateChronicleWeb" --Framework net10.0
           build_generated_project "$validation_root/ValidateChronicleWeb"
 
-          run_dotnet_new dotnet new cratis -n ValidateCratis -o "$validation_root/ValidateCratis" --Framework net10.0 --allow-scripts Yes
+          run_dotnet_new dotnet new cratis -n ValidateCratis -o "$validation_root/ValidateCratis" --Framework net10.0
           build_generated_project "$validation_root/ValidateCratis"
