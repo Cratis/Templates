@@ -1,1 +1,1 @@
-dotnet new uninstall Cratis.Templates
+dotnet new uninstall $PWD
