@@ -1,6 +1,3 @@
-// Copyright (c) Cratis. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { fileURLToPath } from 'node:url';
@@ -35,9 +32,17 @@ export default defineConfig({
     ],
     server: {
         port: 9000,
-        open: false,
+        open: true,
         proxy: {
+            ".cratis/me": {
+                target: 'http://localhost:5000',
+                ws: true
+            },
             '/api': {
+                target: 'http://localhost:5000',
+                ws: true
+            },
+            '/swagger': {
                 target: 'http://localhost:5000',
                 ws: true
             }

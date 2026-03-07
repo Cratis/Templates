@@ -1,10 +1,10 @@
 import { Button } from 'primereact/button';
-import { Registration } from './Registration/Registration';
-import { ListingDataTable } from './Listing/ListingDataTable';
+import { RegisterDialog } from './Registration';
+import { ListingDataTable } from './Listing';
 import { useDialog } from '@cratis/arc.react/dialogs';
 
 export const SomeFeature = () => {
-    const [RegistrationDialog, showRegistrationDialog] = useDialog(Registration);
+    const [RegistrationDialog, showRegistrationDialog] = useDialog(RegisterDialog);
 
     return (
         <div className='p-4'>

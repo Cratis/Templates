@@ -132,6 +132,46 @@ If not already present, add the build package to your `.csproj`:
 - `CratisProxiesSkipFileIndexTracking`: Disables orphan-file tracking when `true`.
 - `CratisProxiesSkipIndexGeneration`: Disables `index.ts` generation when `true`.
 
+### Automatic routes and proxy generation
+
+Arc automatically maps model-bound commands and queries to HTTP routes based on namespace conventions.
+
+Keep runtime (`appsettings.json`) and proxy generation (`.csproj`) settings aligned:
+
+- `Cratis:Arc:GeneratedApis:RoutePrefix` <-> `CratisProxiesApiPrefix`
+- `Cratis:Arc:GeneratedApis:SegmentsToSkipForRoute` <-> `CratisProxiesSegmentsToSkip`
+- `Cratis:Arc:GeneratedApis:IncludeCommandNameInRoute` <-> inverse of `CratisProxiesSkipCommandNameInRoute`
+- `Cratis:Arc:GeneratedApis:IncludeQueryNameInRoute` <-> inverse of `CratisProxiesSkipQueryNameInRoute`
+
+If these are out of sync, generated TypeScript proxies can call routes that do not match mapped backend endpoints.
+
+In this template, both segment-skip settings are set to `1`:
+
+```json
+{
+  "Cratis": {
+    "Arc": {
+      "GeneratedApis": {
+        "RoutePrefix": "api",
+        "IncludeCommandNameInRoute": false,
+        "SegmentsToSkipForRoute": 1
+      }
+    }
+  }
+}
+```
+
+```xml
+<PropertyGroup>
+  <CratisProxiesSegmentsToSkip>1</CratisProxiesSegmentsToSkip>
+  <CratisProxiesSkipCommandNameInRoute>true</CratisProxiesSkipCommandNameInRoute>
+</PropertyGroup>
+```
+
+`IncludeQueryNameInRoute` is not explicitly set in this template, so the Arc default (`true`) applies. This matches proxy generation default `CratisProxiesSkipQueryNameInRoute=false`.
+
+When command/query names are excluded, both runtime mapping and proxy generation automatically re-include names when needed to avoid route collisions.
+
 ### Verify generation
 
 Run:
@@ -145,5 +185,8 @@ Then inspect your configured `CratisProxiesOutputPath` directory for generated p
 ## Learn More
 
 - [Cratis Arc Documentation](https://www.cratis.io/docs/Arc/)
+- [Cratis Arc ASP.NET Core Configuration](https://www.cratis.io/docs/Arc/backend/asp-net-core/configuration.html)
 - [Cratis Arc Proxy Generation Configuration](https://www.cratis.io/docs/Arc/backend/proxy-generation/index.html)
+- [Cratis Arc Model Bound Commands](https://www.cratis.io/docs/Arc/backend/commands/model-bound/index.html)
+- [Cratis Arc Model Bound Queries](https://www.cratis.io/docs/Arc/backend/queries/model-bound/index.html)
 - [Chronicle Documentation](https://www.cratis.io/docs/Chronicle/)
