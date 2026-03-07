@@ -66,11 +66,7 @@ jobs:
           echo "Using validation root: $validation_root"
 
           run_dotnet_new() {
-            set +o pipefail
-            yes | "$@"
-            local status=$?
-            set -o pipefail
-            return $status
+            "$@"
           }
 
           build_generated_project() {
