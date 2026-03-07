@@ -51,8 +51,11 @@ jobs:
       - name: Restore
         run: dotnet restore Cratis.Templates.csproj
 
+      - name: Build
+        run: dotnet build Cratis.Templates.csproj --configuration Release --no-restore
+
       - name: Validate package
-        run: dotnet pack Cratis.Templates.csproj --no-build --configuration Release -o ./Artifacts/NuGet -p:PackageVersion=0.0.0-ci
+        run: dotnet pack Cratis.Templates.csproj --no-build --no-restore --configuration Release -o ./Artifacts/NuGet -p:PackageVersion=0.0.0-ci
 
       - name: Validate templates generate buildable projects
         shell: bash
@@ -90,11 +93,11 @@ jobs:
             dotnet build "$project_file" --configuration Release
           }
 
-          run_dotnet_new dotnet new cratis-chronicle-console -n ValidateChronicleConsole -o "$validation_root/ValidateChronicleConsole" --Framework net10.0
+          run_dotnet_new dotnet new cratis-chronicle-console -n ValidateChronicleConsole -o "$validation_root/ValidateChronicleConsole" --Framework net10.0 --allow-scripts Yes
           build_generated_project "$validation_root/ValidateChronicleConsole"
 
-          run_dotnet_new dotnet new cratis-chronicle-web -n ValidateChronicleWeb -o "$validation_root/ValidateChronicleWeb" --Framework net10.0
+          run_dotnet_new dotnet new cratis-chronicle-web -n ValidateChronicleWeb -o "$validation_root/ValidateChronicleWeb" --Framework net10.0 --allow-scripts Yes
           build_generated_project "$validation_root/ValidateChronicleWeb"
 
-          run_dotnet_new dotnet new cratis -n ValidateCratis -o "$validation_root/ValidateCratis" --Framework net10.0 --EnableFrontend false
+          run_dotnet_new dotnet new cratis -n ValidateCratis -o "$validation_root/ValidateCratis" --Framework net10.0 --EnableFrontend false --allow-scripts Yes
           build_generated_project "$validation_root/ValidateCratis"
