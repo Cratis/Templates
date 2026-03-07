@@ -16,4 +16,9 @@
         <Content Remove="package.json" />
         <None Remove="package.json" />
     </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Cratis" Version="*" />
+        <PackageReference Include="Cratis.Arc.MongoDB" Version="*" />
+    </ItemGroup>
 </Project>

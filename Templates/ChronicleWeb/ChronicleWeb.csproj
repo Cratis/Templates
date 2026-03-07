@@ -6,4 +6,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Cratis.Chronicle" Version="*" />
+    <PackageReference Include="Cratis.Chronicle.AspNetCore" Version="*" />
+  </ItemGroup>
+
 </Project>
