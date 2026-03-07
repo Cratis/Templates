@@ -48,8 +48,21 @@ jobs:
             ${{ env.DOTNET9_VERSION }}
             ${{ env.DOTNET10_VERSION }}
 
+      - name: Generate NuGet.config
+        shell: bash
+        run: |
+          cat > NuGet.config <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <configuration>
+            <packageSources>
+              <clear />
+              <add key="nuget.org" value="https://api.nuget.org/v3/index.json" protocolVersion="3" />
+            </packageSources>
+          </configuration>
+          EOF
+
       - name: Restore
-        run: dotnet restore Cratis.Templates.csproj
+        run: dotnet restore Cratis.Templates.csproj --configfile ./NuGet.config
 
       - name: Build
         run: dotnet build Cratis.Templates.csproj --configuration Release --no-restore
