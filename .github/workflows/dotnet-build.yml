@@ -116,5 +116,5 @@ jobs:
           run_dotnet_new dotnet new cratis-chronicle-web -n ValidateChronicleWeb -o "$validation_root/ValidateChronicleWeb" --Framework net10.0
           build_generated_project "$validation_root/ValidateChronicleWeb"
 
-          run_dotnet_new dotnet new cratis -n ValidateCratis -o "$validation_root/ValidateCratis" --Framework net10.0
+          run_dotnet_new dotnet new cratis -n ValidateCratis -o "$validation_root/ValidateCratis" --Framework net10.0 --allow-scripts Yes
           build_generated_project "$validation_root/ValidateCratis"
