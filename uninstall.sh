@@ -1,0 +1,1 @@
+dotnet new uninstall Cratis.Templates

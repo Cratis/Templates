@@ -1,8 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
         <PackageType>Template</PackageType>
         <PackageId>Cratis.Templates</PackageId>
         <PackageVersion>1.0.0</PackageVersion>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <Title>Cratis Templates</Title>
         <Description>A collection of templates for creating applications with Cratis Arc and Chronicle</Description>
         <Author>Cratis</Author>
@@ -12,14 +14,19 @@
         <License>MIT</License>
         <IncludeContentInPack>true</IncludeContentInPack>
         <NoWarn>$(NoWarn);CS8805;CS0103;IDE0073;SA1512;SA1515;SA1005</NoWarn>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Remove="Cratis\**\*" />
-        <None Remove="Cratis\**\*" />
+        <Compile Remove="Templates\**\*" />
+        <None Remove="Templates\**\*" />
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="Cratis/**/*" />
+        <Content Include="Templates/**/*" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="README.md" Pack="true" PackagePath="/" />
     </ItemGroup>
 </Project>

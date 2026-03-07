@@ -21,14 +21,16 @@ on:
     branches:
       - "main"
     paths:
-      - "Source/DotNET/**"
-      - "Specifications/**"
+      - "Cratis.Templates.csproj"
+      - "Templates/**"
+      - ".github/workflows/dotnet-build.yml"
   pull_request:
     branches:
       - "**"
     paths:
-      - "Source/DotNET/**"
-      - "Specifications/**"
+      - "Cratis.Templates.csproj"
+      - "Templates/**"
+      - ".github/workflows/dotnet-build.yml"
 
 jobs:
   build:
@@ -46,27 +48,52 @@ jobs:
             ${{ env.DOTNET9_VERSION }}
             ${{ env.DOTNET10_VERSION }}
 
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 23.x
-          registry-url: "https://registry.npmjs.org"
-
-      - uses: actions/cache@v3
-        id: yarn-cache
-        with:
-          path: |
-            .yarn/cache
-            **/node_modules
-            **/.eslintcache
-            **/yarn.lock
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}
-
-      - name: Yarn install
-        run: yarn
+      - name: Restore
+        run: dotnet restore Cratis.Templates.csproj
 
       - name: Build
-        run: dotnet build --configuration Release
+        run: dotnet build Cratis.Templates.csproj --configuration Release --no-restore
 
-      - name: Test
-        run: dotnet test --configuration Release --no-build
+      - name: Validate package
+        run: dotnet pack Cratis.Templates.csproj --no-build --no-restore --configuration Release -o ./Artifacts/NuGet -p:PackageVersion=0.0.0-ci
+
+      - name: Validate templates generate buildable projects
+        shell: bash
+        run: |
+          ./install-local.sh
+
+          validation_root="$(mktemp -d)"
+          echo "Using validation root: $validation_root"
+
+          run_dotnet_new() {
+            "$@"
+          }
+
+          build_generated_project() {
+            local project_root="$1"
+            local solution_file
+            local project_file
+
+            solution_file="$(find "$project_root" -maxdepth 1 -name '*.sln' | head -n 1)"
+            if [[ -n "$solution_file" ]]; then
+              dotnet build "$solution_file" --configuration Release
+              return
+            fi
+
+            project_file="$(find "$project_root" -maxdepth 1 -name '*.csproj' | head -n 1)"
+            if [[ -z "$project_file" ]]; then
+              echo "No .sln or .csproj found in $project_root"
+              return 1
+            fi
+
+            dotnet build "$project_file" --configuration Release
+          }
+
+          run_dotnet_new dotnet new cratis-chronicle-console -n ValidateChronicleConsole -o "$validation_root/ValidateChronicleConsole" --Framework net10.0 --allow-scripts Yes
+          build_generated_project "$validation_root/ValidateChronicleConsole"
+
+          run_dotnet_new dotnet new cratis-chronicle-web -n ValidateChronicleWeb -o "$validation_root/ValidateChronicleWeb" --Framework net10.0 --allow-scripts Yes
+          build_generated_project "$validation_root/ValidateChronicleWeb"
+
+          run_dotnet_new dotnet new cratis -n ValidateCratis -o "$validation_root/ValidateCratis" --Framework net10.0 --EnableFrontend false --allow-scripts Yes
+          build_generated_project "$validation_root/ValidateCratis"

@@ -12,10 +12,23 @@ This repository contains all creation templates used by Cratis. It holds project
 
 Quick steps to scaffold projects from these templates:
 
-- Install the templates locally (one-time):
+- Install the published templates from NuGet.org (one-time):
 
 ```bash
 dotnet new install Cratis.Templates
+```
+
+- Optional: install a specific version:
+
+```bash
+dotnet new install Cratis.Templates::<version>
+```
+
+- Optional: install prerelease builds from GitHub Packages:
+
+```bash
+dotnet nuget add source --name cratis-github --username <github-username> --password <github-token> --store-password-in-clear-text https://nuget.pkg.github.com/cratis/index.json
+dotnet new install Cratis.Templates::<version> --nuget-source https://nuget.pkg.github.com/cratis/index.json
 ```
 
 - List available templates and note the `Short Name` you want:
@@ -31,6 +44,44 @@ dotnet new <shortname> -n MyApp -o MyApp
 ```
 
 - Many templates accept parameters; run `dotnet new <shortname> --help` to see available options.
+
+- Uninstall when needed:
+
+```bash
+dotnet new uninstall Cratis.Templates
+```
+
+### Updating installed templates
+
+To update to the latest version:
+
+```bash
+dotnet new update
+```
+
+This updates all installed template packages to their latest versions.
+
+To update only Cratis.Templates:
+
+```bash
+dotnet new uninstall Cratis.Templates
+dotnet new install Cratis.Templates
+```
+
+To check which version you currently have installed:
+
+```bash
+dotnet new list
+```
+
+Look for `Cratis.Templates` in the output to see the installed version.
+
+To update to a specific version:
+
+```bash
+dotnet new uninstall Cratis.Templates
+dotnet new install Cratis.Templates::<version>
+```
 
 
 ## Build & Test Locally
