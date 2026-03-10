@@ -62,5 +62,21 @@
       ]
     }
   ],
-  "postActions": []
+  "postActions": [
+        {
+            "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+            "description": "Add Cratis Chronicle NuGet package.",
+            "manualInstructions": [
+                {
+                    "text": "Add a reference to the Cratis.Chronicle NuGet package"
+                }
+            ],
+            "args": {
+                "referenceType": "package",
+                "reference": "Cratis.Chronicle",
+                "projectFileExtensions": ".csproj"
+            },
+            "continueOnError": true
+        }
+    ]
 }

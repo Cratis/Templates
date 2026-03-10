@@ -61,6 +61,36 @@
     ],
     "postActions": [
         {
+            "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+            "description": "Add Cratis NuGet package.",
+            "manualInstructions": [
+                {
+                    "text": "Add a reference to the Cratis NuGet package"
+                }
+            ],
+            "args": {
+                "referenceType": "package",
+                "reference": "Cratis",
+                "projectFileExtensions": ".csproj"
+            },
+            "continueOnError": true
+        },
+        {
+            "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+            "description": "Add Cratis Arc MongoDB NuGet package.",
+            "manualInstructions": [
+                {
+                    "text": "Add a reference to the Cratis.Arc.MongoDB NuGet package"
+                }
+            ],
+            "args": {
+                "referenceType": "package",
+                "reference": "Cratis.Arc.MongoDB",
+                "projectFileExtensions": ".csproj"
+            },
+            "continueOnError": true
+        },
+        {
             "description": "Restore NuGet packages required by this project.",
             "manualInstructions": [
                 {
