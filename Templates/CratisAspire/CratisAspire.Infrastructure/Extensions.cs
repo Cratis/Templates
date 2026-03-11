@@ -80,7 +80,7 @@ public static class Extensions
     }
 
     /// <summary>
-    /// Maps default health check and liveness endpoints. Only enabled in development.
+    /// Maps default health check and liveness endpoints for development environments only.
     /// </summary>
     /// <param name="app">The <see cref="WebApplication"/> to map endpoints on.</param>
     /// <returns>The <see cref="WebApplication"/> for chaining.</returns>
