@@ -1,0 +1,108 @@
+{
+    "$schema": "http://json.schemastore.org/template",
+    "author": "Cratis",
+    "classifications": [
+        "Web",
+        "ASP.NET",
+        "Cratis",
+        "Arc",
+        "Chronicle",
+        "Aspire"
+    ],
+    "identity": "Cratis.Templates.Aspire",
+    "name": "Cratis Aspire Application",
+    "shortName": "cratis-aspire",
+    "description": "A template for creating a Cratis web application with .NET Aspire orchestration",
+    "tags": {
+        "language": "C#",
+        "type": "solution"
+    },
+    "sourceName": "CratisAspire",
+    "preferNameDirectory": true,
+    "primaryOutputs": [
+        {
+            "path": "CratisAspire.sln"
+        }
+    ],
+    "symbols": {
+        "Framework": {
+            "type": "parameter",
+            "datatype": "choice",
+            "choices": [
+                {
+                    "choice": "net9.0",
+                    "description": ".NET 9"
+                },
+                {
+                    "choice": "net10.0",
+                    "description": ".NET 10"
+                }
+            ],
+            "defaultValue": "net10.0",
+            "description": "Target framework",
+            "prompt": "Select target framework",
+            "replaces": "TARGET_FRAMEWORK"
+        },
+        "ProjectGuid": {
+            "type": "generated",
+            "generator": "guid",
+            "replaces": "PROJECT_GUID"
+        },
+        "CompositionGuid": {
+            "type": "generated",
+            "generator": "guid",
+            "replaces": "COMPOSITION_GUID"
+        },
+        "InfrastructureGuid": {
+            "type": "generated",
+            "generator": "guid",
+            "replaces": "INFRASTRUCTURE_GUID"
+        }
+    },
+    "sources": [
+        {
+            "exclude": [
+                "**/.template.config/**"
+            ]
+        }
+    ],
+    "postActions": [
+        {
+            "description": "Restore NuGet packages required by this project.",
+            "manualInstructions": [
+                {
+                    "text": "Run 'dotnet restore'"
+                }
+            ],
+            "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+            "continueOnError": true
+        },
+        {
+            "description": "Install all frontend dependencies with yarn.",
+            "manualInstructions": [
+                {
+                    "text": "Run 'yarn install' in the CratisAspire directory"
+                }
+            ],
+            "actionId": "3A7C4B45-1F5D-4A30-959A-51B88E82B5D2",
+            "args": {
+                "executable": "yarn",
+                "args": "install"
+            },
+            "continueOnError": true
+        },
+        {
+            "description": "Open README.md with getting started instructions.",
+            "actionId": "84C0DA21-51C8-4541-9940-6CA19AF46622",
+            "continueOnError": true,
+            "manualInstructions": [
+                {
+                    "text": "Your project is ready! Next steps:\n  1. Run the application:   dotnet run --project CratisAspire.Composition\n  2. Frontend dev server:   cd CratisAspire && yarn dev\n\nSee README.md for full details."
+                }
+            ],
+            "args": {
+                "files": "1"
+            }
+        }
+    ]
+}
