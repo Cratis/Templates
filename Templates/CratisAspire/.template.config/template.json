@@ -68,6 +68,166 @@
     ],
     "postActions": [
         {
+            "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+            "description": "Add Cratis NuGet package.",
+            "manualInstructions": [
+                {
+                    "text": "Add a reference to the Cratis NuGet package"
+                }
+            ],
+            "args": {
+                "referenceType": "package",
+                "reference": "Cratis",
+                "projectFileExtensions": ".csproj",
+                "targetFiles": ["CratisAspire/CratisAspire.csproj"]
+            },
+            "continueOnError": true
+        },
+        {
+            "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+            "description": "Add Cratis.Arc.MongoDB NuGet package.",
+            "manualInstructions": [
+                {
+                    "text": "Add a reference to the Cratis.Arc.MongoDB NuGet package"
+                }
+            ],
+            "args": {
+                "referenceType": "package",
+                "reference": "Cratis.Arc.MongoDB",
+                "projectFileExtensions": ".csproj",
+                "targetFiles": ["CratisAspire/CratisAspire.csproj"]
+            },
+            "continueOnError": true
+        },
+        {
+            "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+            "description": "Add Cratis.Chronicle.Aspire NuGet package.",
+            "manualInstructions": [
+                {
+                    "text": "Add a reference to the Cratis.Chronicle.Aspire NuGet package"
+                }
+            ],
+            "args": {
+                "referenceType": "package",
+                "reference": "Cratis.Chronicle.Aspire",
+                "projectFileExtensions": ".csproj",
+                "targetFiles": ["CratisAspire.Composition/CratisAspire.Composition.csproj"]
+            },
+            "continueOnError": true
+        },
+        {
+            "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+            "description": "Add Microsoft.Extensions.Http.Resilience NuGet package.",
+            "manualInstructions": [
+                {
+                    "text": "Add a reference to the Microsoft.Extensions.Http.Resilience NuGet package"
+                }
+            ],
+            "args": {
+                "referenceType": "package",
+                "reference": "Microsoft.Extensions.Http.Resilience",
+                "projectFileExtensions": ".csproj",
+                "targetFiles": ["CratisAspire.Infrastructure/CratisAspire.Infrastructure.csproj"]
+            },
+            "continueOnError": true
+        },
+        {
+            "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+            "description": "Add Microsoft.Extensions.ServiceDiscovery NuGet package.",
+            "manualInstructions": [
+                {
+                    "text": "Add a reference to the Microsoft.Extensions.ServiceDiscovery NuGet package"
+                }
+            ],
+            "args": {
+                "referenceType": "package",
+                "reference": "Microsoft.Extensions.ServiceDiscovery",
+                "projectFileExtensions": ".csproj",
+                "targetFiles": ["CratisAspire.Infrastructure/CratisAspire.Infrastructure.csproj"]
+            },
+            "continueOnError": true
+        },
+        {
+            "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+            "description": "Add OpenTelemetry.Exporter.OpenTelemetryProtocol NuGet package.",
+            "manualInstructions": [
+                {
+                    "text": "Add a reference to the OpenTelemetry.Exporter.OpenTelemetryProtocol NuGet package"
+                }
+            ],
+            "args": {
+                "referenceType": "package",
+                "reference": "OpenTelemetry.Exporter.OpenTelemetryProtocol",
+                "projectFileExtensions": ".csproj",
+                "targetFiles": ["CratisAspire.Infrastructure/CratisAspire.Infrastructure.csproj"]
+            },
+            "continueOnError": true
+        },
+        {
+            "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+            "description": "Add OpenTelemetry.Extensions.Hosting NuGet package.",
+            "manualInstructions": [
+                {
+                    "text": "Add a reference to the OpenTelemetry.Extensions.Hosting NuGet package"
+                }
+            ],
+            "args": {
+                "referenceType": "package",
+                "reference": "OpenTelemetry.Extensions.Hosting",
+                "projectFileExtensions": ".csproj",
+                "targetFiles": ["CratisAspire.Infrastructure/CratisAspire.Infrastructure.csproj"]
+            },
+            "continueOnError": true
+        },
+        {
+            "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+            "description": "Add OpenTelemetry.Instrumentation.AspNetCore NuGet package.",
+            "manualInstructions": [
+                {
+                    "text": "Add a reference to the OpenTelemetry.Instrumentation.AspNetCore NuGet package"
+                }
+            ],
+            "args": {
+                "referenceType": "package",
+                "reference": "OpenTelemetry.Instrumentation.AspNetCore",
+                "projectFileExtensions": ".csproj",
+                "targetFiles": ["CratisAspire.Infrastructure/CratisAspire.Infrastructure.csproj"]
+            },
+            "continueOnError": true
+        },
+        {
+            "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+            "description": "Add OpenTelemetry.Instrumentation.Http NuGet package.",
+            "manualInstructions": [
+                {
+                    "text": "Add a reference to the OpenTelemetry.Instrumentation.Http NuGet package"
+                }
+            ],
+            "args": {
+                "referenceType": "package",
+                "reference": "OpenTelemetry.Instrumentation.Http",
+                "projectFileExtensions": ".csproj",
+                "targetFiles": ["CratisAspire.Infrastructure/CratisAspire.Infrastructure.csproj"]
+            },
+            "continueOnError": true
+        },
+        {
+            "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+            "description": "Add OpenTelemetry.Instrumentation.Runtime NuGet package.",
+            "manualInstructions": [
+                {
+                    "text": "Add a reference to the OpenTelemetry.Instrumentation.Runtime NuGet package"
+                }
+            ],
+            "args": {
+                "referenceType": "package",
+                "reference": "OpenTelemetry.Instrumentation.Runtime",
+                "projectFileExtensions": ".csproj",
+                "targetFiles": ["CratisAspire.Infrastructure/CratisAspire.Infrastructure.csproj"]
+            },
+            "continueOnError": true
+        },
+        {
             "description": "Restore NuGet packages required by this project.",
             "manualInstructions": [
                 {

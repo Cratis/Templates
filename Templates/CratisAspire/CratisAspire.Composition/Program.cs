@@ -1,6 +1,6 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
-var chronicle = builder.AddCratisChronicle("chronicle");
+var chronicle = builder.AddCratisChronicle();
 
 builder.AddProject<Projects.CratisAspire_CratisAspire>("backend")
     .WithReference(chronicle)
