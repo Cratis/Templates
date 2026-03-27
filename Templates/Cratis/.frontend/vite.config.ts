@@ -34,7 +34,7 @@ export default defineConfig({
         port: 9000,
         open: true,
         proxy: {
-            ".cratis/me": {
+            ".cratis": {
                 target: 'http://localhost:5000',
                 ws: true
             },
