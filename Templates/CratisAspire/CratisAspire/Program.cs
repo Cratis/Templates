@@ -1,7 +1,6 @@
 var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 builder.AddCratis(
-    configureArcChronicleOptions: options => options.WithCamelCaseNamingPolicy(),
     configureArcBuilder: arcBuilder => arcBuilder.WithMongoDB(configureMongoDB: builder => builder.WithCamelCaseNamingPolicy()));
 
 builder.Services.AddControllers();
