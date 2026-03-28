@@ -7,7 +7,7 @@ A web application built with Cratis Arc and Chronicle.
 - .NET 9.0 or later
 - Docker and Docker Compose (for running Chronicle and Aspire Dashboard)
 - Node.js 20 or later
-- Yarn
+- A package manager (yarn, pnpm, or npm)
 
 ## Getting Started
 
@@ -25,13 +25,13 @@ This will start:
 2. Install frontend dependencies:
 
 ```bash
-yarn install
+PACKAGE_MGR_INSTALL
 ```
 
 3. Start the frontend development server:
 
 ```bash
-yarn dev
+PACKAGE_MGR_DEV
 ```
 
 4. Run the application:
