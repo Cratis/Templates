@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig, type PluginOption } from 'vite';
 import react from '@vitejs/plugin-react';
 import { fileURLToPath } from 'node:url';
 import { EmitMetadataPlugin } from '@cratis/arc.vite';
@@ -28,7 +28,7 @@ export default defineConfig({
     plugins: [
         react(),
         tailwindcss(),
-        EmitMetadataPlugin({ tsconfigPath: fileURLToPath(new URL('./tsconfig.json', import.meta.url)) }) as any
+        EmitMetadataPlugin({ tsconfigPath: fileURLToPath(new URL('./tsconfig.json', import.meta.url)) }) as PluginOption,
     ],
     server: {
         port: 9000,

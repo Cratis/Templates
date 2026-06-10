@@ -223,8 +223,8 @@
             "continueOnError": true
         },
         {
-            "description": "Open README.md with getting started instructions.",
-            "actionId": "84C0DA21-51C8-4541-9940-6CA19AF46622",
+            "description": "Show getting started instructions.",
+            "actionId": "AC1156F7-BB77-4DB8-B28F-24EEBCCA1E5C",
             "condition": "(packageManager == \"yarn\")",
             "continueOnError": true,
             "manualInstructions": [
@@ -237,8 +237,8 @@
             }
         },
         {
-            "description": "Open README.md with getting started instructions.",
-            "actionId": "84C0DA21-51C8-4541-9940-6CA19AF46622",
+            "description": "Show getting started instructions.",
+            "actionId": "AC1156F7-BB77-4DB8-B28F-24EEBCCA1E5C",
             "condition": "(packageManager == \"pnpm\")",
             "continueOnError": true,
             "manualInstructions": [
@@ -251,8 +251,8 @@
             }
         },
         {
-            "description": "Open README.md with getting started instructions.",
-            "actionId": "84C0DA21-51C8-4541-9940-6CA19AF46622",
+            "description": "Show getting started instructions.",
+            "actionId": "AC1156F7-BB77-4DB8-B28F-24EEBCCA1E5C",
             "condition": "(packageManager == \"npm\")",
             "continueOnError": true,
             "manualInstructions": [
@@ -265,8 +265,8 @@
             }
         },
         {
-            "description": "Open README.md with getting started instructions.",
-            "actionId": "84C0DA21-51C8-4541-9940-6CA19AF46622",
+            "description": "Show getting started instructions.",
+            "actionId": "AC1156F7-BB77-4DB8-B28F-24EEBCCA1E5C",
             "condition": "(packageManager == \"none\")",
             "continueOnError": true,
             "manualInstructions": [

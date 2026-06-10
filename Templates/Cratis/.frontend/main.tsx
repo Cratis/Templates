@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { PrimeReactProvider } from 'primereact/api';
+import { CratisComponentsProvider } from '@cratis/components/Common';
 import ReactDOM from 'react-dom/client';
 import 'primeicons/primeicons.css';
 import './index.css';
@@ -9,10 +9,10 @@ import App from '../App.tsx';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-        <PrimeReactProvider value={{ ripple: true }}>
+        <CratisComponentsProvider value={{ ripple: true }}>
             <Arc>
                 <App />
             </Arc>
-        </PrimeReactProvider>
+        </CratisComponentsProvider>
     </React.StrictMode>
 );

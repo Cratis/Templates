@@ -45,6 +45,17 @@ dotnet new <shortname> -n MyApp -o MyApp
 
 - Many templates accept parameters; run `dotnet new <shortname> --help` to see available options.
 
+> [!IMPORTANT]
+> The `cratis` and `cratis-aspire` templates keep selected NuGet references as `Version="*"` in the template source. Their post-creation package actions intentionally resolve those references and pin the generated project to the current latest package versions. The `cratis` template can also install frontend dependencies (yarn/pnpm/npm) as a post-creation step.
+>
+> In an interactive terminal, `dotnet new` asks before running post-creation actions. When scaffolding **non-interactively** — CI pipelines, scripts, devcontainer `postCreateCommand`, or any context where stdin is not a TTY — opt in explicitly:
+>
+> ```bash
+> dotnet new cratis -n MyApp -o MyApp --allow-scripts yes
+> ```
+>
+> To pin NuGet package versions but skip the regular `cratis` frontend install, pass both `--allow-scripts yes` and `--packageManager none`. The `cratis-aspire` template does not auto-install frontend dependencies; follow the `yarn install` step in its generated `README.md`.
+
 - Uninstall when needed:
 
 ```bash
