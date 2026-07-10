@@ -25,9 +25,8 @@
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,
         /* Path aliases */
-        "baseUrl": "..",
         "paths": {
-            "Api/*": ["Features/*"]
+            "Api/*": ["./../Features/*"]
         }
     },
     "include": [
