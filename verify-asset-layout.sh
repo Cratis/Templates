@@ -198,10 +198,41 @@ scaffold() {
     local template="$1" name="$2" out="$3"
     shift 3
 
+    # `--allow-scripts` is only a recognised option for templates that declare a
+    # run-script post-action, and whether a given template does is not fixed -
+    # it changes as templates evolve. Where it is recognised it is also needed:
+    # with stdin closed, as under CI, dotnet new reads EOF at the approval
+    # prompt, rejects it as invalid input and asks again forever rather than
+    # failing. Where it is not recognised, passing it is a hard error. So ask
+    # the template which of the two it is rather than assuming.
+    local approval=()
+    if dotnet new "$template" -h 2>/dev/null | grep -q -- '--allow-scripts'; then
+        approval=(--allow-scripts Yes)
+    fi
+
     echo "  $template -> $name"
-    if ! dotnet new "$template" -n "$name" -o "$out" "$@" >"$out.scaffold.log" 2>&1; then
+    if ! dotnet new "$template" -n "$name" -o "$out" ${approval[@]+"${approval[@]}"} "$@" >"$out.scaffold.log" 2>&1; then
         fail "dotnet new $template failed"
         sed 's/^/        /' "$out.scaffold.log" | tail -20
+        return 1
+    fi
+}
+
+# The Cratis proxy generator rewrites the TypeScript proxies in place during
+# `dotnet build` (CratisProxiesOutputPath points at the project itself). A
+# frontend built without that step compiles the template's placeholder proxies
+# rather than the generated ones, which is a weaker check than CI performs -
+# CI builds the backend first. Build here too, so a standalone run and a CI run
+# agree about what they verified.
+build_backend() {
+    local project_root="$1" solution
+
+    solution="$(find "$project_root" -maxdepth 1 -name '*.sln' | head -n 1)"
+    [[ -z "$solution" ]] && return 0
+
+    if ! dotnet build "$solution" --configuration Release >"$project_root.build.log" 2>&1; then
+        fail "dotnet build failed for $(basename "$project_root") - proxies were not generated"
+        sed 's/^/        /' "$project_root.build.log" | tail -15
         return 1
     fi
 }
@@ -213,13 +244,17 @@ scaffold_and_verify() {
     "$repo_root/install-local.sh" >/dev/null
 
     info "Scaffolding into $work_dir"
-    # `--packageManager none` keeps the cratis template from running its own
-    # frontend install post-action, which blocks without `--allow-scripts`. The
-    # Aspire template has no packageManager symbol and no install action of its
-    # own, so both arrive here without dependencies and build_frontend installs
-    # what they need - the same path either way.
+    # Post-action approval is handled inside scaffold(). `--packageManager none`
+    # keeps the cratis template from installing frontend dependencies, which it
+    # would otherwise do differently from the Aspire template - that one has no
+    # packageManager symbol. Both arrive here without dependencies and
+    # build_frontend installs what they need, the same way for each.
     scaffold cratis VerifyCratis "$work_dir/VerifyCratis" --packageManager none || return 0
     scaffold cratis-aspire VerifyCratisAspire "$work_dir/VerifyCratisAspire" || return 0
+
+    info "Building backends so the TypeScript proxies are generated"
+    build_backend "$work_dir/VerifyCratis" || return 0
+    build_backend "$work_dir/VerifyCratisAspire" || return 0
 
     local app_dir
     while IFS= read -r app_dir; do
