@@ -139,6 +139,25 @@ npm install
 npm run dev
 ```
 
+### Verify the emitted frontend asset layout
+
+```bash
+./verify-asset-layout.sh
+```
+
+Scaffolds both Vite-based templates, builds their frontends, and checks that every
+hashed build artifact lands under `wwwroot/assets/` rather than at the `wwwroot`
+root. A flat root layout cannot be expressed as a reverse-proxy, CDN or WAF path
+rule — the artifacts are hash-named, change every build and share no prefix — so
+the failure only shows up at deployment, as a blank page. CI runs the same script
+against the applications it has already generated.
+
+Pass application directories to check ones you have already scaffolded:
+
+```bash
+./verify-asset-layout.sh path/to/MyTestApp
+```
+
 ### Uninstall the local template when finished
 
 ```bash
