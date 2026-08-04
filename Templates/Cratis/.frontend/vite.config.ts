@@ -16,7 +16,6 @@ export default defineConfig({
     },
     build: {
         outDir: '../wwwroot',
-        assetsDir: '',
         modulePreload: false,
         target: 'esnext',
         minify: false,
