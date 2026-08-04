@@ -133,9 +133,13 @@ jobs:
           run_dotnet_new dotnet new cratis -n ValidateCratis -o "$validation_root/ValidateCratis" --Framework net10.0 --allow-scripts Yes
           build_generated_project "$validation_root/ValidateCratis"
 
+          # --allow-scripts Yes is required for every template here, not just the
+          # ones with an install action: without it dotnet new prompts for
+          # post-action approval, and on a runner - where stdin is never a TTY -
+          # it reads EOF and re-asks forever rather than failing.
           # The Aspire template has no packageManager symbol, so it installs no
           # frontend dependencies of its own - verify-asset-layout.sh does that.
-          run_dotnet_new dotnet new cratis-aspire -n ValidateCratisAspire -o "$validation_root/ValidateCratisAspire" --Framework net10.0
+          run_dotnet_new dotnet new cratis-aspire -n ValidateCratisAspire -o "$validation_root/ValidateCratisAspire" --Framework net10.0 --allow-scripts Yes
           build_generated_project "$validation_root/ValidateCratisAspire"
 
       - name: Validate scaffolded frontends serve their assets from /assets/

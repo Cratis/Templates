@@ -213,13 +213,16 @@ scaffold_and_verify() {
     "$repo_root/install-local.sh" >/dev/null
 
     info "Scaffolding into $work_dir"
-    # `--packageManager none` keeps the cratis template from running its own
-    # frontend install post-action, which blocks without `--allow-scripts`. The
-    # Aspire template has no packageManager symbol and no install action of its
-    # own, so both arrive here without dependencies and build_frontend installs
-    # what they need - the same path either way.
-    scaffold cratis VerifyCratis "$work_dir/VerifyCratis" --packageManager none || return 0
-    scaffold cratis-aspire VerifyCratisAspire "$work_dir/VerifyCratisAspire" || return 0
+    # `--allow-scripts Yes` is needed by both templates, whether or not they have
+    # an install action: without it dotnet new prompts for post-action approval,
+    # and with stdin redirected - as it is here and on any CI runner - it reads
+    # EOF and re-asks forever instead of failing.
+    # `--packageManager none` then keeps the cratis template from installing
+    # frontend dependencies it would only install differently to the Aspire
+    # template, which has no packageManager symbol. Both arrive here without
+    # dependencies and build_frontend installs what they need.
+    scaffold cratis VerifyCratis "$work_dir/VerifyCratis" --allow-scripts Yes --packageManager none || return 0
+    scaffold cratis-aspire VerifyCratisAspire "$work_dir/VerifyCratisAspire" --allow-scripts Yes || return 0
 
     local app_dir
     while IFS= read -r app_dir; do
