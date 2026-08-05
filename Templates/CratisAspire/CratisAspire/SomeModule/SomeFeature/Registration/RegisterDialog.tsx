@@ -15,4 +15,4 @@ export const RegisterDialog = () => {
                 icon={<i className='pi pi-pencil' />} />
         </CommandDialog>
     );
-}
+};

@@ -116,7 +116,7 @@ SomeModule/
       Listing.cs              - Read model + projection + query
       Listing.ts              - Generated TypeScript proxy
       AllListings.ts          - Generated observable query proxy
-      ListingDataTable.tsx    - React data table component
+      ListingPage.tsx         - React listing page component
       index.ts                - Barrel export
 ```
 

@@ -6,7 +6,7 @@ A web application built with Cratis Arc and Chronicle.
 
 - .NET 9.0 or later
 - Docker and Docker Compose (for running Chronicle and Aspire Dashboard)
-- Node.js 20 or later
+- Node.js 20.19+, 22.13+, or 24+
 - A package manager (yarn, pnpm, or npm)
 
 ## Getting Started
@@ -92,7 +92,7 @@ If not already present, add the build package to your `.csproj`:
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Cratis.Arc.ProxyGenerator.Build" Version="<version>" />
+  <PackageReference Include="Cratis.Arc.ProxyGenerator.Build" Version="*" />
 </ItemGroup>
 ```
 
