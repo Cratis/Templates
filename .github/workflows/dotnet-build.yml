@@ -23,6 +23,7 @@ on:
     paths:
       - "Cratis.Templates.csproj"
       - "Templates/**"
+      - "verify-asset-layout.sh"
       - ".github/workflows/dotnet-build.yml"
   pull_request:
     branches:
@@ -30,6 +31,7 @@ on:
     paths:
       - "Cratis.Templates.csproj"
       - "Templates/**"
+      - "verify-asset-layout.sh"
       - ".github/workflows/dotnet-build.yml"
 
 jobs:
@@ -87,6 +89,10 @@ jobs:
           validation_root="$(mktemp -d)"
           echo "Using validation root: $validation_root"
 
+          # Carried into the asset-layout step, which verifies the applications
+          # generated here rather than scaffolding its own.
+          echo "validation_root=$validation_root" >> "$GITHUB_ENV"
+
           # Copy NuGet.config to the validation root so that dotnet restore
           # (which runs inside subdirectories of validation_root) can walk up
           # and find it, ensuring only nuget.org is used as a package source.
@@ -126,3 +132,18 @@ jobs:
 
           run_dotnet_new dotnet new cratis -n ValidateCratis -o "$validation_root/ValidateCratis" --Framework net10.0 --allow-scripts Yes
           build_generated_project "$validation_root/ValidateCratis"
+
+          # No --allow-scripts here: this template declares no run-script
+          # post-action, so dotnet new does not offer the option and rejects it
+          # outright. It also has no packageManager symbol, so it installs no
+          # frontend dependencies of its own - verify-asset-layout.sh does that.
+          run_dotnet_new dotnet new cratis-aspire -n ValidateCratisAspire -o "$validation_root/ValidateCratisAspire" --Framework net10.0
+          build_generated_project "$validation_root/ValidateCratisAspire"
+
+      - name: Validate scaffolded frontends serve their assets from /assets/
+        timeout-minutes: 15
+        shell: bash
+        run: |
+          ./verify-asset-layout.sh \
+            "$validation_root/ValidateCratis" \
+            "$validation_root/ValidateCratisAspire/ValidateCratisAspire"
