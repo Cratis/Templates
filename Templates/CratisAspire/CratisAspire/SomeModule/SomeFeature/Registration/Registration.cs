@@ -3,9 +3,9 @@ namespace CratisAspire.SomeModule.SomeFeature.Registration;
 [Command]
 public record Register(SomeName Name)
 {
-    public (Guid, Registered) Handle()
+    public (EventSourceId, Registered) Handle()
     {
-        var eventSourceId = Guid.NewGuid();
+        var eventSourceId = EventSourceId.New();
 
         return (eventSourceId, new(Name));
     }
