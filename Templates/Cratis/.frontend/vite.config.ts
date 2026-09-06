@@ -9,20 +9,12 @@ export default defineConfig({
     optimizeDeps: {
         exclude: ['tslib'],
     },
-    esbuild: {
-        supported: {
-            'top-level-await': true,
-        },
-    },
     build: {
         outDir: '../wwwroot',
         modulePreload: false,
         target: 'esnext',
         minify: false,
         cssCodeSplit: false,
-        rollupOptions: {
-            external: [],
-        },
     },
     plugins: [
         react(),

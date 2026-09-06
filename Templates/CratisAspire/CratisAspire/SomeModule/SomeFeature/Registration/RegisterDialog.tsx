@@ -1,5 +1,9 @@
+// Copyright (c) Cratis. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 import { CommandDialog } from '@cratis/components/CommandDialog';
 import { InputTextField } from '@cratis/components/CommandForm';
+import { MdEdit } from 'react-icons/md';
 import { Register } from './Registration';
 
 export const RegisterDialog = () => {
@@ -12,7 +16,7 @@ export const RegisterDialog = () => {
             <InputTextField<Register>
                 value={c => c.name}
                 title='Name'
-                icon={<i className='pi pi-pencil' />} />
+                icon={<MdEdit />} />
         </CommandDialog>
     );
 };
