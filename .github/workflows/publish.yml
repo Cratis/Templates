@@ -45,6 +45,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write
 
 jobs:
   release:
@@ -85,10 +86,19 @@ jobs:
           dotnet restore Cratis.Templates.csproj
           dotnet pack Cratis.Templates.csproj --no-restore --configuration Release -o "${{ env.NUGET_OUTPUT }}" -p:PackageVersion=${{ steps.release.outputs.version }}
 
+      - name: NuGet trusted-publishing login
+        if: steps.release.outputs.should-publish == 'true'
+        id: nuget-login
+        uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
+        with:
+          user: ${{ vars.NUGET_USER }}
+          token-service-url: https://www.nuget.org/api/v2/token
+          audience: https://www.nuget.org
+
       - name: Push NuGet package
         if: steps.release.outputs.should-publish == 'true'
         env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+          NUGET_API_KEY: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
         run: dotnet nuget push --skip-duplicate '${{ env.NUGET_OUTPUT }}/*.nupkg' --timeout 900 --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json
 
       - name: Verify the published package
