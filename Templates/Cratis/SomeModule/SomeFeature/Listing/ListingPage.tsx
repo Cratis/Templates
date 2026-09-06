@@ -1,5 +1,5 @@
 import { DataPage, MenuItem } from '@cratis/components/DataPage';
-import { AllListings } from './AllListings';
+import { AllListings } from './Listing';
 import { Column } from 'primereact/column';
 import { MdAdd } from 'react-icons/md';
 

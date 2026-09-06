@@ -1,6 +1,6 @@
 import { CommandDialog } from '@cratis/components/CommandDialog';
 import { InputTextField } from '@cratis/components/CommandForm';
-import { Register } from './Register';
+import { Register } from './Registration';
 
 export const RegisterDialog = () => {
     return (
