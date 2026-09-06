@@ -1,6 +1,8 @@
-import { DataPage, MenuItem } from '@cratis/components/DataPage';
+// Copyright (c) Cratis. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+import { Column, DataPage, MenuItem } from '@cratis/components/DataPage';
 import { AllListings } from './Listing';
-import { Column } from 'primereact/column';
 import { MdAdd } from 'react-icons/md';
 
 export interface ListingPageProps {
