@@ -28,6 +28,8 @@ on:
       - "Cratis.Templates.csproj"
       - "Templates/**"
       - "verify-asset-layout.sh"
+      - "verify-registration-identity.sh"
+      - "Verification/**"
       - ".github/workflows/dotnet-build.yml"
   pull_request:
     branches:
@@ -36,6 +38,8 @@ on:
       - "Cratis.Templates.csproj"
       - "Templates/**"
       - "verify-asset-layout.sh"
+      - "verify-registration-identity.sh"
+      - "Verification/**"
       - ".github/workflows/dotnet-build.yml"
 
 jobs:
@@ -144,6 +148,14 @@ jobs:
           # frontend dependencies of its own - verify-asset-layout.sh does that.
           run_dotnet_new dotnet new cratis-aspire -n ValidateCratisAspire -o "$validation_root/ValidateCratisAspire" --Framework net10.0
           build_generated_project "$validation_root/ValidateCratisAspire"
+
+      - name: Validate registration returns the persisted identity
+        timeout-minutes: 10
+        shell: bash
+        run: |
+          ./verify-registration-identity.sh \
+            "$validation_root/ValidateCratis" \
+            "$validation_root/ValidateCratisAspire/ValidateCratisAspire"
 
       - name: Validate scaffolded frontends serve their assets from /assets/
         timeout-minutes: 15

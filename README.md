@@ -167,6 +167,18 @@ Pass application directories to check ones you have already scaffolded:
 ./verify-asset-layout.sh path/to/MyTestApp
 ```
 
+### Verify the registration identity
+
+The `cratis` and `cratis-aspire` samples return `SomeId`, an `EventSourceId<Guid>`-derived identity, alongside the registered event. This tells Arc to append under that identity and return the same value to the caller. A raw `Guid` in the tuple is only a response value, not an append identity. The generated TypeScript response remains `Guid`.
+
+With .NET 10 and Python 3 installed, check already-scaffolded application directories:
+
+```bash
+./verify-registration-identity.sh path/to/MyApp path/to/MyAspireApp/MyAspireApp
+```
+
+This regenerates proxies and checks their response type, executes the actual scaffolded registration command, compares its response to the appended event and projected `Listing.Id`, and runs a follow-up command using that response identity. It uses in-process Arc/Chronicle scenarios, not a running Chronicle server; the lookup scenario is seeded with the verified projected instance under its own identity. Test-only packages and runner files stay under the repository's ignored `.ai-work/`; they are not added to generated applications. CI runs this check for both templates.
+
 ### Uninstall the local template when finished
 
 ```bash
