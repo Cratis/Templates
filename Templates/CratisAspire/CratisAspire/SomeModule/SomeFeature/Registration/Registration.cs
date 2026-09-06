@@ -1,11 +1,14 @@
+// Copyright (c) Cratis. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 namespace CratisAspire.SomeModule.SomeFeature.Registration;
 
 [Command]
 public record Register(SomeName Name)
 {
-    public (Guid, Registered) Handle()
+    public (SomeId, Registered) Handle()
     {
-        var eventSourceId = Guid.NewGuid();
+        var eventSourceId = SomeId.New();
 
         return (eventSourceId, new(Name));
     }

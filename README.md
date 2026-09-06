@@ -57,6 +57,8 @@ dotnet new <shortname> -n MyApp -o MyApp
 > [!IMPORTANT]
 > The `cratis` and `cratis-aspire` templates keep selected NuGet references as `Version="*"` in the template source. Their post-creation package actions intentionally resolve those references and pin the generated project to the current latest package versions. The `cratis` template can also install frontend dependencies (yarn/pnpm/npm) as a post-creation step.
 >
+> Keep frontend dependencies on their latest published releases. The declarations set explicit minimum versions rather than relying only on npm's `latest` tag, which can resolve an older version while satisfying peer dependencies. Components 4 supplies the starter's provider, widgets, and styles directly; no PrimeReact adapter is required. Commit the generated application's lockfile to record the versions you installed. Incompatibilities between current releases should be reported and fixed, not bypassed with `--force` or worked around by downgrading.
+>
 > In an interactive terminal, `dotnet new` asks before running post-creation actions. When scaffolding **non-interactively** — CI pipelines, scripts, devcontainer `postCreateCommand`, or any context where stdin is not a TTY — opt in explicitly:
 >
 > ```bash
@@ -109,7 +111,7 @@ dotnet new install Cratis.Templates::<version>
 Prerequisites:
 
 - .NET SDK (recommended 8.0+)
-- Node.js and npm (if testing frontend/Vite templates)
+- Latest stable Node.js and npm (if testing frontend/Vite templates; CI resolves the latest Node release)
 
 ### Pack and install the templates locally
 
@@ -148,6 +150,12 @@ npm install
 npm run dev
 ```
 
+### TypeScript compiler and lint tooling
+
+The starters use the latest TypeScript 7 compiler. Following [TypeScript's side-by-side setup](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/#running-side-by-side-with-typescript-6.0), `@typescript/native` aliases TypeScript 7 and supplies the `tsc` executable used by the build. The `typescript` alias points to the latest `@typescript/typescript6` compatibility package for tools such as typescript-eslint that need the JavaScript compiler API, which TypeScript 7.0 does not provide. This does not switch the build to the older `tsc6` executable.
+
+Check the compiler actually used by the build with `./node_modules/.bin/tsc --version` rather than inferring it from the compatibility package's name.
+
 ### Verify the emitted frontend asset layout
 
 ```bash
@@ -166,6 +174,18 @@ Pass application directories to check ones you have already scaffolded:
 ```bash
 ./verify-asset-layout.sh path/to/MyTestApp
 ```
+
+### Verify the registration identity
+
+The `cratis` and `cratis-aspire` samples return `SomeId`, an `EventSourceId<Guid>`-derived identity, alongside the registered event. This tells Arc to append under that identity and return the same value to the caller. A raw `Guid` in the tuple is only a response value, not an append identity. The generated TypeScript response remains `Guid`.
+
+With .NET 10 and Python 3 installed, check already-scaffolded application directories:
+
+```bash
+./verify-registration-identity.sh path/to/MyApp path/to/MyAspireApp/MyAspireApp
+```
+
+This regenerates proxies and checks their response type, executes the actual scaffolded registration command, compares its response to the appended event and projected `Listing.Id`, and runs a follow-up command using that response identity. It uses in-process Arc/Chronicle scenarios, not a running Chronicle server; the lookup scenario is seeded with the verified projected instance under its own identity. Test-only packages and runner files stay under the repository's ignored `.ai-work/`; they are not added to generated applications. CI runs this check for both templates.
 
 ### Uninstall the local template when finished
 

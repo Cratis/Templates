@@ -40,7 +40,10 @@ trap 'if [[ -n "$work_dir" ]]; then rm -rf "$work_dir"; fi' EXIT
 
 info() { printf '\n\033[1m%s\033[0m\n' "$*"; }
 pass() { printf '  \033[32m✓\033[0m %s\n' "$*"; }
-fail() { printf '  \033[31m✗\033[0m %s\n' "$*"; failures=$((failures + 1)); }
+fail() {
+    printf '  \033[31m✗\033[0m %s\n' "$*"
+    failures=$((failures + 1))
+}
 detail() { printf '        %s\n' "$@"; }
 
 # Installs dependencies if needed and runs the frontend build. Returns non-zero
@@ -49,6 +52,7 @@ detail() { printf '        %s\n' "$@"; }
 build_frontend() {
     local app_dir="$1"
     local installed=0
+    local package_manager=npm
 
     if [[ -d "$app_dir/node_modules" ]]; then
         installed=1
@@ -60,6 +64,7 @@ build_frontend() {
         # over. Fall back, and say so rather than switching silently.
         if (cd "$app_dir" && yarn install --silent); then
             installed=1
+            package_manager=yarn
         else
             echo "  yarn install failed - falling back to npm"
         fi
@@ -69,7 +74,11 @@ build_frontend() {
         (cd "$app_dir" && npm install --no-audit --no-fund --silent) || return 1
     fi
 
-    (cd "$app_dir" && npm run build) || return 1
+    if [[ "$package_manager" == "yarn" ]]; then
+        (cd "$app_dir" && yarn build) || return 1
+    else
+        (cd "$app_dir" && npm run build) || return 1
+    fi
 }
 
 # The wwwroot root may hold `assets/`, the generated index.html, and whatever
