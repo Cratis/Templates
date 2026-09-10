@@ -1,11 +1,13 @@
+using Cratis.Chronicle.Events;
+
 namespace CratisApp.SomeModule.SomeFeature.Registration;
 
 [Command]
 public record Register(SomeName Name)
 {
-    public (Guid, Registered) Handle()
+    public (EventSourceId<Guid>, Registered) Handle()
     {
-        var eventSourceId = Guid.NewGuid();
+        var eventSourceId = new EventSourceId<Guid>(Guid.NewGuid());
 
         return (eventSourceId, new(Name));
     }

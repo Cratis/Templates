@@ -1,0 +1,32 @@
+---
+title: The Cratis Aspire template
+description: The full-stack Cratis web application composed with .NET Aspire — the same vertical slices with an orchestrated development topology.
+---
+
+The `cratis-aspire` template is the [Cratis Web Application](/templates/cratis-web/) composed with [.NET Aspire](https://learn.microsoft.com/en-us/dotnet/aspire/): the same vertical slices, the same Arc conventions, with the development topology — Chronicle, MongoDB, and your services — orchestrated by an Aspire app host.
+
+```bash
+dotnet new cratis-aspire -n MyStore
+```
+
+## What you get
+
+A solution with three projects instead of one:
+
+| Project | Role |
+| --- | --- |
+| `<App>` | The full-stack web application — Arc backend, Chronicle client, React frontend, the same `SomeModule/SomeFeature` slices |
+| `<App>.Composition` | The Aspire app host: starts a Chronicle container with `AddCratisChronicle()`, launches the backend, and wires the references |
+| `<App>.Infrastructure` | Shared service defaults: OpenTelemetry, resilience, service discovery |
+
+Run the composition and Aspire starts the rest:
+
+```bash
+dotnet run --project MyStore.Composition
+```
+
+The Aspire dashboard opens with all services, their logs, and their telemetry in one place.
+
+## What it is for
+
+Use this template when your team already runs on Aspire, or when you want the local development topology — multiple services, dashboards, resilient HTTP — managed for you from day one. If you want the same application without the orchestration layer, use the plain [Cratis Web Application](/templates/cratis-web/) template.

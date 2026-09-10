@@ -1,0 +1,52 @@
+---
+title: C# Templates
+description: Official .NET templates for scaffolding event-sourced CQRS applications on the Cratis stack — from a minimal Chronicle console app to a full-stack Arc web application with React.
+---
+
+import { CardGrid, Aside } from '@astrojs/starlight/components';
+import SimpleCard from '@components/SimpleCard.astro';
+import TopicHero from '@components/TopicHero.astro';
+
+<TopicHero icon="seti:app" eyebrow="The Cratis Stack" title="Start your Cratis app with the conventions already in place">
+Every Cratis application follows the same conventions: vertical slices, model-bound commands and queries, events as facts, read models projected from the log. The Cratis templates give you a working application with those conventions already in place — a real project you can run in minutes, not a blank folder you fill in from documentation.
+</TopicHero>
+
+Install the templates once:
+
+```bash
+dotnet new install Cratis.Templates
+```
+
+## The templates
+
+<CardGrid>
+  <SimpleCard title="Cratis Web Application" icon="seti:app" link="/templates/cratis-web/">
+    The full-stack starting point: ASP.NET Core with Arc commands and queries, Chronicle event sourcing, and a React frontend with generated TypeScript proxies — wired together in vertical slices.
+  </SimpleCard>
+  <SimpleCard title="Chronicle Web" icon="seti:db" link="/templates/chronicle-web/">
+    A minimal ASP.NET Core application connected to Chronicle — events in, projections out, no frontend. The smallest possible server-side starting point.
+  </SimpleCard>
+  <SimpleCard title="Chronicle Console" icon="seti:terminal" link="/templates/chronicle-console/">
+    A console application that appends an event and observes it through a projection and a reactor. The shortest path to seeing Chronicle move.
+  </SimpleCard>
+  <SimpleCard title="Cratis Aspire" icon="seti:graph" link="/templates/cratis-aspire/">
+    The full-stack web application, composed with .NET Aspire — the same vertical slices with an orchestrated development topology.
+  </SimpleCard>
+</CardGrid>
+
+<Aside type="note">
+Each template pins the current stable Cratis package versions so a scaffold builds reproducibly. Update the packages with `dotnet add package` as you normally would.
+</Aside>
+
+## What the templates have in common
+
+- **Vertical slices** — everything for a behavior lives in one folder: the C# command or query, the events it produces, the React component that calls it, and the generated TypeScript proxy.
+- **Model-bound by default** — commands and queries are plain records the framework maps to HTTP routes; no controllers to write.
+- **Infrastructure included** — a `docker-compose.yml` that starts a local Chronicle development container (with its bundled MongoDB) and an Aspire dashboard for telemetry.
+- **Builds clean** — the sample code compiles with zero warnings under the Cratis analyzers, so the first warning you see is your own.
+
+## Learn more
+
+- [Chronicle documentation](/chronicle/) — the event-sourcing database at the center of the stack.
+- [Arc documentation](/arc/) — the CQRS application framework the web templates build on.
+- The [Cratis AI skills](/ai/) teach coding agents these same conventions.

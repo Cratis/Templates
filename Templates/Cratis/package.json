@@ -9,9 +9,9 @@
     "preview": "vite preview --config .frontend/vite.config.ts"
   },
   "dependencies": {
-    "@cratis/arc.react": "^19.6.9",
-    "@cratis/arc.vite": "^19.6.9",
-    "@cratis/components": "^1.1.4",
+    "@cratis/arc.react": "^22.13.1",
+    "@cratis/arc.vite": "^22.13.1",
+    "@cratis/components": "^4.2.2",
     "primeicons": "^7.0.0",
     "primereact": "^10.9.7",
     "react": "^19.0.0",

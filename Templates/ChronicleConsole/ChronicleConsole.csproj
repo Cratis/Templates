@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cratis.Chronicle" Version="*" />
+    <PackageReference Include="Cratis.Chronicle" Version="18.1.0" />
   </ItemGroup>
 
 </Project>

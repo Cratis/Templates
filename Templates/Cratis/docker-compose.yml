@@ -1,7 +1,6 @@
 services:
   chronicle:
-    image: cratis/chronicle:latest-development
-    pull_policy: always
+    image: cratis/chronicle:18.1.0-development
     environment:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:18889
     ports:

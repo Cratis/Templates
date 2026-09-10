@@ -1,0 +1,81 @@
+---
+title: The Cratis Web Application template
+description: A full-stack vertical-slice application — ASP.NET Core with Arc commands and queries, Chronicle event sourcing, and a React frontend with generated TypeScript proxies.
+---
+
+The `cratis` template is the full-stack starting point for a Cratis application. One command gives you a running application with the whole stack wired: **Arc** for commands and queries over HTTP, **Chronicle** for the event log, MongoDB for read models, and a **React** frontend that talks to generated TypeScript proxies.
+
+```bash
+dotnet new cratis -n MyStore
+```
+
+## What you get
+
+```text
+MyStore/
+├── Program.cs              — app setup: Arc, Chronicle, Swagger, static files
+├── appsettings.json        — Chronicle and MongoDB connection settings
+├── docker-compose.yml      — Chronicle dev container + Aspire dashboard
+├── package.json            — frontend tooling (Vite, React, Tailwind)
+├── .frontend/              — Vite and TypeScript configuration
+├── App.tsx, Home.tsx       — frontend application shell
+└── SomeModule/             — a sample domain module
+    └── SomeFeature/        — a feature with two vertical slices
+        ├── SomeName.cs     — a ConceptAs<T> value type
+        ├── Registration/   — command slice: Register command, event, reactor
+        ├── Listing/        — read-model slice: Listing projected from events
+        ├── SomeFeature.tsx — the feature's composition page
+        └── index.ts        — TypeScript barrel export
+```
+
+## The sample slices teach the conventions
+
+The `Registration` slice shows the command side — a model-bound command that returns the event source id it decided on plus the event to append. No controller, no handler class, no route registration:
+
+```csharp
+[Command]
+public record Register(SomeName Name)
+{
+    public (EventSourceId<Guid>, Registered) Handle()
+    {
+        var eventSourceId = new EventSourceId<Guid>(Guid.NewGuid());
+
+        return (eventSourceId, new(Name));
+    }
+}
+```
+
+The `Listing` slice shows the read side — a read model projected from events, with a query for all instances:
+
+```csharp
+[ReadModel]
+[FromEvent<Registered>]
+public record Listing(Guid Id, SomeName Name, EventSourceId EventSourceId)
+{
+    public static ISubject<IEnumerable<Listing>> AllListings(IMongoCollection<Listing> collection) =>
+        collection.Observe();
+}
+```
+
+Post to the command route and the whole loop runs — command handled, event appended to Chronicle, reactor notified, read model updated in MongoDB:
+
+```bash
+curl -X POST http://localhost:5000/api/some-module/some-feature/registration \
+  -H "Content-Type: application/json" \
+  -d '{ "name": "Cratis" }'
+```
+
+## TypeScript proxies are generated at build time
+
+Every `dotnet build` regenerates typed TypeScript proxies for your commands and queries next to their C# sources. The frontend imports them and gets compile-time safety across the stack — change a C# property and the frontend stops compiling until it catches up:
+
+```typescript
+import { Register } from './Registration';
+
+const command = new Register({ name: 'Cratis' });
+await command.execute();
+```
+
+## Add your first feature
+
+Copy the `SomeFeature` folder shape: one folder per feature, one folder per slice, C# and TypeScript side by side. A typical feature holds a command slice, a query slice, and the React components that use them. The Cratis AI skills follow this same structure when an assistant scaffolds slices for you.
