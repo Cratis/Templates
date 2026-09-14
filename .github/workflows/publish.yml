@@ -127,6 +127,14 @@ jobs:
           dotnet new cratis -n ValidatePublished -o "$validation_root" --Framework net10.0 --allow-scripts Yes
           dotnet build "$validation_root/ValidatePublished.csproj" --configuration Release
 
+      - name: Trigger Documentation Build
+        if: steps.release.outputs.should-publish == 'true'
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.PAT_DOCUMENTATION }}
+          repository: cratis/documentation
+          event-type: build-docs
+
   verify-published:
     # A merge that publishes nothing is the failure mode that silently costs a release: the release job
     # succeeds, every publish job is skipped for want of should-publish, and the whole run reports green. Fail
