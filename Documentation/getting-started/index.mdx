@@ -1,0 +1,72 @@
+---
+title: Getting started with the Cratis templates
+description: Install the Cratis.Templates package and scaffold your first event-sourced application.
+---
+
+Everything you need is one NuGet package: `Cratis.Templates`. Install it once per machine:
+
+```bash
+dotnet new install Cratis.Templates
+```
+
+To install a specific version:
+
+```bash
+dotnet new install Cratis.Templates::1.2.0
+```
+
+## See what is available
+
+List the templates and their short names:
+
+```bash
+dotnet new cratis
+```
+
+You should see the four Cratis templates alongside the built-in .NET templates. Each template has its own help page with every option:
+
+```bash
+dotnet new cratis -h
+```
+
+## Scaffold your first application
+
+The `cratis` template creates a complete full-stack application — ASP.NET Core backend with Arc, Chronicle event sourcing, and a React frontend:
+
+```bash
+dotnet new cratis -n MyStore
+cd MyStore
+```
+
+The template asks which frontend package manager you use (yarn, pnpm, npm, or none) and which target framework you want (net8.0, net9.0, or net10.0). Both can also be passed directly:
+
+```bash
+dotnet new cratis -n MyStore --packageManager pnpm --Framework net10.0
+```
+
+## Start the infrastructure
+
+Every template ships a `docker-compose.yml` with a local Chronicle development container (MongoDB bundled) and an Aspire dashboard:
+
+```bash
+docker-compose up -d
+```
+
+## Run it
+
+For the web templates, restore frontend dependencies and start the backend:
+
+```bash
+npm install
+dotnet run
+```
+
+The backend serves Swagger at `http://localhost:5000/swagger`, and the React frontend runs on the Vite dev server (`npm run dev`, port 5173). Append a command and watch the event land in Chronicle — then open the Workbench at `https://localhost:35000` (accept the self-signed development certificate) to see the log.
+
+## Keep the templates current
+
+```bash
+dotnet new update
+```
+
+updates every installed template package. Uninstall with `dotnet new uninstall Cratis.Templates`.

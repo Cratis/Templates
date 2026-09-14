@@ -1,0 +1,30 @@
+---
+title: The Chronicle Console template
+description: The shortest path to a running Chronicle application — a console app that appends an event and observes it through a projection and a reactor.
+---
+
+The `cratis-chronicle-console` template is the smallest complete Chronicle application: a console project that connects to a running Chronicle, appends an event, and shows the event flowing through a projection and a reactor.
+
+```bash
+dotnet new cratis-chronicle-console -n MyConsole
+```
+
+## What you get
+
+A single `Program.cs` with the whole story:
+
+- A `ChronicleClient` connected to the local development kernel (`chronicle://localhost:35000`, development credentials).
+- A `[EventType]` record — the fact your application produces.
+- A model-bound `[FromEvent]` projection — a read model kept in sync by Chronicle.
+- An `IReactor` — a callback that fires the moment the event is observed.
+
+Start the infrastructure, run the app, and watch the reactor print:
+
+```bash
+docker-compose up -d
+dotnet run
+```
+
+## What it is for
+
+This template is the fastest way to check that your machine, your container, and your client packages agree — and the cleanest place to experiment with events, projections, and reactors without an HTTP layer in the way. When you are ready for commands, queries, and a frontend, move to the [Cratis Web Application](/templates/cratis-web/) template.

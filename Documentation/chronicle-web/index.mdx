@@ -1,0 +1,44 @@
+---
+title: The Chronicle Web template
+description: A minimal ASP.NET Core application wired to Chronicle — events in over HTTP, projections out, no frontend.
+---
+
+The `cratis-chronicle-web` template is a minimal ASP.NET Core application connected to Chronicle. It is deliberately small: two endpoints, one event, one projection — the server-side skeleton without Arc, without a frontend, and without anything else in the way.
+
+```bash
+dotnet new cratis-chronicle-web -n MyApi
+```
+
+## What you get
+
+A `Program.cs` with the Cratis middleware wired and two minimal API endpoints:
+
+```csharp
+var builder = WebApplication.CreateBuilder(args)
+    .AddCratisChronicle();
+
+var app = builder.Build();
+
+app.UseCratisChronicle();
+
+app.MapGet("/", (IEventLog log) => log.Append(Guid.NewGuid().ToString(), new TestEvent("Hello, Chronicle!")));
+app.MapGet("/projection", (IReadModels readModels) => readModels.GetInstances<TestProjection>());
+
+app.RunAsync();
+```
+
+## Run it
+
+Start the infrastructure, run the app, and hit the two endpoints:
+
+```bash
+docker-compose up -d
+dotnet run
+
+curl http://localhost:5000/           # appends a TestEvent to the log
+curl http://localhost:5000/projection # reads the projected read model
+```
+
+## What it is for
+
+Use this template when you know you want Chronicle inside an ASP.NET Core service and you would rather grow the application yourself. When you want model-bound commands and queries with routes and TypeScript proxies handled for you, that is the [Cratis Web Application](/templates/cratis-web/) template.
