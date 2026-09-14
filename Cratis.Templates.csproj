@@ -22,8 +22,34 @@
         <None Remove="Templates\**\*" />
     </ItemGroup>
 
+    <!--
+        Testing/ is gitignored scratch space for locally scaffolded applications.
+        It is absent from a fresh checkout, so CI never sees it, but the SDK's
+        default **/*.cs glob otherwise compiles whatever a developer has
+        scaffolded there - which makes `dotnet build` fail locally on generated
+        code this project does not own. Nothing under Testing/ is packed.
+    -->
+    <ItemGroup>
+        <Compile Remove="Testing\**\*" />
+        <None Remove="Testing\**\*" />
+    </ItemGroup>
+
     <ItemGroup>
         <Content Include="Templates/**/*" />
+
+        <!--
+            The Include above is a filesystem glob, so it also picks up anything
+            a local build has left inside the template folders. CI packs from a
+            fresh checkout and never sees these, but `TestLocal.sh` and any
+            maintainer packing locally would otherwise ship compiled output -
+            ChronicleWeb.dll, apphost, pdbs, a project.assets.json full of
+            absolute paths - inside the template content, and scaffold it back
+            out into consumers' projects. These are the paths .gitignore already
+            excludes from the repository.
+        -->
+        <Content Remove="Templates/**/bin/**" />
+        <Content Remove="Templates/**/obj/**" />
+        <Content Remove="Templates/**/Properties/launchSettings.json" />
     </ItemGroup>
 
     <ItemGroup>

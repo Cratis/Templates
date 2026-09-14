@@ -1,0 +1,80 @@
+// Copyright (c) Cratis. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using Cratis.Arc.Chronicle.Testing.Commands;
+using Cratis.Arc.Commands;
+using Cratis.Arc.Commands.ModelBound;
+using Cratis.Arc.Testing.Commands;
+using Cratis.Chronicle.Events;
+using Cratis.Chronicle.ReadModels;
+using Cratis.Chronicle.Testing.ReadModels;
+using Microsoft.Extensions.DependencyInjection;
+using TEMPLATE_NAMESPACE.SomeModule.SomeFeature;
+using TEMPLATE_NAMESPACE.SomeModule.SomeFeature.Listing;
+using TEMPLATE_NAMESPACE.SomeModule.SomeFeature.Registration;
+
+namespace Cratis.Templates.Verification;
+
+public static class VerifyRegistration
+{
+    public static async Task<int> Main()
+    {
+        await using var registration = new CommandScenario<Register>();
+        var result = await registration.Execute(new Register(new SomeName("Identity regression")));
+        if (!result.IsSuccess)
+        {
+            return Fail($"Registration failed: {string.Join("; ", result.ExceptionMessages)}");
+        }
+
+        if (result is not CommandResult<SomeId> { Response: { } response } || response == SomeId.NotSet)
+        {
+            return Fail($"Expected a nonempty typed identity response, got {result.GetType().Name}");
+        }
+
+        if (registration.AppendedEvents.Count != 1)
+        {
+            return Fail("Registration must append exactly one event");
+        }
+
+        var appended = registration.AppendedEvents.Single().Event;
+        if (appended.Content is not Registered || Guid.Parse(appended.Context.EventSourceId.Value) != response.Value)
+        {
+            return Fail($"Returned identity {response.Value} differs from appended identity {appended.Context.EventSourceId.Value}");
+        }
+
+        var projection = new ReadModelScenario<Listing>();
+        await projection.Given.ForEventSource(appended.Context.EventSourceId).Events(appended.Content);
+        var listing = projection.Instance;
+        if (listing is null || listing.Id != response.Value || listing.Name.Value != "Identity regression")
+        {
+            return Fail("The event did not project a Listing with the returned identity and registered name");
+        }
+
+        // The projection scenario does not automatically persist its result for command-side lookups.
+        // Seed that actual result under its own projected identity, not under a fabricated response key.
+        var persisted = new ReadModelScenario<Listing>();
+        await persisted.Given.ForEventSourceId((EventSourceId)listing.Id).ReadModel(listing);
+        await using var lookup = new CommandScenario<FindRegistered>();
+        lookup.Services.AddSingleton<IReadModels>(persisted.ReadModels);
+        var lookupResult = await lookup.Execute(new FindRegistered(response));
+        if (!lookupResult.IsSuccess || lookupResult is not CommandResult<bool> { Response: true })
+        {
+            return Fail($"Follow-up command could not resolve the projected Listing: {string.Join("; ", lookupResult.ExceptionMessages)}");
+        }
+
+        Console.WriteLine($"PASS: returned identity == appended event source == Listing.Id == follow-up lookup ({response.Value})");
+        return 0;
+    }
+
+    static int Fail(string message)
+    {
+        Console.Error.WriteLine(message);
+        return 1;
+    }
+}
+
+[Command]
+public record FindRegistered(SomeId Id)
+{
+    public bool Handle(Listing? current) => current is not null && current.Id == Id.Value;
+}

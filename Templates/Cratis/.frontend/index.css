@@ -1,5 +1,7 @@
 @import "tailwindcss";
-@import 'primereact/resources/themes/lara-dark-blue/theme.css';
+@import '@cratis/components/tokens';
+@import '@cratis/components/styles';
+@import '@cratis/components/theme';
 @source '../';
 
 :root {
@@ -20,8 +22,8 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: var(--surface-ground);
-  color: var(--text-color);
+  background-color: var(--cratis-surface-ground);
+  color: var(--cratis-text-color);
 }
 
 #root {

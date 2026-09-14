@@ -18,8 +18,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Cratis" Version="22.13.1" />
-        <PackageReference Include="Cratis.Arc.MongoDB" Version="22.13.1" />
+        <PackageReference Include="Cratis" Version="*" />
+        <PackageReference Include="Cratis.Arc.MongoDB" Version="*" />
     </ItemGroup>
 
     <ItemGroup>

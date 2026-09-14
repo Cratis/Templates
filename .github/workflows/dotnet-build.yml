@@ -1,5 +1,9 @@
 name: .NET Build
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   DOTNET8_VERSION: "8.0.407"
   DOTNET9_VERSION: "9.0.x"
@@ -23,6 +27,9 @@ on:
     paths:
       - "Cratis.Templates.csproj"
       - "Templates/**"
+      - "verify-asset-layout.sh"
+      - "verify-registration-identity.sh"
+      - "Verification/**"
       - ".github/workflows/dotnet-build.yml"
   pull_request:
     branches:
@@ -30,11 +37,15 @@ on:
     paths:
       - "Cratis.Templates.csproj"
       - "Templates/**"
+      - "verify-asset-layout.sh"
+      - "verify-registration-identity.sh"
+      - "Verification/**"
       - ".github/workflows/dotnet-build.yml"
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Checkout code
@@ -49,9 +60,10 @@ jobs:
             ${{ env.DOTNET10_VERSION }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version: 'latest'
+          package-manager-cache: false
 
       - name: Install Yarn
         run: npm install -g yarn
@@ -86,6 +98,10 @@ jobs:
 
           validation_root="$(mktemp -d)"
           echo "Using validation root: $validation_root"
+
+          # Carried into the asset-layout step, which verifies the applications
+          # generated here rather than scaffolding its own.
+          echo "validation_root=$validation_root" >> "$GITHUB_ENV"
 
           # Copy NuGet.config to the validation root so that dotnet restore
           # (which runs inside subdirectories of validation_root) can walk up
@@ -124,5 +140,42 @@ jobs:
           run_dotnet_new dotnet new cratis-chronicle-web -n ValidateChronicleWeb -o "$validation_root/ValidateChronicleWeb" --Framework net10.0
           build_generated_project "$validation_root/ValidateChronicleWeb"
 
-          run_dotnet_new dotnet new cratis -n ValidateCratis -o "$validation_root/ValidateCratis" --Framework net10.0 --allow-scripts Yes
+          run_dotnet_new dotnet new cratis -n ValidateCratis -o "$validation_root/ValidateCratis" --Framework net10.0 --packageManager none --allow-scripts Yes
           build_generated_project "$validation_root/ValidateCratis"
+
+          # No --allow-scripts here: this template declares no run-script
+          # post-action, so dotnet new does not offer the option and rejects it
+          # outright. It also has no packageManager symbol, so it installs no
+          # frontend dependencies of its own - verify-asset-layout.sh does that.
+          run_dotnet_new dotnet new cratis-aspire -n ValidateCratisAspire -o "$validation_root/ValidateCratisAspire" --Framework net10.0
+          build_generated_project "$validation_root/ValidateCratisAspire"
+
+      - name: Validate registration returns the persisted identity
+        timeout-minutes: 10
+        shell: bash
+        run: |
+          ./verify-registration-identity.sh \
+            "$validation_root/ValidateCratis" \
+            "$validation_root/ValidateCratisAspire/ValidateCratisAspire"
+
+      - name: Install and lint latest frontend dependencies
+        timeout-minutes: 10
+        shell: bash
+        run: |
+          for app in "$validation_root/ValidateCratis" "$validation_root/ValidateCratisAspire/ValidateCratisAspire"; do
+            (
+              cd "$app"
+              npm install --no-audit --no-fund
+              compiler_version="$(node -p "require('./node_modules/@typescript/native/package.json').version")"
+              test "$(./node_modules/.bin/tsc --version)" = "Version $compiler_version"
+              npm run lint
+            )
+          done
+
+      - name: Validate scaffolded frontends serve their assets from /assets/
+        timeout-minutes: 15
+        shell: bash
+        run: |
+          ./verify-asset-layout.sh \
+            "$validation_root/ValidateCratis" \
+            "$validation_root/ValidateCratisAspire/ValidateCratisAspire"

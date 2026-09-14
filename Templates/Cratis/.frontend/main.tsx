@@ -1,7 +1,9 @@
+// Copyright (c) Cratis. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 import 'reflect-metadata';
-import { PrimeReactProvider } from 'primereact/api';
+import { CratisComponentsProvider } from '@cratis/components';
 import ReactDOM from 'react-dom/client';
-import 'primeicons/primeicons.css';
 import './index.css';
 import React from 'react';
 import { Arc } from '@cratis/arc.react';
@@ -9,10 +11,10 @@ import App from '../App.tsx';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-        <PrimeReactProvider value={{ ripple: true }}>
+        <CratisComponentsProvider>
             <Arc>
                 <App />
             </Arc>
-        </PrimeReactProvider>
+        </CratisComponentsProvider>
     </React.StrictMode>
 );

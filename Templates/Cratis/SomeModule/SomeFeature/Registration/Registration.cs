@@ -1,13 +1,14 @@
-using Cratis.Chronicle.Events;
+// Copyright (c) Cratis. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 namespace CratisApp.SomeModule.SomeFeature.Registration;
 
 [Command]
 public record Register(SomeName Name)
 {
-    public (EventSourceId<Guid>, Registered) Handle()
+    public (SomeId, Registered) Handle()
     {
-        var eventSourceId = new EventSourceId<Guid>(Guid.NewGuid());
+        var eventSourceId = SomeId.New();
 
         return (eventSourceId, new(Name));
     }
