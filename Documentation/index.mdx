@@ -35,7 +35,7 @@ dotnet new install Cratis.Templates
 </CardGrid>
 
 <Aside type="note">
-Each template pins the current stable Cratis package versions so a scaffold builds reproducibly. Update the packages with `dotnet add package` as you normally would.
+Each template references the Cratis packages with a floating version (`*`), so `dotnet new` always scaffolds against the latest released Cratis stack. Run `dotnet restore` right after scaffolding to pick up the current versions, and update them later the same way you would any other package.
 </Aside>
 
 ## What the templates have in common
@@ -43,6 +43,7 @@ Each template pins the current stable Cratis package versions so a scaffold buil
 - **Vertical slices** — everything for a behavior lives in one folder: the C# command or query, the events it produces, the React component that calls it, and the generated TypeScript proxy.
 - **Model-bound by default** — commands and queries are plain records the framework maps to HTTP routes; no controllers to write.
 - **Infrastructure included** — a `docker-compose.yml` that starts a local Chronicle development container (with its bundled MongoDB) and an Aspire dashboard for telemetry.
+- **AI-ready** — every template ships a `.cratis/ai.json` with the Cratis AI profiles, languages, and coding agent harnesses for that template. Install the [Cratis CLI](/cli/) and run `cratis ai update` to get the AI rules, skills, and harness integration in place — `dotnet new` prints this reminder after scaffolding.
 - **Builds clean** — the sample code compiles with zero warnings under the Cratis analyzers, so the first warning you see is your own.
 
 ## Learn more

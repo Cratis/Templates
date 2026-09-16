@@ -22,6 +22,7 @@ MyStore/
 └── SomeModule/             — a sample domain module
     └── SomeFeature/        — a feature with two vertical slices
         ├── SomeName.cs     — a ConceptAs<T> value type
+        ├── SomeId.cs       — an EventSourceId<T> identity type
         ├── Registration/   — command slice: Register command, event, reactor
         ├── Listing/        — read-model slice: Listing projected from events
         ├── SomeFeature.tsx — the feature's composition page
@@ -36,14 +37,16 @@ The `Registration` slice shows the command side — a model-bound command that r
 [Command]
 public record Register(SomeName Name)
 {
-    public (EventSourceId<Guid>, Registered) Handle()
+    public (SomeId, Registered) Handle()
     {
-        var eventSourceId = new EventSourceId<Guid>(Guid.NewGuid());
+        var eventSourceId = SomeId.New();
 
         return (eventSourceId, new(Name));
     }
 }
 ```
+
+`SomeId` is a strongly-typed identity — a `Guid`-backed value deriving from `EventSourceId<Guid>` — rather than a raw `Guid`. Every feature gets its own identity type this way instead of passing bare `Guid`s around.
 
 The `Listing` slice shows the read side — a read model projected from events, with a query for all instances:
 
@@ -79,3 +82,13 @@ await command.execute();
 ## Add your first feature
 
 Copy the `SomeFeature` folder shape: one folder per feature, one folder per slice, C# and TypeScript side by side. A typical feature holds a command slice, a query slice, and the React components that use them. The Cratis AI skills follow this same structure when an assistant scaffolds slices for you.
+
+## AI assistance
+
+The scaffolded project includes a `.cratis/ai.json` with the Cratis AI profiles, languages, and coding agent harnesses for this template — the full-stack selection covering Arc, Chronicle, Components, C#, and TypeScript. Make sure the [Cratis CLI](/cli/) is installed, then run:
+
+```bash
+cratis ai update
+```
+
+That installs the AI rules, skills, and harness integration for the coding agents you selected — `AGENTS.md` instructions plus `.claude/`, `.cursor/`, `.github/`, `.opencode/`, and `.pi/` integration — and records what it installed in `.cratis/ai.manifest.json`. `dotnet new` prints this reminder after scaffolding, and re-running the command only refreshes Cratis-managed files, never yours. See the [CLI AI documentation](/cli/ai/) for the full command reference.

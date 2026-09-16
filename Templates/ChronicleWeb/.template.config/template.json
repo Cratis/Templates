@@ -103,6 +103,19 @@
             ],
             "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
             "continueOnError": true
+        },
+        {
+            "description": "Show getting started instructions.",
+            "actionId": "AC1156F7-BB77-4DB8-B28F-24EEBCCA1E5C",
+            "continueOnError": true,
+            "manualInstructions": [
+                {
+                    "text": "Your project is ready! Next steps:\n  1. Start Chronicle and the Aspire dashboard:  docker-compose up -d\n  2. Run the web app:                           dotnet run\n\nAI assistance:\n  This project ships with a .cratis/ai.json holding its Cratis AI configuration.\n  Make sure the Cratis CLI is installed - see https://cratis.io/cli - and run:\n      cratis ai update\n  to get all the AI rules, skills, and coding agent integration in place.\n\nSee README.md for full details."
+                }
+            ],
+            "args": {
+                "files": "1"
+            }
         }
     ]
 }

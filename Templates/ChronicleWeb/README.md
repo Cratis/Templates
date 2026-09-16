@@ -26,6 +26,23 @@ dotnet run
 - Test event appending endpoint: http://localhost:5000/
 - Test Projection endpoint: http://localhost:5000/projection
 
+## AI assistance
+
+This project ships with a `.cratis/ai.json` holding its Cratis AI configuration — the Cratis AI profiles, languages, and coding agent harnesses to set up.
+
+To get all the AI things in place:
+
+1. Make sure the Cratis CLI is installed — see [https://cratis.io/cli](https://cratis.io/cli).
+2. Run:
+
+```bash
+cratis ai update
+```
+
+This installs the Cratis-owned AI rules, skills, and harness integration for the coding agents you selected — things like `AGENTS.md` instructions and `.claude/`, `.cursor/`, `.github/`, `.opencode/`, and `.pi/` integration — and records everything it installed in `.cratis/ai.manifest.json`. Commit the installed content along with your project.
+
+Re-run `cratis ai update` whenever you want the latest guidance; it only touches Cratis-managed files, never yours. `cratis ai status` shows what is installed and whether a newer revision is available.
+
 ## Artifacts
 
 - `Program.cs`
