@@ -6,6 +6,8 @@
 *.dll   binary
 *.exe   binary
 *.ttf   binary
+*.jar   binary
+
 
 *.cs diff=csharp
 *.sln text eol=crlf

@@ -84,7 +84,11 @@ jobs:
         run: |
           rm -rf "${{ env.NUGET_OUTPUT }}"
           dotnet restore Cratis.Templates.csproj
+          dotnet restore Cratis.Templates.Kotlin.csproj
+          dotnet restore Cratis.Templates.Java.csproj
           dotnet pack Cratis.Templates.csproj --no-restore --configuration Release -o "${{ env.NUGET_OUTPUT }}" -p:PackageVersion=${{ steps.release.outputs.version }}
+          dotnet pack Cratis.Templates.Kotlin.csproj --no-restore --configuration Release -o "${{ env.NUGET_OUTPUT }}" -p:PackageVersion=${{ steps.release.outputs.version }}
+          dotnet pack Cratis.Templates.Java.csproj --no-restore --configuration Release -o "${{ env.NUGET_OUTPUT }}" -p:PackageVersion=${{ steps.release.outputs.version }}
 
       - name: NuGet trusted-publishing login
         if: steps.release.outputs.should-publish == 'true'
@@ -107,25 +111,43 @@ jobs:
         run: |
           set -euo pipefail
           version="${{ steps.release.outputs.version }}"
-          package_file="$RUNNER_TEMP/cratis.templates.${version}.nupkg"
-          package_url="https://api.nuget.org/v3-flatcontainer/cratis.templates/${version}/cratis.templates.${version}.nupkg"
+          # Every package cut by this release must be downloadable from NuGet.
+          # The C# package is additionally scaffolded and built; the Kotlin and Java
+          # templates' generated projects are compile-validated by the .NET Build
+          # workflow, so here we only prove the published bits install and scaffold.
+          packages=(
+            "cratis.templates"
+            "cratis.templates.kotlin"
+            "cratis.templates.java"
+          )
 
-          for attempt in $(seq 1 30); do
-            if curl --fail --silent --show-error --location "$package_url" --output "$package_file"; then
-              break
-            fi
-            if [[ "$attempt" -eq 30 ]]; then
-              echo "::error::Cratis.Templates ${version} was not downloadable from NuGet after 5 minutes"
-              exit 1
-            fi
-            echo "Package is not indexed yet (attempt ${attempt}/30); retrying in 10 seconds"
-            sleep 10
+          for package in "${packages[@]}"; do
+            package_file="$RUNNER_TEMP/${package}.${version}.nupkg"
+            package_url="https://api.nuget.org/v3-flatcontainer/${package}/${version}/${package}.${version}.nupkg"
+
+            for attempt in $(seq 1 30); do
+              if curl --fail --silent --show-error --location "$package_url" --output "$package_file"; then
+                break
+              fi
+              if [[ "$attempt" -eq 30 ]]; then
+                echo "::error::${package} ${version} was not downloadable from NuGet after 5 minutes"
+                exit 1
+              fi
+              echo "$package is not indexed yet (attempt ${attempt}/30); retrying in 10 seconds"
+              sleep 10
+            done
+
+            dotnet new install "$package_file"
           done
 
-          dotnet new install "$package_file"
           validation_root="$RUNNER_TEMP/published-template"
           dotnet new cratis -n ValidatePublished -o "$validation_root" --Framework net10.0 --allow-scripts Yes
           dotnet build "$validation_root/ValidatePublished.csproj" --configuration Release
+
+          kotlin_root="$RUNNER_TEMP/published-kotlin-template"
+          dotnet new cratis-kotlin -n ValidatePublishedKotlin -o "$kotlin_root" --packageManager none --allow-scripts Yes
+          java_root="$RUNNER_TEMP/published-java-template"
+          dotnet new cratis-java -n ValidatePublishedJava -o "$java_root" --packageManager none --allow-scripts Yes
 
       - name: Trigger Documentation Build
         if: steps.release.outputs.should-publish == 'true'

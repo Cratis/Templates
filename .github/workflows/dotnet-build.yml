@@ -26,6 +26,8 @@ on:
       - "main"
     paths:
       - "Cratis.Templates.csproj"
+      - "Cratis.Templates.Kotlin.csproj"
+      - "Cratis.Templates.Java.csproj"
       - "Templates/**"
       - "verify-asset-layout.sh"
       - "verify-registration-identity.sh"
@@ -36,6 +38,8 @@ on:
       - "**"
     paths:
       - "Cratis.Templates.csproj"
+      - "Cratis.Templates.Kotlin.csproj"
+      - "Cratis.Templates.Java.csproj"
       - "Templates/**"
       - "verify-asset-layout.sh"
       - "verify-registration-identity.sh"
@@ -85,10 +89,16 @@ jobs:
         run: dotnet restore Cratis.Templates.csproj --configfile ./NuGet.config
 
       - name: Build
-        run: dotnet build Cratis.Templates.csproj --configuration Release --no-restore
+        run: |
+          dotnet build Cratis.Templates.csproj --configuration Release --no-restore
+          dotnet build Cratis.Templates.Kotlin.csproj --configuration Release --no-restore
+          dotnet build Cratis.Templates.Java.csproj --configuration Release --no-restore
 
       - name: Validate package
-        run: dotnet pack Cratis.Templates.csproj --no-build --no-restore --configuration Release -o ./Artifacts/NuGet -p:PackageVersion=0.0.0-ci
+        run: |
+          dotnet pack Cratis.Templates.csproj --no-build --no-restore --configuration Release -o ./Artifacts/NuGet -p:PackageVersion=0.0.0-ci
+          dotnet pack Cratis.Templates.Kotlin.csproj --no-build --no-restore --configuration Release -o ./Artifacts/NuGet -p:PackageVersion=0.0.0-ci
+          dotnet pack Cratis.Templates.Java.csproj --no-build --no-restore --configuration Release -o ./Artifacts/NuGet -p:PackageVersion=0.0.0-ci
 
       - name: Validate templates generate buildable projects
         timeout-minutes: 15
@@ -179,3 +189,87 @@ jobs:
           ./verify-asset-layout.sh \
             "$validation_root/ValidateCratis" \
             "$validation_root/ValidateCratisAspire/ValidateCratisAspire"
+
+  kotlin-java-templates:
+    # Validates the JVM templates end to end: scaffold with dotnet new, compile the
+    # generated Gradle project with a real JDK (which also runs the Arc Gradle plugin's
+    # TypeScript proxy generation), then compile-check the frontend against the
+    # generated proxies with the same npm packages the template declares.
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup .Net
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET10_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 'latest'
+          package-manager-cache: false
+
+      - name: Install Yarn
+        run: npm install -g yarn
+
+      - name: Install templates locally
+        shell: bash
+        run: |
+          ./install-local.sh
+          dotnet new list | grep cratis-kotlin
+          dotnet new list | grep cratis-java
+
+      - name: Scaffold JVM template applications
+        shell: bash
+        run: |
+          validation_root="$(mktemp -d)"
+          echo "Using validation root: $validation_root"
+          echo "validation_root=$validation_root" >> "$GITHUB_ENV"
+
+          dotnet new cratis-kotlin -n ValidateCratisKotlin -o "$validation_root/ValidateCratisKotlin" --packageManager none --allow-scripts Yes
+          dotnet new cratis-java -n ValidateCratisJava -o "$validation_root/ValidateCratisJava" --packageManager none --allow-scripts Yes
+
+      - name: Build scaffolded Kotlin application
+        timeout-minutes: 20
+        shell: bash
+        run: |
+          cd "$validation_root/ValidateCratisKotlin"
+          sh ./gradlew build --no-daemon
+          test -f build/generated/arc-proxies/Register.ts
+          test -f build/generated/arc-proxies/All.ts
+          test -f build/generated/arc-proxies/Listing.ts
+
+      - name: Build scaffolded Java application
+        timeout-minutes: 20
+        shell: bash
+        run: |
+          cd "$validation_root/ValidateCratisJava"
+          sh ./gradlew build --no-daemon
+          test -f build/generated/arc-proxies/Register.ts
+          test -f build/generated/arc-proxies/All.ts
+          test -f build/generated/arc-proxies/Listing.ts
+
+      - name: Type-check and build scaffolded frontends
+        timeout-minutes: 15
+        shell: bash
+        run: |
+          # The generated proxies land under build/generated/arc-proxies, which the
+          # frontend consumes through the Api alias, so a full build proves the
+          # generated TypeScript matches the npm packages the template pins.
+          for app in "$validation_root/ValidateCratisKotlin" "$validation_root/ValidateCratisJava"; do
+            (
+              cd "$app"
+              npm install --no-audit --no-fund
+              npm run build
+            )
+          done
