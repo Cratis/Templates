@@ -1,0 +1,211 @@
+{
+    "$schema": "http://json.schemastore.org/template",
+    "author": "Cratis",
+    "classifications": [
+        "Web",
+        "Spring Boot",
+        "Cratis",
+        "Arc",
+        "Chronicle",
+        "Java"
+    ],
+    "identity": "Cratis.Templates.Java",
+    "name": "Cratis Java Application",
+    "shortName": "cratis-java",
+    "description": "A template for creating a Cratis web application with Java and Spring Boot",
+    "tags": {
+        "language": "Java",
+        "type": "project"
+    },
+    "sourceName": "CratisApp",
+    "preferNameDirectory": true,
+    "symbols": {
+        "packageManager": {
+            "type": "parameter",
+            "datatype": "choice",
+            "choices": [
+                {
+                    "choice": "yarn",
+                    "description": "Use yarn"
+                },
+                {
+                    "choice": "pnpm",
+                    "description": "Use pnpm"
+                },
+                {
+                    "choice": "npm",
+                    "description": "Use npm"
+                },
+                {
+                    "choice": "none",
+                    "description": "Skip package installation"
+                }
+            ],
+            "defaultValue": "yarn",
+            "description": "Package manager to use for frontend dependencies",
+            "prompt": "Select frontend package manager"
+        },
+        "packageManagerInstallCommand": {
+            "type": "generated",
+            "generator": "switch",
+            "replaces": "PACKAGE_MGR_INSTALL",
+            "parameters": {
+                "evaluator": "C++",
+                "cases": [
+                    {
+                        "condition": "(packageManager == \"yarn\")",
+                        "value": "yarn install"
+                    },
+                    {
+                        "condition": "(packageManager == \"pnpm\")",
+                        "value": "pnpm install"
+                    },
+                    {
+                        "condition": "(packageManager == \"npm\")",
+                        "value": "npm install"
+                    },
+                    {
+                        "condition": "(packageManager == \"none\")",
+                        "value": "# Run your preferred package manager install command (e.g. npm install)"
+                    }
+                ]
+            }
+        },
+        "packageManagerDevCommand": {
+            "type": "generated",
+            "generator": "switch",
+            "replaces": "PACKAGE_MGR_DEV",
+            "parameters": {
+                "evaluator": "C++",
+                "cases": [
+                    {
+                        "condition": "(packageManager == \"yarn\")",
+                        "value": "yarn dev"
+                    },
+                    {
+                        "condition": "(packageManager == \"pnpm\")",
+                        "value": "pnpm dev"
+                    },
+                    {
+                        "condition": "(packageManager == \"npm\")",
+                        "value": "npm run dev"
+                    },
+                    {
+                        "condition": "(packageManager == \"none\")",
+                        "value": "# Run your preferred package manager dev command (e.g. npm run dev)"
+                    }
+                ]
+            }
+        }
+    },
+    "sources": [
+        {
+            "exclude": [
+                "**/.template.config/**"
+            ]
+        }
+    ],
+    "postActions": [
+        {
+            "description": "Install all frontend dependencies with yarn.",
+            "manualInstructions": [
+                {
+                    "text": "Run 'yarn install'"
+                }
+            ],
+            "actionId": "3A7C4B45-1F5D-4A30-959A-51B88E82B5D2",
+            "condition": "(packageManager == \"yarn\")",
+            "args": {
+                "executable": "yarn",
+                "args": "install"
+            },
+            "continueOnError": true
+        },
+        {
+            "description": "Install all frontend dependencies with pnpm.",
+            "manualInstructions": [
+                {
+                    "text": "Run 'pnpm install'"
+                }
+            ],
+            "actionId": "3A7C4B45-1F5D-4A30-959A-51B88E82B5D2",
+            "condition": "(packageManager == \"pnpm\")",
+            "args": {
+                "executable": "pnpm",
+                "args": "install"
+            },
+            "continueOnError": true
+        },
+        {
+            "description": "Install all frontend dependencies with npm.",
+            "manualInstructions": [
+                {
+                    "text": "Run 'npm install'"
+                }
+            ],
+            "actionId": "3A7C4B45-1F5D-4A30-959A-51B88E82B5D2",
+            "condition": "(packageManager == \"npm\")",
+            "args": {
+                "executable": "npm",
+                "args": "install"
+            },
+            "continueOnError": true
+        },
+        {
+            "description": "Show getting started instructions.",
+            "actionId": "AC1156F7-BB77-4DB8-B28F-24EEBCCA1E5C",
+            "condition": "(packageManager == \"yarn\")",
+            "continueOnError": true,
+            "manualInstructions": [
+                {
+                    "text": "Your project is ready! Next steps:\n  1. Start infrastructure:        docker-compose up -d\n  2. Build (generates proxies):  ./gradlew build\n  3. Run the application:        ./gradlew bootRun\n  4. Frontend dev server:        yarn dev\n\nAI assistance:\n  This project ships with a .cratis/ai.json holding its Cratis AI configuration.\n  Make sure the Cratis CLI is installed - see https://cratis.io/cli - and run:\n      cratis ai update\n  to get all the AI rules, skills, and coding agent integration in place.\n\nSee README.md for full details."
+                }
+            ],
+            "args": {
+                "files": "1"
+            }
+        },
+        {
+            "description": "Show getting started instructions.",
+            "actionId": "AC1156F7-BB77-4DB8-B28F-24EEBCCA1E5C",
+            "condition": "(packageManager == \"pnpm\")",
+            "continueOnError": true,
+            "manualInstructions": [
+                {
+                    "text": "Your project is ready! Next steps:\n  1. Start infrastructure:        docker-compose up -d\n  2. Build (generates proxies):  ./gradlew build\n  3. Run the application:        ./gradlew bootRun\n  4. Frontend dev server:        pnpm dev\n\nAI assistance:\n  This project ships with a .cratis/ai.json holding its Cratis AI configuration.\n  Make sure the Cratis CLI is installed - see https://cratis.io/cli - and run:\n      cratis ai update\n  to get all the AI rules, skills, and coding agent integration in place.\n\nSee README.md for full details."
+                }
+            ],
+            "args": {
+                "files": "1"
+            }
+        },
+        {
+            "description": "Show getting started instructions.",
+            "actionId": "AC1156F7-BB77-4DB8-B28F-24EEBCCA1E5C",
+            "condition": "(packageManager == \"npm\")",
+            "continueOnError": true,
+            "manualInstructions": [
+                {
+                    "text": "Your project is ready! Next steps:\n  1. Start infrastructure:        docker-compose up -d\n  2. Build (generates proxies):  ./gradlew build\n  3. Run the application:        ./gradlew bootRun\n  4. Frontend dev server:        npm run dev\n\nAI assistance:\n  This project ships with a .cratis/ai.json holding its Cratis AI configuration.\n  Make sure the Cratis CLI is installed - see https://cratis.io/cli - and run:\n      cratis ai update\n  to get all the AI rules, skills, and coding agent integration in place.\n\nSee README.md for full details."
+                }
+            ],
+            "args": {
+                "files": "1"
+            }
+        },
+        {
+            "description": "Show getting started instructions.",
+            "actionId": "AC1156F7-BB77-4DB8-B28F-24EEBCCA1E5C",
+            "condition": "(packageManager == \"none\")",
+            "continueOnError": true,
+            "manualInstructions": [
+                {
+                    "text": "Your project is ready! Next steps:\n  1. Install frontend dependencies manually (e.g. npm install)\n  2. Start infrastructure:        docker-compose up -d\n  3. Build (generates proxies):  ./gradlew build\n  4. Run the application:        ./gradlew bootRun\n  5. Frontend dev server:        npm run dev\n\nAI assistance:\n  This project ships with a .cratis/ai.json holding its Cratis AI configuration.\n  Make sure the Cratis CLI is installed - see https://cratis.io/cli - and run:\n      cratis ai update\n  to get all the AI rules, skills, and coding agent integration in place.\n\nSee README.md for full details."
+                }
+            ],
+            "args": {
+                "files": "1"
+            }
+        }
+    ]
+}
