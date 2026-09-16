@@ -22,6 +22,7 @@ MyStore/
 └── SomeModule/             — a sample domain module
     └── SomeFeature/        — a feature with two vertical slices
         ├── SomeName.cs     — a ConceptAs<T> value type
+        ├── SomeId.cs       — an EventSourceId<T> identity type
         ├── Registration/   — command slice: Register command, event, reactor
         ├── Listing/        — read-model slice: Listing projected from events
         ├── SomeFeature.tsx — the feature's composition page
@@ -36,14 +37,16 @@ The `Registration` slice shows the command side — a model-bound command that r
 [Command]
 public record Register(SomeName Name)
 {
-    public (EventSourceId<Guid>, Registered) Handle()
+    public (SomeId, Registered) Handle()
     {
-        var eventSourceId = new EventSourceId<Guid>(Guid.NewGuid());
+        var eventSourceId = SomeId.New();
 
         return (eventSourceId, new(Name));
     }
 }
 ```
+
+`SomeId` is a strongly-typed identity — a `Guid`-backed value deriving from `EventSourceId<Guid>` — rather than a raw `Guid`. Every feature gets its own identity type this way instead of passing bare `Guid`s around.
 
 The `Listing` slice shows the read side — a read model projected from events, with a query for all instances:
 

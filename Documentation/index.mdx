@@ -35,7 +35,7 @@ dotnet new install Cratis.Templates
 </CardGrid>
 
 <Aside type="note">
-Each template pins the current stable Cratis package versions so a scaffold builds reproducibly. Update the packages with `dotnet add package` as you normally would.
+Each template references the Cratis packages with a floating version (`*`), so `dotnet new` always scaffolds against the latest released Cratis stack. Run `dotnet restore` right after scaffolding to pick up the current versions, and update them later the same way you would any other package.
 </Aside>
 
 ## What the templates have in common
