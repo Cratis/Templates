@@ -1,6 +1,6 @@
 ---
-title: C# Templates
-description: Official .NET templates for scaffolding event-sourced CQRS applications on the Cratis stack — from a minimal Chronicle console app to a full-stack Arc web application with React.
+title: Cratis Templates
+description: Official dotnet-new templates for scaffolding event-sourced CQRS applications on the Cratis stack — from a minimal Chronicle console app to full-stack Arc web applications with React, in C#, Kotlin, or Java.
 ---
 
 import { CardGrid, Aside } from '@astrojs/starlight/components';
@@ -11,17 +11,25 @@ import TopicHero from '@components/TopicHero.astro';
 Every Cratis application follows the same conventions: vertical slices, model-bound commands and queries, events as facts, read models projected from the log. The Cratis templates give you a working application with those conventions already in place — a real project you can run in minutes, not a blank folder you fill in from documentation.
 </TopicHero>
 
-Install the templates once:
+Install the .NET templates once:
 
 ```bash
 dotnet new install Cratis.Templates
 ```
+
+The Kotlin and Java templates ship as separate packages — `Cratis.Templates.Kotlin` and `Cratis.Templates.Java` — so they do not show up in `dotnet new` unless you want them; the Cratis CLI installs and invokes them directly when you create a JVM project.
 
 ## The templates
 
 <CardGrid>
   <SimpleCard title="Cratis Web Application" icon="seti:app" link="/templates/cratis-web/">
     The full-stack starting point: ASP.NET Core with Arc commands and queries, Chronicle event sourcing, and a React frontend with generated TypeScript proxies — wired together in vertical slices.
+  </SimpleCard>
+  <SimpleCard title="Cratis Kotlin Application" icon="seti:kotlin" link="/templates/cratis-kotlin/">
+    The same full-stack application on Spring Boot, authored in Kotlin — Arc commands and queries, Chronicle event sourcing, TypeScript proxy generation through the Arc Gradle plugin, and a React frontend.
+  </SimpleCard>
+  <SimpleCard title="Cratis Java Application" icon="seti:java" link="/templates/cratis-java/">
+    The same full-stack application on Spring Boot, authored in Java — records as commands and read models, Chronicle event sourcing, TypeScript proxy generation through the Arc Gradle plugin, and a React frontend.
   </SimpleCard>
   <SimpleCard title="Chronicle Web" icon="seti:db" link="/templates/chronicle-web/">
     A minimal ASP.NET Core application connected to Chronicle — events in, projections out, no frontend. The smallest possible server-side starting point.
@@ -35,7 +43,7 @@ dotnet new install Cratis.Templates
 </CardGrid>
 
 <Aside type="note">
-Each template references the Cratis packages with a floating version (`*`), so `dotnet new` always scaffolds against the latest released Cratis stack. Run `dotnet restore` right after scaffolding to pick up the current versions, and update them later the same way you would any other package.
+The .NET templates reference the Cratis packages with a floating version (`*`), so `dotnet new` always scaffolds against the latest released Cratis stack. Run `dotnet restore` right after scaffolding to pick up the current versions, and update them later the same way you would any other package. The Kotlin and Java templates pin their verified Maven versions — Arc 7.2.0 with Chronicle 4.0.0, Kotlin 2.4.20, and Spring Boot 4.1.1 — since Gradle has no floating-version equivalent; bump them deliberately when you upgrade.
 </Aside>
 
 ## What the templates have in common

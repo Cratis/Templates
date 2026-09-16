@@ -1,0 +1,89 @@
+---
+title: The Cratis Java Application template
+description: A full-stack vertical-slice application on Spring Boot — Java with Arc commands and queries, Chronicle event sourcing, TypeScript proxy generation through the Arc Gradle plugin, and a React frontend.
+---
+
+The `cratis-java` template is the Java flavor of the full-stack starting point. One command gives you a running application with the whole stack wired: **Arc** for commands and queries over HTTP, **Chronicle** for the event log, MongoDB for read models, and a **React** frontend that talks to generated TypeScript proxies — all authored in Java on **Spring Boot**.
+
+Install the package and scaffold:
+
+```bash
+dotnet new install Cratis.Templates.Java
+dotnet new cratis-java -n MyStore
+```
+
+## What you get
+
+```text
+MyStore/
+├── build.gradle.kts           — Gradle build with the Arc plugin
+├── settings.gradle.kts        — plugin and dependency repositories
+├── gradlew, gradle/wrapper/   — Gradle wrapper (9.1.0)
+├── docker-compose.yml         — Chronicle dev container + Aspire dashboard
+├── package.json               — frontend tooling (Vite, React, Cratis Components)
+├── .frontend/                 — Vite and TypeScript configuration
+├── App.tsx, Home.tsx          — frontend application shell
+├── SomeModule/                — the sample frontend slices
+└── src/main/
+    ├── java/com/example/
+    │   ├── CratisAppApplication.java   — Spring Boot entry point
+    │   ├── ChronicleConfiguration.java — Chronicle options and artifact registration
+    │   └── somemodule/                 — the sample backend vertical slices
+    └── kotlin/com/example/PackageMarker.kt — keeps the package visible for KSP
+```
+
+## The sample slices teach the conventions
+
+The `Registration` slice shows the command side — a `@Command` record with a `@CommandKey`, returning the event to append through Arc's Java asynchronous command path. No controller, no route registration:
+
+```java
+@Command
+@AllowAnonymous
+public record Register(@CommandKey SomeId id, SomeName name) {
+    public CompletionStage<Registered> handle() {
+        return CompletableFuture.completedFuture(new Registered(name()));
+    }
+}
+```
+
+`SomeId` is a strongly-typed identity — a record implementing `ConceptAs<String>` — rather than a raw `String`. The command key routes the command to its event source; the generated TypeScript command sends it as part of the payload.
+
+The `Listing` slice shows the read side — a read model record built by a `@Reducer` from the `Registered` event, with a query exposing it over HTTP:
+
+```java
+@io.cratis.arc.artifacts.ReadModel
+@io.cratis.chronicle.readModels.ReadModel
+@AllowAnonymous
+public record Listing(String id, SomeName name) {
+    @Path("/api/listings")
+    public static CompletionStage<List<Listing>> all(@FromServices Chronicle chronicle) {
+        return CompletableFuture.completedFuture(chronicle.readModels(Listing.class));
+    }
+}
+```
+
+Post to the command route and the whole loop runs — command handled, event appended to Chronicle, reactor notified, read model updated:
+
+```bash
+curl -sS -X POST http://localhost:8080/api/register \
+    -H 'Content-Type: application/json' \
+    -d '{"id":"'$(uuidgen)'","name":"Cratis"}'
+
+curl -sS -X QUERY http://localhost:8080/api/listings \
+    -H 'Content-Type: application/json' \
+    -d '{"arguments":{}}'
+```
+
+## Versions
+
+The template pins the versions it was verified against — Arc **7.2.0** (Gradle plugin and `arc-chronicle-spring-boot-starter`, which pins Chronicle **4.0.0**), Kotlin **2.4.20**, Spring Boot **4.1.1**, JDK **17**, and Gradle **9.1.0**. Upgrade by bumping these in `build.gradle.kts`, keeping the plugin and starter versions in sync.
+
+## AI assistance
+
+The scaffolded project includes a `.cratis/ai.json` with the Cratis AI profiles, languages, and coding agent harnesses for this template — the Cratis application selection for the JVM clients, with the Java, Kotlin, and TypeScript languages. Make sure the [Cratis CLI](/cli/) is installed, then run:
+
+```bash
+cratis ai update
+```
+
+See the [CLI AI documentation](/cli/ai/) for the full command reference.
