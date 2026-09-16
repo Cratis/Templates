@@ -82,3 +82,13 @@ await command.execute();
 ## Add your first feature
 
 Copy the `SomeFeature` folder shape: one folder per feature, one folder per slice, C# and TypeScript side by side. A typical feature holds a command slice, a query slice, and the React components that use them. The Cratis AI skills follow this same structure when an assistant scaffolds slices for you.
+
+## AI assistance
+
+The scaffolded project includes a `.cratis/ai.json` with the Cratis AI profiles, languages, and coding agent harnesses for this template — the full-stack selection covering Arc, Chronicle, Components, C#, and TypeScript. Make sure the [Cratis CLI](/cli/) is installed, then run:
+
+```bash
+cratis ai update
+```
+
+That installs the AI rules, skills, and harness integration for the coding agents you selected — `AGENTS.md` instructions plus `.claude/`, `.cursor/`, `.github/`, `.opencode/`, and `.pi/` integration — and records what it installed in `.cratis/ai.manifest.json`. `dotnet new` prints this reminder after scaffolding, and re-running the command only refreshes Cratis-managed files, never yours. See the [CLI AI documentation](/cli/ai/) for the full command reference.

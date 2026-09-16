@@ -30,3 +30,13 @@ The Aspire dashboard opens with all services, their logs, and their telemetry in
 ## What it is for
 
 Use this template when your team already runs on Aspire, or when you want the local development topology — multiple services, dashboards, resilient HTTP — managed for you from day one. If you want the same application without the orchestration layer, use the plain [Cratis Web Application](/templates/cratis-web/) template.
+
+## AI assistance
+
+The scaffolded solution includes a `.cratis/ai.json` with the Cratis AI profiles, languages, and coding agent harnesses for this template — the full-stack selection covering Arc, Chronicle, Components, C#, and TypeScript. Make sure the [Cratis CLI](/cli/) is installed, then run:
+
+```bash
+cratis ai update
+```
+
+That installs the AI rules, skills, and harness integration for the coding agents you selected — `AGENTS.md` instructions plus `.claude/`, `.cursor/`, `.github/`, `.opencode/`, and `.pi/` integration — and records what it installed in `.cratis/ai.manifest.json`. `dotnet new` prints this reminder after scaffolding, and re-running the command only refreshes Cratis-managed files, never yours. See the [CLI AI documentation](/cli/ai/) for the full command reference.

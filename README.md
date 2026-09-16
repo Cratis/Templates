@@ -67,6 +67,23 @@ dotnet new <shortname> -n MyApp -o MyApp
 >
 > To pin NuGet package versions but skip the regular `cratis` frontend install, pass both `--allow-scripts yes` and `--packageManager none`. The `cratis-aspire` template does not auto-install frontend dependencies; follow the `yarn install` step in its generated `README.md`.
 
+### AI setup in generated projects
+
+Every template ships a `.cratis/ai.json` describing its Cratis AI configuration — the Cratis AI profiles, languages, and coding agent harnesses for that template:
+
+| Template | Profiles | Languages |
+| -------- | -------- | --------- |
+| `cratis-chronicle-console`, `cratis-chronicle-web` | `cratis/application/chronicle-dotnet` | `csharp` |
+| `cratis`, `cratis-aspire` | `cratis/application/csharp` | `csharp`, `typescript` |
+
+All templates assume support for every harness (`claude`, `codex`, `copilot`, `cursor`, `opencode`, `pi`). After scaffolding — `dotnet new` prints a reminder about this — make sure the Cratis CLI is installed (see [https://cratis.io/cli](https://cratis.io/cli)) and run:
+
+```bash
+cratis ai update
+```
+
+This installs the Cratis-owned AI rules, skills, and harness integration for the selected coding agents — `AGENTS.md` instructions plus `.claude/`, `.cursor/`, `.github/`, `.opencode/`, and `.pi/` integration — and records what it installed in `.cratis/ai.manifest.json`. Commit the installed content with the generated project. Re-running `cratis ai update` refreshes only Cratis-managed files; the generated `README.md` and the [template documentation](https://www.cratis.io/templates/) describe this in full.
+
 - Uninstall when needed:
 
 ```bash

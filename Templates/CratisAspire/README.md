@@ -43,6 +43,23 @@ The application will be available at:
 - Frontend: http://localhost:9000 (Vite dev server) or served from the backend
 - Aspire Dashboard: http://localhost:15888
 
+## AI assistance
+
+This project ships with a `.cratis/ai.json` holding its Cratis AI configuration — the Cratis AI profiles, languages, and coding agent harnesses to set up.
+
+To get all the AI things in place:
+
+1. Make sure the Cratis CLI is installed — see [https://cratis.io/cli](https://cratis.io/cli).
+2. Run:
+
+```bash
+cratis ai update
+```
+
+This installs the Cratis-owned AI rules, skills, and harness integration for the coding agents you selected — things like `AGENTS.md` instructions and `.claude/`, `.cursor/`, `.github/`, `.opencode/`, and `.pi/` integration — and records everything it installed in `.cratis/ai.manifest.json`. Commit the installed content along with your project.
+
+Re-run `cratis ai update` whenever you want the latest guidance; it only touches Cratis-managed files, never yours. `cratis ai status` shows what is installed and whether a newer revision is available.
+
 ## Project Structure
 
 ```shell

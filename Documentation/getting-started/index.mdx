@@ -44,6 +44,21 @@ The template asks which frontend package manager you use (yarn, pnpm, npm, or no
 dotnet new cratis -n MyStore --packageManager pnpm --Framework net10.0
 ```
 
+## Set up AI assistance
+
+Every template ships with a `.cratis/ai.json` describing its Cratis AI configuration — the AI profiles, languages, and coding agent harnesses for that template. Right after scaffolding, set your coding agents up with it:
+
+1. Make sure the Cratis CLI is installed — see [cratis.io/cli](https://cratis.io/cli/) for install options (Homebrew and the .NET global tool).
+2. From the project root, run:
+
+```bash
+cratis ai update
+```
+
+This installs the Cratis-owned AI rules, skills, and harness integration for the coding agents you selected — `AGENTS.md` instructions plus `.claude/`, `.cursor/`, `.github/`, `.opencode/`, and `.pi/` integration — and records what it installed in `.cratis/ai.manifest.json`. Commit the installed content along with your project so your whole team shares the same guidance.
+
+`dotnet new` prints this same reminder after scaffolding. Re-run `cratis ai update` whenever you want the latest guidance — it only touches Cratis-managed files, never yours.
+
 ## Start the infrastructure
 
 Every template ships a `docker-compose.yml` with a local Chronicle development container (MongoDB bundled) and an Aspire dashboard:

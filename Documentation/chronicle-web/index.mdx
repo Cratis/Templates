@@ -42,3 +42,13 @@ curl http://localhost:5000/projection # reads the projected read model
 ## What it is for
 
 Use this template when you know you want Chronicle inside an ASP.NET Core service and you would rather grow the application yourself. When you want model-bound commands and queries with routes and TypeScript proxies handled for you, that is the [Cratis Web Application](/templates/cratis-web/) template.
+
+## AI assistance
+
+The scaffolded project includes a `.cratis/ai.json` with the Cratis AI profiles, languages, and coding agent harnesses for this template — the Chronicle-on-.NET selection. Make sure the [Cratis CLI](/cli/) is installed, then run:
+
+```bash
+cratis ai update
+```
+
+That installs the AI rules, skills, and harness integration for the coding agents you selected — `AGENTS.md` instructions plus `.claude/`, `.cursor/`, `.github/`, `.opencode/`, and `.pi/` integration — and records what it installed in `.cratis/ai.manifest.json`. `dotnet new` prints this reminder after scaffolding, and re-running the command only refreshes Cratis-managed files, never yours. See the [CLI AI documentation](/cli/ai/) for the full command reference.
