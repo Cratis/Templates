@@ -20,6 +20,18 @@ docker-compose up -d
 
 This starts a local [Cratis Chronicle](https://github.com/Cratis/Chronicle) development container (with its bundled MongoDB) and an Aspire dashboard for telemetry. The Chronicle API is available at `http://localhost:35000`, the dashboard at `http://localhost:18888`.
 
+### Choosing a database
+
+The template defaults to MongoDB. To scaffold the application with a different database, pass the `--Database` option when creating the project:
+
+```bash
+dotnet new cratis-kotlin --Database PostgreSQL
+dotnet new cratis-kotlin --Database MsSql
+dotnet new cratis-kotlin --Database SQLite
+```
+
+Read models are persisted by the Chronicle kernel itself, so the application code does not change — only how the kernel in `docker-compose.yml` stores its data. For MongoDB it uses the embedded server, for PostgreSQL and MsSql it adds a database container to the compose file, and for SQLite it uses a mounted volume file. The read-model sink the client connects with is switched accordingly (MongoDB or SQL).
+
 ### 2. Build the backend (this generates the TypeScript proxies)
 
 ```bash

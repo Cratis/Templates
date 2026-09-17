@@ -22,6 +22,27 @@ This will start:
 - Chronicle (with MongoDB on port 27017)
 - Aspire Dashboard (on port 18888)
 
+### Choosing a database
+
+The template defaults to MongoDB. To scaffold the application with a different database, pass
+the `--Database` option when creating the project:
+
+```bash
+dotnet new cratis --Database PostgreSQL
+dotnet new cratis --Database MsSql
+dotnet new cratis --Database SQLite
+```
+
+The database choice determines:
+
+- Which Arc read-model package is referenced (`Cratis.Arc.MongoDB` for MongoDB,
+  `Cratis.Arc.EntityFrameworkCore` for the others) and how the application connects to it.
+- How the Chronicle kernel started by `docker-compose` persists its event stores — for MongoDB it
+  uses the embedded server, for the others a dedicated database container (or a mounted file for
+  SQLite).
+
+MongoDB and SQLite need no extra container; PostgreSQL and MsSql add one to `docker-compose.yml`.
+
 2. Install frontend dependencies:
 
 ```bash

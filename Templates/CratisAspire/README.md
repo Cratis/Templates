@@ -25,9 +25,28 @@ dotnet run --project CratisAspire.Composition
 
 Aspire will automatically start and configure:
 
-- Chronicle (event store + MongoDB)
+- Chronicle (event store + database)
 - The backend application
 - The Aspire Dashboard for observability
+
+### Choosing a database
+
+The template defaults to MongoDB. To scaffold the application with a different database, pass
+the `--Database` option when creating the project:
+
+```bash
+dotnet new cratis-aspire --Database PostgreSQL
+dotnet new cratis-aspire --Database MsSql
+dotnet new cratis-aspire --Database SQLite
+```
+
+The database choice determines:
+
+- Which Arc read-model package the backend references (`Cratis.Arc.MongoDB` for MongoDB,
+  `Cratis.Arc.EntityFrameworkCore` for the others) and how it connects to the database resource.
+- How the AppHost provisions Chronicle — an external database resource for PostgreSQL, MsSql, and
+  SQLite (the Chronicle resource is wired with `WithPostgreSql`, `WithMsSql`, or `WithSqlite`), or
+  the development image with its embedded MongoDB for the default.
 
 3. Start the frontend development server (optional, for hot-reload during development):
 

@@ -1,69 +1,192 @@
 {
-  "$schema": "http://json.schemastore.org/template",
-  "author": "Cratis",
-  "classifications": [
-    "Asp.NET Core",
-    "Web",
-    "Cratis",
-    "Chronicle"
-  ],
-  "identity": "Cratis.Templates.ChronicleWeb",
-  "name": "Cratis Chronicle Web",
-  "shortName": "cratis-chronicle-web",
-  "description": "A simple web app template that connects to Cratis Chronicle",
-  "tags": {
-    "language": "C#",
-    "type": "project"
-  },
-  "sourceName": "ChronicleWeb",
-  "preferNameDirectory": true,
-  "primaryOutputs": [
-    {
-      "path": "ChronicleWeb.csproj"
+    "$schema": "http://json.schemastore.org/template",
+    "author": "Cratis",
+    "classifications": [
+        "Asp.NET Core",
+        "Web",
+        "Cratis",
+        "Chronicle"
+    ],
+    "identity": "Cratis.Templates.ChronicleWeb",
+    "name": "Cratis Chronicle Web",
+    "shortName": "cratis-chronicle-web",
+    "description": "A simple web app template that connects to Cratis Chronicle",
+    "tags": {
+        "language": "C#",
+        "type": "project"
     },
-    {
-      "path": "ChronicleWeb.sln"
-    }
-  ],
-  "symbols": {
-    "Framework": {
-      "type": "parameter",
-      "datatype": "choice",
-      "choices": [
+    "sourceName": "ChronicleWeb",
+    "preferNameDirectory": true,
+    "primaryOutputs": [
         {
-          "choice": "net8.0",
-          "description": ".NET 8"
+            "path": "ChronicleWeb.csproj"
         },
         {
-          "choice": "net9.0",
-          "description": ".NET 9"
-        },
-        {
-          "choice": "net10.0",
-          "description": ".NET 10"
+            "path": "ChronicleWeb.sln"
         }
-      ],
-      "defaultValue": "net10.0",
-      "description": "Target framework",
-      "prompt": "Select target framework",
-      "replaces": "TARGET_FRAMEWORK"
+    ],
+    "symbols": {
+        "Framework": {
+            "type": "parameter",
+            "datatype": "choice",
+            "choices": [
+                {
+                    "choice": "net8.0",
+                    "description": ".NET 8"
+                },
+                {
+                    "choice": "net9.0",
+                    "description": ".NET 9"
+                },
+                {
+                    "choice": "net10.0",
+                    "description": ".NET 10"
+                }
+            ],
+            "defaultValue": "net10.0",
+            "description": "Target framework",
+            "prompt": "Select target framework",
+            "replaces": "TARGET_FRAMEWORK"
+        },
+        "ProjectGuid": {
+            "type": "generated",
+            "generator": "guid",
+            "replaces": "PROJECT_GUID"
+        },
+        "Database": {
+            "type": "parameter",
+            "datatype": "choice",
+            "choices": [
+                {
+                    "choice": "MongoDB"
+                },
+                {
+                    "choice": "PostgreSQL"
+                },
+                {
+                    "choice": "MsSql"
+                },
+                {
+                    "choice": "SQLite"
+                }
+            ],
+            "defaultValue": "MongoDB",
+            "replaces": "DATABASE",
+            "enableQuotelessLiterals": true
+        },
+        "databaseKernelConnectionDetails": {
+            "type": "generated",
+            "generator": "switch",
+            "replaces": "DATABASE_KERNEL_CONNECTION",
+            "parameters": {
+                "evaluator": "C++",
+                "cases": [
+                    {
+                        "condition": "(Database == \"MongoDB\")",
+                        "value": "mongodb://localhost:27017"
+                    },
+                    {
+                        "condition": "(Database == \"PostgreSQL\")",
+                        "value": "Host=database;Port=5432;Database=chronicle;Username=chronicle;Password=cratis-dev-2026"
+                    },
+                    {
+                        "condition": "(Database == \"MsSql\")",
+                        "value": "Server=database,1433;Database=chronicle;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=true"
+                    },
+                    {
+                        "condition": "(Database == \"SQLite\")",
+                        "value": "Data Source=/data/chronicle.db"
+                    }
+                ]
+            }
+        },
+        "databaseDependsOn": {
+            "type": "generated",
+            "generator": "switch",
+            "replaces": "DATABASE_DEPENDS_ON",
+            "parameters": {
+                "evaluator": "C++",
+                "cases": [
+                    {
+                        "condition": "(Database == \"PostgreSQL\" || Database == \"MsSql\")",
+                        "value": "depends_on:\n      database:\n        condition: service_healthy"
+                    },
+                    {
+                        "condition": "(Database == \"MongoDB\" || Database == \"SQLite\")",
+                        "value": ""
+                    }
+                ]
+            }
+        },
+        "databaseVolumes": {
+            "type": "generated",
+            "generator": "switch",
+            "replaces": "DATABASE_VOLUMES",
+            "parameters": {
+                "evaluator": "C++",
+                "cases": [
+                    {
+                        "condition": "(Database == \"SQLite\")",
+                        "value": "volumes:\n      - chronicle-data:/data"
+                    },
+                    {
+                        "condition": "(Database != \"SQLite\")",
+                        "value": ""
+                    }
+                ]
+            }
+        },
+        "databaseService": {
+            "type": "generated",
+            "generator": "switch",
+            "replaces": "DATABASE_SERVICE",
+            "parameters": {
+                "evaluator": "C++",
+                "cases": [
+                    {
+                        "condition": "(Database == \"MongoDB\" || Database == \"SQLite\")",
+                        "value": ""
+                    },
+                    {
+                        "condition": "(Database == \"PostgreSQL\")",
+                        "value": "  database:\n    image: postgres:17\n    environment:\n      - POSTGRES_USER=chronicle\n      - POSTGRES_PASSWORD=cratis-dev-2026\n      - POSTGRES_DB=chronicle\n    ports:\n      - 5432:5432\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U chronicle\"]\n      interval: 5s\n      timeout: 5s\n      retries: 12"
+                    },
+                    {
+                        "condition": "(Database == \"MsSql\")",
+                        "value": "  database:\n    image: mcr.microsoft.com/mssql/server:2022-latest\n    environment:\n      - ACCEPT_EULA=Y\n      - MSSQL_SA_PASSWORD=YourStrong!Passw0rd\n    ports:\n      - 1433:1433\n    healthcheck:\n      test: [\"CMD-SHELL\", \"/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P 'YourStrong!Passw0rd' -Q 'SELECT 1' || exit 1\"]\n      interval: 10s\n      timeout: 5s\n      retries: 12"
+                    }
+                ]
+            }
+        },
+        "databaseTopVolumes": {
+            "type": "generated",
+            "generator": "switch",
+            "replaces": "DATABASE_TOP_VOLUMES",
+            "parameters": {
+                "evaluator": "C++",
+                "cases": [
+                    {
+                        "condition": "(Database == \"SQLite\")",
+                        "value": "volumes:\n  chronicle-data:"
+                    },
+                    {
+                        "condition": "(Database != \"SQLite\")",
+                        "value": ""
+                    }
+                ]
+            }
+        }
     },
-    "ProjectGuid": {
-      "type": "generated",
-      "generator": "guid",
-      "replaces": "PROJECT_GUID"
-    }
-  },
-  "sources": [
-    {
-      "exclude": [
-        "**/[Bb]in/**",
-        "**/[Oo]bj/**",
-        "**/.template.config/**"
-      ]
-    }
-  ],
-  "postActions": [
+    "sources": [
+        {
+            "exclude": [
+                "**/[Bb]in/**",
+                "**/[Oo]bj/**",
+                "**/.template.config/**"
+            ]
+        }
+    ],
+    "postActions": [
         {
             "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
             "description": "Add Cratis Chronicle NuGet package.",

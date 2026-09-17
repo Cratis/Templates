@@ -45,7 +45,7 @@ public class ChronicleConfiguration {
             JvmClassMappingKt.getKotlinClass(RegistrationReactor.class)));
         var sinkType = properties.getDefaultSinkTypeId();
         if (sinkType == null) sinkType = System.getenv("CHRONICLE_SINK_TYPE");
-        if (sinkType == null) sinkType = WellKnownSinkTypes.MONGODB;
+        if (sinkType == null) sinkType = WellKnownSinkTypes.DATABASE_SINK_TYPE;
         var programIdentifier = properties.getProgramIdentifier() == null
             ? applicationName
             : properties.getProgramIdentifier();

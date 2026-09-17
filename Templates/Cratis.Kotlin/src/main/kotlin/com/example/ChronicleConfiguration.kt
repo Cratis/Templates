@@ -40,7 +40,7 @@ class ChronicleConfiguration {
         programIdentifier = properties.programIdentifier ?: applicationName,
         defaultSinkTypeId = properties.defaultSinkTypeId
             ?: System.getenv("CHRONICLE_SINK_TYPE")
-            ?: WellKnownSinkTypes.MONGODB,
+            ?: WellKnownSinkTypes.DATABASE_SINK_TYPE,
         autoDiscoverAndRegister = properties.autoDiscoverAndRegister,
         artifacts = KnownClientArtifacts(
             Registered::class,
