@@ -101,7 +101,7 @@ jobs:
           dotnet pack Cratis.Templates.Java.csproj --no-build --no-restore --configuration Release -o ./Artifacts/NuGet -p:PackageVersion=0.0.0-ci
 
       - name: Validate templates generate buildable projects
-        timeout-minutes: 15
+        timeout-minutes: 25
         shell: bash
         run: |
           ./install-local.sh
@@ -160,6 +160,13 @@ jobs:
           run_dotnet_new dotnet new cratis-aspire -n ValidateCratisAspire -o "$validation_root/ValidateCratisAspire" --Framework net10.0
           build_generated_project "$validation_root/ValidateCratisAspire"
 
+          # A non-default database proves the Entity Framework Core package path,
+          # the conditional csproj wiring, and the preprocessor branches compile.
+          run_dotnet_new dotnet new cratis -n ValidateCratisPostgreSql -o "$validation_root/ValidateCratisPostgreSql" --Framework net10.0 --packageManager none --Database PostgreSQL --allow-scripts Yes
+          build_generated_project "$validation_root/ValidateCratisPostgreSql"
+          run_dotnet_new dotnet new cratis-aspire -n ValidateCratisAspirePostgreSql -o "$validation_root/ValidateCratisAspirePostgreSql" --Framework net10.0 --Database PostgreSQL
+          build_generated_project "$validation_root/ValidateCratisAspirePostgreSql"
+
       - name: Validate registration returns the persisted identity
         timeout-minutes: 10
         shell: bash
@@ -196,7 +203,7 @@ jobs:
     # TypeScript proxy generation), then compile-check the frontend against the
     # generated proxies with the same npm packages the template declares.
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
 
     steps:
       - name: Checkout code
@@ -238,6 +245,9 @@ jobs:
 
           dotnet new cratis-kotlin -n ValidateCratisKotlin -o "$validation_root/ValidateCratisKotlin" --packageManager none --allow-scripts Yes
           dotnet new cratis-java -n ValidateCratisJava -o "$validation_root/ValidateCratisJava" --packageManager none --allow-scripts Yes
+          # A non-default database proves the SQL sink switch and compose tokens scaffold.
+          dotnet new cratis-kotlin -n ValidateCratisKotlinSqlite -o "$validation_root/ValidateCratisKotlinSqlite" --packageManager none --Database SQLite --allow-scripts Yes
+          dotnet new cratis-java -n ValidateCratisJavaPostgreSql -o "$validation_root/ValidateCratisJavaPostgreSql" --packageManager none --Database PostgreSQL --allow-scripts Yes
 
       - name: Build scaffolded Kotlin application
         timeout-minutes: 20
@@ -258,6 +268,17 @@ jobs:
           test -f build/generated/arc-proxies/Register.ts
           test -f build/generated/arc-proxies/All.ts
           test -f build/generated/arc-proxies/Listing.ts
+
+      - name: Build scaffolded JVM applications with a non-default database
+        timeout-minutes: 30
+        shell: bash
+        run: |
+          # The SQL sink path compiles identically; the scaffold proves the
+          # Database symbol, derived sink switch, and compose tokens resolve.
+          cd "$validation_root/ValidateCratisKotlinSqlite"
+          sh ./gradlew build --no-daemon
+          cd "$validation_root/ValidateCratisJavaPostgreSql"
+          sh ./gradlew build --no-daemon
 
       - name: Type-check and build scaffolded frontends
         timeout-minutes: 15
