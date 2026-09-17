@@ -233,8 +233,7 @@ jobs:
         shell: bash
         run: |
           ./install-local.sh
-          dotnet new list | grep cratis-kotlin
-          dotnet new list | grep cratis-java
+          dotnet new list | grep 'cratis *\[C#\],Java,Kotlin'
 
       - name: Scaffold JVM template applications
         shell: bash
