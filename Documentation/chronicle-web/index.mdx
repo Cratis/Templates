@@ -9,6 +9,8 @@ The `cratis-chronicle-web` template is a minimal ASP.NET Core application connec
 dotnet new cratis-chronicle-web -n MyApi
 ```
 
+These templates scaffold a Chronicle **client** — pass `--Database` (`MongoDB` by default, or `PostgreSQL`, `MsSql`, `SQLite`) to choose which database the Chronicle kernel in `docker-compose.yml` persists to.
+
 ## What you get
 
 A `Program.cs` with the Cratis middleware wired and two minimal API endpoints:

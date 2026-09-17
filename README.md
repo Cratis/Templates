@@ -57,6 +57,7 @@ dotnet new <shortname> -n MyApp -o MyApp
 ```
 
 - Many templates accept parameters; run `dotnet new <shortname> --help` to see available options.
+- All application templates (`cratis`, `cratis-aspire`, `cratis-kotlin`, `cratis-java`) and the Chronicle client templates accept a `--Database` choice — `MongoDB` (default), `PostgreSQL`, `MsSql`, or `SQLite` — selecting which database the Chronicle kernel persists its event stores and read models to, and which read-model package the generated .NET application uses.
 
 > [!IMPORTANT]
 > The `cratis` and `cratis-aspire` templates keep selected NuGet references as `Version="*"` in the template source. Their post-creation package actions intentionally resolve those references and pin the generated project to the current latest package versions. The `cratis` template can also install frontend dependencies (yarn/pnpm/npm) as a post-creation step.

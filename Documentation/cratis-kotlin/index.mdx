@@ -12,6 +12,14 @@ dotnet new install Cratis.Templates.Kotlin
 dotnet new cratis-kotlin -n MyStore
 ```
 
+MongoDB is the default database. Pass `--Database` to scaffold against PostgreSQL, MsSql, or SQLite instead — the `docker-compose.yml` then provisions the matching database for the Chronicle kernel, and the read-model sink switches to SQL:
+
+```bash
+dotnet new cratis-kotlin -n MyStore --Database PostgreSQL
+```
+
+The application code itself is identical for all databases — read models are persisted by the Chronicle kernel, so only the infrastructure the kernel runs against changes.
+
 ## What you get
 
 ```text
