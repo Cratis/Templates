@@ -31,20 +31,11 @@
             "datatype": "choice",
             "choices": [
                 {
-                    "choice": "net8.0",
-                    "description": ".NET 8"
-                },
-                {
-                    "choice": "net9.0",
-                    "description": ".NET 9"
-                },
-                {
                     "choice": "net10.0",
                     "description": ".NET 10"
                 }
             ],
             "defaultValue": "net10.0",
-            "prompt": "Select target framework",
             "replaces": "TARGET_FRAMEWORK"
         },
         "ProjectGuid": {
