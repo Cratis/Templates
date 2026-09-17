@@ -145,9 +145,9 @@ jobs:
           dotnet build "$validation_root/ValidatePublished.csproj" --configuration Release
 
           kotlin_root="$RUNNER_TEMP/published-kotlin-template"
-          dotnet new cratis-kotlin -n ValidatePublishedKotlin -o "$kotlin_root" --packageManager none --allow-scripts Yes
+          dotnet new cratis -n ValidatePublishedKotlin -o "$kotlin_root" --language Kotlin --packageManager none --allow-scripts Yes
           java_root="$RUNNER_TEMP/published-java-template"
-          dotnet new cratis-java -n ValidatePublishedJava -o "$java_root" --packageManager none --allow-scripts Yes
+          dotnet new cratis -n ValidatePublishedJava -o "$java_root" --language Java --packageManager none --allow-scripts Yes
 
       - name: Trigger Documentation Build
         if: steps.release.outputs.should-publish == 'true'
