@@ -238,6 +238,12 @@
                     }
                 ]
             }
+        },
+        "SkipAiUpdateInstructions": {
+            "type": "parameter",
+            "datatype": "bool",
+            "defaultValue": "false",
+            "description": "Suppress the cratis ai update hint in the getting-started instructions (the Cratis CLI runs the update automatically)."
         }
     },
     "sources": [
@@ -300,7 +306,21 @@
             "continueOnError": true,
             "manualInstructions": [
                 {
-                    "text": "Your project is ready! Next steps:\n  1. Start infrastructure:        docker-compose up -d\n  2. Build (generates proxies):  ./gradlew build\n  3. Run the application:        ./gradlew bootRun\n  4. Frontend dev server:        yarn dev\n\nAI assistance:\n  This project ships with a .cratis/ai.json holding its Cratis AI configuration.\n  Make sure the Cratis CLI is installed - see https://cratis.io/cli - and run:\n      cratis ai update\n  to get all the AI rules, skills, and coding agent integration in place.\n\nSee README.md for full details."
+                    "text": "Your project is ready! Next steps:\n\n  Requirements: JDK 17 and Docker.\n  1. Start infrastructure:  docker-compose up -d\n     (or just run everything: ./run.sh)\n  2. Build (generates the frontend proxies):  ./gradlew build\n  3. Run the application:    ./gradlew bootRun\n  4. Frontend dev server:    yarn dev\n\nSee README.md for full details."
+                }
+            ],
+            "args": {
+                "files": "1"
+            }
+        },
+        {
+            "description": "Show the Cratis AI update hint.",
+            "actionId": "AC1156F7-BB77-4DB8-B28F-24EEBCCA1E5C",
+            "condition": "(packageManager == \"yarn\") && (SkipAiUpdateInstructions != true)",
+            "continueOnError": true,
+            "manualInstructions": [
+                {
+                    "text": "Your project ships with a .cratis/ai.json holding its Cratis AI configuration.\nMake sure the Cratis CLI is installed - see https://cratis.io/cli - and run:\n    cratis ai update\nto get all the AI rules, skills, and coding agent integration in place."
                 }
             ],
             "args": {
@@ -314,7 +334,21 @@
             "continueOnError": true,
             "manualInstructions": [
                 {
-                    "text": "Your project is ready! Next steps:\n  1. Start infrastructure:        docker-compose up -d\n  2. Build (generates proxies):  ./gradlew build\n  3. Run the application:        ./gradlew bootRun\n  4. Frontend dev server:        pnpm dev\n\nAI assistance:\n  This project ships with a .cratis/ai.json holding its Cratis AI configuration.\n  Make sure the Cratis CLI is installed - see https://cratis.io/cli - and run:\n      cratis ai update\n  to get all the AI rules, skills, and coding agent integration in place.\n\nSee README.md for full details."
+                    "text": "Your project is ready! Next steps:\n\n  Requirements: JDK 17 and Docker.\n  1. Start infrastructure:  docker-compose up -d\n     (or just run everything: ./run.sh)\n  2. Build (generates the frontend proxies):  ./gradlew build\n  3. Run the application:    ./gradlew bootRun\n  4. Frontend dev server:    pnpm dev\n\nSee README.md for full details."
+                }
+            ],
+            "args": {
+                "files": "1"
+            }
+        },
+        {
+            "description": "Show the Cratis AI update hint.",
+            "actionId": "AC1156F7-BB77-4DB8-B28F-24EEBCCA1E5C",
+            "condition": "(packageManager == \"pnpm\") && (SkipAiUpdateInstructions != true)",
+            "continueOnError": true,
+            "manualInstructions": [
+                {
+                    "text": "Your project ships with a .cratis/ai.json holding its Cratis AI configuration.\nMake sure the Cratis CLI is installed - see https://cratis.io/cli - and run:\n    cratis ai update\nto get all the AI rules, skills, and coding agent integration in place."
                 }
             ],
             "args": {
@@ -328,7 +362,21 @@
             "continueOnError": true,
             "manualInstructions": [
                 {
-                    "text": "Your project is ready! Next steps:\n  1. Start infrastructure:        docker-compose up -d\n  2. Build (generates proxies):  ./gradlew build\n  3. Run the application:        ./gradlew bootRun\n  4. Frontend dev server:        npm run dev\n\nAI assistance:\n  This project ships with a .cratis/ai.json holding its Cratis AI configuration.\n  Make sure the Cratis CLI is installed - see https://cratis.io/cli - and run:\n      cratis ai update\n  to get all the AI rules, skills, and coding agent integration in place.\n\nSee README.md for full details."
+                    "text": "Your project is ready! Next steps:\n\n  Requirements: JDK 17 and Docker.\n  1. Start infrastructure:  docker-compose up -d\n     (or just run everything: ./run.sh)\n  2. Build (generates the frontend proxies):  ./gradlew build\n  3. Run the application:    ./gradlew bootRun\n  4. Frontend dev server:    npm run dev\n\nSee README.md for full details."
+                }
+            ],
+            "args": {
+                "files": "1"
+            }
+        },
+        {
+            "description": "Show the Cratis AI update hint.",
+            "actionId": "AC1156F7-BB77-4DB8-B28F-24EEBCCA1E5C",
+            "condition": "(packageManager == \"npm\") && (SkipAiUpdateInstructions != true)",
+            "continueOnError": true,
+            "manualInstructions": [
+                {
+                    "text": "Your project ships with a .cratis/ai.json holding its Cratis AI configuration.\nMake sure the Cratis CLI is installed - see https://cratis.io/cli - and run:\n    cratis ai update\nto get all the AI rules, skills, and coding agent integration in place."
                 }
             ],
             "args": {
@@ -342,7 +390,21 @@
             "continueOnError": true,
             "manualInstructions": [
                 {
-                    "text": "Your project is ready! Next steps:\n  1. Install frontend dependencies manually (e.g. npm install)\n  2. Start infrastructure:        docker-compose up -d\n  3. Build (generates proxies):  ./gradlew build\n  4. Run the application:        ./gradlew bootRun\n  5. Frontend dev server:        npm run dev\n\nAI assistance:\n  This project ships with a .cratis/ai.json holding its Cratis AI configuration.\n  Make sure the Cratis CLI is installed - see https://cratis.io/cli - and run:\n      cratis ai update\n  to get all the AI rules, skills, and coding agent integration in place.\n\nSee README.md for full details."
+                    "text": "Your project is ready! Next steps:\n\n  Requirements: JDK 17 and Docker.\n  1. Start infrastructure:  docker-compose up -d\n     (or just run everything: ./run.sh)\n  2. Build (generates the frontend proxies):  ./gradlew build\n  3. Run the application:    ./gradlew bootRun\n  4. Frontend dev server:    # Run your preferred package manager dev command (e.g. npm run dev)\n\nSee README.md for full details."
+                }
+            ],
+            "args": {
+                "files": "1"
+            }
+        },
+        {
+            "description": "Show the Cratis AI update hint.",
+            "actionId": "AC1156F7-BB77-4DB8-B28F-24EEBCCA1E5C",
+            "condition": "(packageManager == \"none\") && (SkipAiUpdateInstructions != true)",
+            "continueOnError": true,
+            "manualInstructions": [
+                {
+                    "text": "Your project ships with a .cratis/ai.json holding its Cratis AI configuration.\nMake sure the Cratis CLI is installed - see https://cratis.io/cli - and run:\n    cratis ai update\nto get all the AI rules, skills, and coding agent integration in place."
                 }
             ],
             "args": {

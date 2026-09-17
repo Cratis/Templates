@@ -9,11 +9,10 @@
     "pi"
   ],
   "profiles": [
-    "cratis/application/kotlin"
+    "cratis/application/java"
   ],
   "languages": [
     "java",
-    "kotlin",
     "typescript"
   ]
 }
