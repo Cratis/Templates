@@ -9,6 +9,7 @@
         "Chronicle"
     ],
     "identity": "Cratis.Templates.Web",
+    "groupIdentity": "Cratis.Templates.Cratis",
     "name": "Cratis Web Application",
     "shortName": "cratis",
     "description": "A template for creating a Cratis web application",
@@ -443,5 +444,6 @@
                 "files": "1"
             }
         }
-    ]
+    ],
+    "precedence": 1
 }

@@ -14,8 +14,8 @@ The templates ship as three NuGet packages: `Cratis.Templates` (the .NET templat
 | Cratis Chronicle Web | `cratis-chronicle-web` | An ASP.NET Core web application connected to Cratis Chronicle |
 | Cratis Web Application | `cratis` | A full-stack web application with Arc (commands, queries, TypeScript proxy generation) and a React + Vite frontend using Cratis Components |
 | Cratis Aspire Application | `cratis-aspire` | The full-stack web application orchestrated with .NET Aspire |
-| Cratis Kotlin Application | `cratis-kotlin` | A full-stack web application with Arc and Chronicle on Spring Boot — Kotlin backend, TypeScript proxy generation through the Arc Gradle plugin, and a React + Vite frontend |
-| Cratis Java Application | `cratis-java` | The same full-stack application authored in Java — Spring Boot backend, TypeScript proxy generation through the Arc Gradle plugin, and a React + Vite frontend |
+| Cratis Kotlin Application | `cratis --language Kotlin` | A full-stack web application with Arc and Chronicle on Spring Boot — Kotlin backend, TypeScript proxy generation through the Arc Gradle plugin, and a React + Vite frontend |
+| Cratis Java Application | `cratis --language Java` | The same full-stack application authored in Java — Spring Boot backend, TypeScript proxy generation through the Arc Gradle plugin, and a React + Vite frontend |
 
 ## Builds
 
@@ -57,7 +57,7 @@ dotnet new <shortname> -n MyApp -o MyApp
 ```
 
 - Many templates accept parameters; run `dotnet new <shortname> --help` to see available options.
-- All application templates (`cratis`, `cratis-aspire`, `cratis-kotlin`, `cratis-java`) and the Chronicle client templates accept a `--Database` choice — `MongoDB` (default), `PostgreSQL`, `MsSql`, or `SQLite` — selecting which database the Chronicle kernel persists its event stores and read models to, and which read-model package the generated .NET application uses.
+- All application templates (`cratis` — C#, Kotlin, and Java — and `cratis-aspire`) and the Chronicle client templates accept a `--Database` choice — `MongoDB` (default), `PostgreSQL`, `MsSql`, or `SQLite` — selecting which database the Chronicle kernel persists its event stores and read models to, and which read-model package the generated .NET application uses.
 
 > [!IMPORTANT]
 > The `cratis` and `cratis-aspire` templates keep selected NuGet references as `Version="*"` in the template source. Their post-creation package actions intentionally resolve those references and pin the generated project to the current latest package versions. The `cratis` template can also install frontend dependencies (yarn/pnpm/npm) as a post-creation step.
@@ -80,8 +80,8 @@ Every template ships a `.cratis/ai.json` describing its Cratis AI configuration 
 | -------- | -------- | --------- |
 | `cratis-chronicle-console`, `cratis-chronicle-web` | `cratis/application/chronicle-dotnet` | `csharp` |
 | `cratis`, `cratis-aspire` | `cratis/application/csharp` | `csharp`, `typescript` |
-| `cratis-kotlin` | `cratis/application/kotlin` | `kotlin`, `typescript` |
-| `cratis-java` | `cratis/application/kotlin` | `java`, `kotlin`, `typescript` |
+| `cratis --language Kotlin` | `cratis/application/kotlin` | `kotlin`, `typescript` |
+| `cratis --language Java` | `cratis/application/kotlin` | `java`, `kotlin`, `typescript` |
 
 All templates assume support for every harness (`claude`, `codex`, `copilot`, `cursor`, `opencode`, `pi`). After scaffolding — `dotnet new` prints a reminder about this — make sure the Cratis CLI is installed (see [https://cratis.io/cli](https://cratis.io/cli)) and run:
 

@@ -10,8 +10,9 @@
         "Kotlin"
     ],
     "identity": "Cratis.Templates.Kotlin",
+    "groupIdentity": "Cratis.Templates.Cratis",
     "name": "Cratis Kotlin Application",
-    "shortName": "cratis-kotlin",
+    "shortName": "cratis",
     "description": "A template for creating a Cratis web application with Kotlin and Spring Boot",
     "tags": {
         "language": "Kotlin",

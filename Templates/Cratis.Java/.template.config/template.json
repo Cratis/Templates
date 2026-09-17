@@ -10,8 +10,9 @@
         "Java"
     ],
     "identity": "Cratis.Templates.Java",
+    "groupIdentity": "Cratis.Templates.Cratis",
     "name": "Cratis Java Application",
-    "shortName": "cratis-java",
+    "shortName": "cratis",
     "description": "A template for creating a Cratis web application with Java and Spring Boot",
     "tags": {
         "language": "Java",

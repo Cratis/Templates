@@ -233,8 +233,7 @@ jobs:
         shell: bash
         run: |
           ./install-local.sh
-          dotnet new list | grep cratis-kotlin
-          dotnet new list | grep cratis-java
+          dotnet new list | grep 'cratis *\[C#\],Java,Kotlin'
 
       - name: Scaffold JVM template applications
         shell: bash
@@ -243,11 +242,11 @@ jobs:
           echo "Using validation root: $validation_root"
           echo "validation_root=$validation_root" >> "$GITHUB_ENV"
 
-          dotnet new cratis-kotlin -n ValidateCratisKotlin -o "$validation_root/ValidateCratisKotlin" --packageManager none --allow-scripts Yes
-          dotnet new cratis-java -n ValidateCratisJava -o "$validation_root/ValidateCratisJava" --packageManager none --allow-scripts Yes
+          dotnet new cratis -n ValidateCratisKotlin -o "$validation_root/ValidateCratisKotlin" --language Kotlin --packageManager none --allow-scripts Yes
+          dotnet new cratis -n ValidateCratisJava -o "$validation_root/ValidateCratisJava" --language Java --packageManager none --allow-scripts Yes
           # A non-default database proves the SQL sink switch and compose tokens scaffold.
-          dotnet new cratis-kotlin -n ValidateCratisKotlinSqlite -o "$validation_root/ValidateCratisKotlinSqlite" --packageManager none --Database SQLite --allow-scripts Yes
-          dotnet new cratis-java -n ValidateCratisJavaPostgreSql -o "$validation_root/ValidateCratisJavaPostgreSql" --packageManager none --Database PostgreSQL --allow-scripts Yes
+          dotnet new cratis -n ValidateCratisKotlinSqlite -o "$validation_root/ValidateCratisKotlinSqlite" --language Kotlin --packageManager none --Database SQLite --allow-scripts Yes
+          dotnet new cratis -n ValidateCratisJavaPostgreSql -o "$validation_root/ValidateCratisJavaPostgreSql" --language Java --packageManager none --Database PostgreSQL --allow-scripts Yes
 
       - name: Build scaffolded Kotlin application
         timeout-minutes: 20
