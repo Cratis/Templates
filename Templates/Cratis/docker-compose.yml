@@ -4,12 +4,18 @@ services:
     pull_policy: always
     environment:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:18889
+      - Cratis__Chronicle__Storage__Type=DATABASE
+      - Cratis__Chronicle__Storage__ConnectionDetails=DATABASE_KERNEL_CONNECTION
     ports:
       - 27017:27017
       - 8080:8080
       - 11111:11111
       - 30000:30000
       - 35000:35000
+    DATABASE_DEPENDS_ON
+    DATABASE_VOLUMES
+
+DATABASE_SERVICE
 
   aspire-dashboard:
     image: mcr.microsoft.com/dotnet/aspire-dashboard:latest
@@ -21,3 +27,5 @@ services:
     ports:
       - 18888:18888
       - 4317:18889
+
+DATABASE_TOP_VOLUMES

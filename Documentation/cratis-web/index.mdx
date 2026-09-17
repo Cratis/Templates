@@ -9,6 +9,12 @@ The `cratis` template is the full-stack starting point for a Cratis application.
 dotnet new cratis -n MyStore
 ```
 
+MongoDB is the default database. Pass `--Database` to scaffold against PostgreSQL, MsSql, or SQLite instead — the template then references `Cratis.Arc.EntityFrameworkCore` instead of `Cratis.Arc.MongoDB`, and `docker-compose.yml` provisions a matching database for the Chronicle kernel:
+
+```bash
+dotnet new cratis -n MyStore --Database PostgreSQL
+```
+
 ## What you get
 
 ```text

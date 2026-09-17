@@ -1,8 +1,16 @@
 var builder = WebApplication.CreateBuilder(args);
+
+#if cratisMongoDb
 builder.AddCratis(
     configureChronicleBuilder: chronicleBuilder => chronicleBuilder.WithCamelCaseNamingPolicy(),
-    configureArcBuilder: arcBuilder => arcBuilder.WithMongoDB(configureMongoDB: builder => builder.WithCamelCaseNamingPolicy()));
-    
+    configureArcBuilder: arcBuilder => arcBuilder.WithMongoDB(configureMongoDB: mongoBuilder => mongoBuilder.WithCamelCaseNamingPolicy()));
+#else
+builder.AddCratis(
+    configureChronicleBuilder: chronicleBuilder => chronicleBuilder.WithCamelCaseNamingPolicy(),
+    configureArcBuilder: arcBuilder => arcBuilder.WithEntityFrameworkCore(options => options.ConnectionString =
+        builder.Configuration.GetConnectionString("Cratis")!));
+#endif
+
 builder.Services.AddControllers();
 builder.Services.AddMvc();
 builder.Services.AddEndpointsApiExplorer();
@@ -18,7 +26,7 @@ app.UseStaticFiles();
 app.UseWebSockets();
 app.MapControllers();
 app.UseCratis();
- 
+
 app.UseSwagger();
 app.UseSwaggerUI();
 app.MapFallbackToFile("/index.html");

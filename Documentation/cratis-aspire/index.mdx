@@ -9,6 +9,12 @@ The `cratis-aspire` template is the [Cratis Web Application](/templates/cratis-w
 dotnet new cratis-aspire -n MyStore
 ```
 
+MongoDB is the default database. Pass `--Database` to scaffold against PostgreSQL, MsSql, or SQLite instead — the app host then provisions the matching database resource and wires the Chronicle container to it (`WithPostgreSql`, `WithMsSql`, or `WithSqlite`), and the backend reads its read models through Entity Framework Core:
+
+```bash
+dotnet new cratis-aspire -n MyStore --Database PostgreSQL
+```
+
 ## What you get
 
 A solution with three projects instead of one:

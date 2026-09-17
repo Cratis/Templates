@@ -17,9 +17,20 @@
         <None Remove="package.json" />
     </ItemGroup>
 
+    <PropertyGroup>
+        <CratisDatabase>DATABASE</CratisDatabase>
+    </PropertyGroup>
+
     <ItemGroup>
         <PackageReference Include="Cratis" Version="*" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(CratisDatabase)' == 'MongoDB'">
         <PackageReference Include="Cratis.Arc.MongoDB" Version="*" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(CratisDatabase)' != 'MongoDB'">
+        <PackageReference Include="Cratis.Arc.EntityFrameworkCore" Version="*" />
     </ItemGroup>
 
     <ItemGroup>

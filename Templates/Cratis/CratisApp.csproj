@@ -12,6 +12,10 @@
         <CratisProxiesUseSourceFileAsOutputFile>true</CratisProxiesUseSourceFileAsOutputFile>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <CratisDatabase>DATABASE</CratisDatabase>
+    </PropertyGroup>
+
     <ItemGroup>
         <Content Remove="package.json" />
         <None Remove="package.json" />
@@ -19,6 +23,13 @@
 
     <ItemGroup>
         <PackageReference Include="Cratis" Version="*" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(CratisDatabase)' == 'MongoDB'">
         <PackageReference Include="Cratis.Arc.MongoDB" Version="*" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(CratisDatabase)' != 'MongoDB'">
+        <PackageReference Include="Cratis.Arc.EntityFrameworkCore" Version="*" />
     </ItemGroup>
 </Project>

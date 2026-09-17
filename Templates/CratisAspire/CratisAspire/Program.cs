@@ -1,8 +1,15 @@
 var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
+#if cratisMongoDb
 builder.AddCratis(
     configureChronicleBuilder: chronicleBuilder => chronicleBuilder.WithCamelCaseNamingPolicy(),
-    configureArcBuilder: arcBuilder => arcBuilder.WithMongoDB(configureMongoDB: builder => builder.WithCamelCaseNamingPolicy()));
+    configureArcBuilder: arcBuilder => arcBuilder.WithMongoDB(configureMongoDB: mongoBuilder => mongoBuilder.WithCamelCaseNamingPolicy()));
+#else
+builder.AddCratis(
+    configureChronicleBuilder: chronicleBuilder => chronicleBuilder.WithCamelCaseNamingPolicy(),
+    configureArcBuilder: arcBuilder => arcBuilder.WithEntityFrameworkCore(options => options.ConnectionString =
+        builder.Configuration.GetConnectionString("Cratis")!));
+#endif
 
 builder.Services.AddControllers();
 builder.Services.AddMvc();

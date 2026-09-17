@@ -1,0 +1,60 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <PackageType>Template</PackageType>
+        <PackageId>Cratis.Templates.Kotlin</PackageId>
+        <PackageVersion>1.0.0</PackageVersion>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <Title>Cratis Kotlin Templates</Title>
+        <Description>A template for creating Kotlin web applications with Cratis Arc and Chronicle on Spring Boot</Description>
+        <Author>Cratis</Author>
+        <PackageTags>dotnet;templates;cratis;arc;chronicle;web;kotlin;springboot</PackageTags>
+        <RepositoryUrl>https://github.com/Cratis/Templates</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <License>MIT</License>
+        <IncludeContentInPack>true</IncludeContentInPack>
+        <NoWarn>$(NoWarn);CS8805;CS0103;IDE0073;SA1512;SA1515;SA1005</NoWarn>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Remove="Templates\**\*" />
+        <None Remove="Templates\**\*" />
+    </ItemGroup>
+
+    <!--
+        Testing/ is gitignored scratch space for locally scaffolded applications.
+        It is absent from a fresh checkout, but the SDK's default **/*.cs glob
+        otherwise compiles whatever a developer has scaffolded there. Nothing
+        under Testing/ is packed.
+    -->
+    <ItemGroup>
+        <Compile Remove="Testing\**\*" />
+        <None Remove="Testing\**\*" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="Templates/Cratis.Kotlin/**/*" />
+
+        <!--
+            The Include above is a filesystem glob, so it also picks up anything
+            a local build has left inside the template folder - Gradle build
+            output, scaffolded frontend node_modules. CI packs from a fresh
+            checkout and never sees these, but `TestLocal.sh` and any maintainer
+            packing locally would otherwise ship compiled output inside the
+            template content, and scaffold it back out into consumers' projects.
+            These are the paths .gitignore already excludes from the repository.
+        -->
+        <Content Remove="Templates/Cratis.Kotlin/**/bin/**" />
+        <Content Remove="Templates/Cratis.Kotlin/**/obj/**" />
+        <Content Remove="Templates/Cratis.Kotlin/**/build/**" />
+        <Content Remove="Templates/Cratis.Kotlin/**/.gradle/**" />
+        <Content Remove="Templates/Cratis.Kotlin/**/node_modules/**" />
+        <Content Remove="Templates/Cratis.Kotlin/**/src/main/resources/static/**" />
+        <Content Remove="Templates/Cratis.Kotlin/**/Properties/launchSettings.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="README.md" Pack="true" PackagePath="/" />
+    </ItemGroup>
+</Project>

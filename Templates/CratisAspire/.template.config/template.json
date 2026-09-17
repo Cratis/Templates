@@ -30,17 +30,12 @@
             "datatype": "choice",
             "choices": [
                 {
-                    "choice": "net9.0",
-                    "description": ".NET 9"
-                },
-                {
                     "choice": "net10.0",
                     "description": ".NET 10"
                 }
             ],
             "defaultValue": "net10.0",
             "description": "Target framework",
-            "prompt": "Select target framework",
             "replaces": "TARGET_FRAMEWORK"
         },
         "ProjectGuid": {
@@ -57,6 +52,73 @@
             "type": "generated",
             "generator": "guid",
             "replaces": "INFRASTRUCTURE_GUID"
+        },
+        "Database": {
+            "type": "parameter",
+            "datatype": "choice",
+            "choices": [
+                {
+                    "choice": "MongoDB"
+                },
+                {
+                    "choice": "PostgreSQL"
+                },
+                {
+                    "choice": "MsSql"
+                },
+                {
+                    "choice": "SQLite"
+                }
+            ],
+            "defaultValue": "MongoDB",
+            "replaces": "DATABASE",
+            "enableQuotelessLiterals": true
+        },
+        "databaseAppConnectionString": {
+            "type": "generated",
+            "generator": "switch",
+            "replaces": "DATABASE_APP_CONNECTION",
+            "parameters": {
+                "evaluator": "C++",
+                "cases": [
+                    {
+                        "condition": "(Database == \"MongoDB\")",
+                        "value": ""
+                    },
+                    {
+                        "condition": "(Database == \"PostgreSQL\")",
+                        "value": "Host=localhost;Port=5432;Database=CratisApp;Username=cratis;Password=cratis-dev-2026"
+                    },
+                    {
+                        "condition": "(Database == \"MsSql\")",
+                        "value": "Server=localhost,1433;Database=CratisApp;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=true"
+                    },
+                    {
+                        "condition": "(Database == \"SQLite\")",
+                        "value": "Data Source=CratisApp.db"
+                    }
+                ]
+            }
+        },
+        "cratisMongoDb": {
+            "type": "computed",
+            "value": "(Database == \"MongoDB\")"
+        },
+        "cratisPostgreSql": {
+            "type": "computed",
+            "value": "(Database == \"PostgreSQL\")"
+        },
+        "cratisMsSql": {
+            "type": "computed",
+            "value": "(Database == \"MsSql\")"
+        },
+        "cratisSqlite": {
+            "type": "computed",
+            "value": "(Database == \"SQLite\")"
+        },
+        "cratisEntityFrameworkCore": {
+            "type": "computed",
+            "value": "(Database != \"MongoDB\")"
         }
     },
     "sources": [

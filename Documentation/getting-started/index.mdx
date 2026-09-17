@@ -29,6 +29,33 @@ You should see the four Cratis templates alongside the built-in .NET templates. 
 dotnet new cratis -h
 ```
 
+## Two ways to scaffold: dotnet new and cratis new
+
+The templates work unchanged through both doors:
+
+```bash
+dotnet new install Cratis.Templates     # the .NET SDK path — needs the SDK installed
+cratis new                               # the CLI path — no .NET SDK required at all
+```
+
+`cratis new` is the Cratis CLI's own scaffolding command. It ships a self-contained template
+engine that reads this package's `template.json` files directly, so the same templates, the same
+parameters and the same post actions run on a machine with nothing but `cratis` installed —
+package references with `Version="*"` are resolved to concrete versions through the CLI's own
+NuGet client. The one toolchain-dependent step is `dotnet restore`: it runs when dotnet is on
+your PATH and is otherwise reported with instructions, never silently skipped.
+
+```bash
+cratis new                     # list the four templates
+cratis new cratis -n MyStore    # scaffold — same parameters as dotnet new
+cratis new cratis -n MyStore --packageManager pnpm --Framework net10.0
+```
+
+No authoring changes are needed for any of this — a template that works through `dotnet new`
+works through `cratis new`. See the [CLI creating-projects documentation](https://cratis.io/cli/new/)
+for the full command reference, the `--allow-scripts` contract, and how the two template stores
+stay isolated from each other.
+
 ## Scaffold your first application
 
 The `cratis` template creates a complete full-stack application — ASP.NET Core backend with Arc, Chronicle event sourcing, and a React frontend:

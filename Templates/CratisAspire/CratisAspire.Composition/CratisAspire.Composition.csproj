@@ -10,9 +10,21 @@
         <AspireUseCliBundle>true</AspireUseCliBundle>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <CratisDatabase>DATABASE</CratisDatabase>
+    </PropertyGroup>
+
     <ItemGroup>
         <PackageReference Include="Aspire.Hosting.AppHost" Version="13.5.3" />
         <PackageReference Include="Cratis.Chronicle.Aspire" Version="*" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(CratisDatabase)' == 'PostgreSQL'">
+        <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="13.5.3" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(CratisDatabase)' == 'MsSql'">
+        <PackageReference Include="Aspire.Hosting.SqlServer" Version="13.5.3" />
     </ItemGroup>
 
     <ItemGroup>
