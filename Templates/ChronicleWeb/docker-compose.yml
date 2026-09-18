@@ -8,7 +8,6 @@ services:
       - Cratis__Chronicle__Storage__ConnectionDetails=DATABASE_KERNEL_CONNECTION
     ports:
       - 27017:27017
-      - 8080:8080
       - 11111:11111
       - 30000:30000
       - 35000:35000

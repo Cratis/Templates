@@ -255,6 +255,32 @@
     ],
     "postActions": [
         {
+            "description": "Make gradlew executable.",
+            "manualInstructions": [
+                {
+                    "text": "Run 'chmod +x gradlew'"
+                }
+            ],
+            "actionId": "cb9a6cf3-4f5c-4860-b9d2-03a574959774",
+            "args": {
+                "+x": "gradlew"
+            },
+            "continueOnError": true
+        },
+        {
+            "description": "Make run.sh executable.",
+            "manualInstructions": [
+                {
+                    "text": "Run 'chmod +x run.sh'"
+                }
+            ],
+            "actionId": "cb9a6cf3-4f5c-4860-b9d2-03a574959774",
+            "args": {
+                "+x": "run.sh"
+            },
+            "continueOnError": true
+        },
+        {
             "description": "Install all frontend dependencies with yarn.",
             "manualInstructions": [
                 {
