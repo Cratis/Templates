@@ -38,9 +38,6 @@ Read models are persisted by the Chronicle kernel itself, so the application cod
 ./gradlew build
 ```
 
-> `dotnet new` does not preserve the executable bit on `gradlew`. If running it fails with
-> "Permission denied", invoke it through a shell instead: `sh ./gradlew build`.
-
 The Arc Gradle plugin generates TypeScript proxies from your Kotlin commands and queries into `build/generated/arc-proxies/`. The frontend build consumes these, so run this before starting the frontend tooling.
 
 ### 3. Install frontend dependencies
