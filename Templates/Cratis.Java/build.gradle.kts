@@ -5,7 +5,7 @@ plugins {
     kotlin("jvm") version "2.4.20"
     kotlin("plugin.spring") version "2.4.20"
     id("com.google.devtools.ksp") version "2.3.12"
-    id("io.cratis.arc") version "7.4.1"
+    id("io.cratis.arc") version "latest.release"
     id("org.springframework.boot") version "4.1.1"
     id("io.spring.dependency-management") version "1.1.7"
 }
@@ -31,7 +31,6 @@ repositories {
 
 cratisArc {
     moduleName = "CratisApp"
-    dependencyVersion = "7.4.1"
     manageDependencies = true
 
     endpoints {
@@ -47,7 +46,7 @@ cratisArc {
 }
 
 dependencies {
-    implementation("io.cratis:arc-chronicle-spring-boot-starter:7.4.1")
+    implementation("io.cratis:cratis:latest.release")
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 }
