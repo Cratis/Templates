@@ -101,18 +101,16 @@ CratisApp/
 
 ## Versions
 
-The template pins the versions it was verified against:
+`io.cratis.arc` (the Gradle plugin) and `io.cratis:cratis` (the one dependency that bundles Arc, its Spring Boot wiring, and the Chronicle integration) both resolve to `latest.release`, so a fresh build always picks up the newest published Cratis release without editing `build.gradle.kts`. Pin an exact version instead only when a build needs to be reproducible against a specific release.
 
 | Dependency | Version |
 | ---------- | ------- |
-| Cratis Arc (Gradle plugin & `arc-chronicle-spring-boot-starter`) | 7.2.0 |
-| Cratis Chronicle (via the starter) | 4.0.0 |
 | Kotlin | 2.4.20 |
 | Spring Boot | 4.1.1 |
 | Java toolchain | 17 |
 | Gradle | 9.1.0 |
 
-Upgrade by bumping these in `build.gradle.kts` and `gradle/wrapper/gradle-wrapper.properties`. Keep the Arc Gradle plugin version and the `arc-chronicle-spring-boot-starter` version in sync — the starter pins its verified Chronicle version.
+Upgrade these by bumping them in `build.gradle.kts` and `gradle/wrapper/gradle-wrapper.properties`.
 
 ## AI assistance
 
