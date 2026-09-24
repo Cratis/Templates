@@ -83,8 +83,9 @@ Two invariants; the mechanics of every channel (`cratis ai install`, `@cratis/pi
 the plugin marketplaces) are in [ai-distribution.md](./ai-distribution.md):
 
 - Never copy or synchronize `.cratis/ai`, `.agents`, `.claude`, `.github`, or `.pi`
-  trees between repositories, and never patch managed files under `.cratis/ai/`
-  by hand — update through the channel that installed them.
+  trees between repositories. In a consuming repository, never patch managed
+  files under `.cratis/ai/` by hand — update through the channel that installed
+  them. The authored corpus in `Cratis/AI` is changed and reviewed here.
 - The consuming repository owns its project facts, confidential behavior, and
   local skills; installing, updating, or uninstalling shared AI never merges,
   overwrites, or removes them.
@@ -148,6 +149,8 @@ A claim is only as good as the signal behind it — a build result, a test run, 
 | Writing a scan, allowlist or destructive pass that cannot pass vacuously | `guards-and-fuses.md` |
 | How the shared corpus is installed, updated and rolled back | `ai-distribution.md` |
 | Event modeling / schema migration / calling commands from code / paging / cross-cutting metadata / multi-tenancy | the matching skills |
+| Designing an information system, business process or information flow as a **Screenplay** `.play` model | the **cratis-screenplay-event-modeling** skill, then the per-surface `cratis-screenplay-*` skills |
+| Rendering a settled `.play` model into an application | the **cratis-stage-rendering-and-sandbox** skill |
 | Step-by-step recipes | `.cratis/ai/skills/` |
 
 ## Source-of-Truth Discipline
