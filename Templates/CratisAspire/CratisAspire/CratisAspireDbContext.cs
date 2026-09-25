@@ -18,7 +18,7 @@ public class CratisAspireDbContext(DbContextOptions<CratisAspireDbContext> optio
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<Listing>().ToTable("Listing");
+        modelBuilder.Entity<Listing>().ToTable("Listings");
     }
 }
 #endif

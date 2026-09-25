@@ -19,7 +19,7 @@ public class CratisAppDbContext(DbContextOptions<CratisAppDbContext> options) : 
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<Listing>().ToTable("Listing");
+        modelBuilder.Entity<Listing>().ToTable("Listings");
     }
 }
 
