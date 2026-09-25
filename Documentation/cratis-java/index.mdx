@@ -82,9 +82,7 @@ Vite serves the frontend on `http://localhost:9000`, opens it in your browser, a
 
 `./run.sh` runs the same sequence in one terminal When it exits, whether you press Ctrl+C or a step fails, it runs `docker compose down`, which removes the containers and, with the default MongoDB storage, every event and read model. Use the manual steps with `docker compose stop` when you want to keep data between runs. It uses yarn when available and falls back to npm; `./run.sh --no-frontend` starts only Chronicle and the backend.
 
-:::caution[Yarn 2 and later]
-Yarn 2 or later installs with Plug'n'Play by default, and the frontend build then fails with `Cannot find module` errors. Add a `.yarnrc.yml` containing `nodeLinker: node-modules` before `yarn install`, or use npm or pnpm.
-:::
+The project includes a `.yarnrc.yml` that sets `nodeLinker: node-modules`, so Yarn 2 and later install into `node_modules` instead of Plug'n'Play, which the TypeScript 7 compiler cannot resolve. npm, pnpm, and Yarn 1 ignore the file.
 
 ## The sample slices teach the conventions
 
@@ -151,7 +149,7 @@ The rest of the build is pinned:
 ## Troubleshooting
 
 - **`Cannot find a Java installation … languageVersion=17`.** Install a JDK 17 and point `JAVA_HOME` at it.
-- **`Cannot find module` during the frontend build.** See the Yarn caution under [Run it](#run-it).
+- **`Cannot find module` during the frontend build.** Yarn 2 or later installed with Plug'n'Play because `.yarnrc.yml` is missing (projects scaffolded from earlier template versions do not have one). Add one containing `nodeLinker: node-modules` and run `yarn install` again.
 - **Port 8080 or 35000 is already in use.** Stop the other process, or move the service. For the backend, set `server.port` in `application.properties` and update the two `http://localhost:8080` proxy targets in `.frontend/vite.config.ts`. For Chronicle, change the host side of the mapping in `docker-compose.yml` and point `cratis.chronicle.connection-string` at the new port.
 - **The backend is reachable from other machines.** Spring Boot listens on every interface by default. Set `server.address=127.0.0.1` in `application.properties` to keep it local; the compose ports can be limited the same way by prefixing each mapping with `127.0.0.1:`.
 
