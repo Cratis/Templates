@@ -3,17 +3,29 @@ title: The Cratis Aspire template
 description: The full-stack Cratis web application composed with .NET Aspire — the same vertical slices with an orchestrated development topology.
 ---
 
-The `cratis-aspire` template is the [Cratis Web Application](/templates/cratis-web/) composed with [.NET Aspire](https://learn.microsoft.com/en-us/dotnet/aspire/): the same vertical slices, the same Arc conventions, with the development topology — Chronicle, MongoDB, and your services — orchestrated by an Aspire app host.
+The `cratis-aspire` template is the [Cratis Web Application](/templates/cratis-web/) composed with [Aspire](https://learn.microsoft.com/en-us/dotnet/aspire/): the same vertical slices and Arc conventions, with Chronicle, its database, and your backend started and wired together by an Aspire app host instead of a `docker-compose.yml`.
 
 ```bash
 dotnet new cratis-aspire -n MyStore
 ```
 
-MongoDB is the default database. Pass `--Database` to scaffold against PostgreSQL, MsSql, or SQLite instead — the app host then provisions the matching database resource and wires the Chronicle container to it (`WithPostgreSql`, `WithMsSql`, or `WithSqlite`), and the backend reads its read models through Entity Framework Core:
+You need the .NET 10 SDK, Docker (the app host runs Chronicle and any database as containers), and Node.js `^20.19.0` or `>=22.12.0` with a package manager for the frontend.
+
+## Options
+
+| Option | Values | Default |
+| --- | --- | --- |
+| `--Database` | `MongoDB`, `PostgreSQL`, `MsSql`, `SQLite` | `MongoDB` |
+| `--Framework` | `net10.0` | `net10.0` |
+| `--SkipAiUpdateInstructions` | `true`, `false` | `false` |
+
+With a database other than MongoDB, the app host provisions the matching resource and wires the Chronicle container to it (`WithPostgreSql`, `WithMsSql`, or `WithSqlite` with a data volume), and the backend reads its read models through Entity Framework Core:
 
 ```bash
 dotnet new cratis-aspire -n MyStore --Database PostgreSQL
 ```
+
+Unlike `cratis`, this template has no `--packageManager` option and does not install frontend dependencies for you. Its post-creation actions also add `Cratis.Arc.MongoDB` for every database and never pin `Cratis.Arc.EntityFrameworkCore`, so the PostgreSQL, MsSql, and SQLite variants keep a floating `Version="*"` for Entity Framework Core. Replace it with the version you tested for reproducible builds.
 
 ## What you get
 
@@ -21,28 +33,40 @@ A solution with three projects instead of one:
 
 | Project | Role |
 | --- | --- |
-| `<App>` | The full-stack web application — Arc backend, Chronicle client, React frontend, the same `SomeModule/SomeFeature` slices |
-| `<App>.Composition` | The Aspire app host: starts a Chronicle container with `AddCratisChronicle()`, launches the backend, and wires the references |
-| `<App>.Infrastructure` | Shared service defaults: OpenTelemetry, resilience, service discovery |
+| `<App>` | The full-stack web application: Arc backend, Chronicle client, React frontend, and the same `SomeModule/SomeFeature` slices |
+| `<App>.Composition` | The Aspire app host: starts Chronicle with `AddCratisChronicle()`, launches the backend, and passes it the references |
+| `<App>.Infrastructure` | Shared service defaults: OpenTelemetry, health checks, resilience, and service discovery |
 
-Run the composition and Aspire starts the rest:
+## Run it
+
+`dotnet new` creates a `MyStore` solution folder with the web project in a nested `MyStore` folder. Install the frontend dependencies in the web project, then run the app host from the solution folder:
 
 ```bash
+cd MyStore          # the solution folder
+cd MyStore          # the web project
+yarn install
+cd ..
 dotnet run --project MyStore.Composition
 ```
 
-The Aspire dashboard opens with all services, their logs, and their telemetry in one place.
+Aspire starts the containers and the backend and prints the dashboard address with a one-time login token, for example `https://localhost:57075/login?t=…`. The port changes between runs, so open the link from your terminal. The dashboard shows every resource with its logs and telemetry.
+
+For frontend hot reload, run `yarn dev` in the `MyStore` folder. Vite serves on `http://localhost:9000` and forwards `/api`, `/.cratis`, and `/swagger` to `http://localhost:5000`.
+
+:::caution[The MongoDB backend exits at startup]
+With the default `--Database MongoDB`, the backend resource currently stops a few seconds after starting, and its log shows `DataAnnotation validation failed for 'MongoDBOptions' members: 'Server' with the error: 'The Server field is required.'`. The app host passes the backend a reference to Chronicle but no MongoDB server address, and the backend's `appsettings.json` does not set `Cratis:MongoDB:Server`. Verified with Aspire 13.5.3 and Cratis.Chronicle.Aspire 19.6.1.
+:::
 
 ## What it is for
 
-Use this template when your team already runs on Aspire, or when you want the local development topology — multiple services, dashboards, resilient HTTP — managed for you from day one. If you want the same application without the orchestration layer, use the plain [Cratis Web Application](/templates/cratis-web/) template.
+Use this template when your team already runs on Aspire, or when you want the local development topology, with dashboards, telemetry, and resilient HTTP, managed for you from day one. If you want the same application without the orchestration layer, use the plain [Cratis Web Application](/templates/cratis-web/) template.
 
 ## AI assistance
 
-The scaffolded solution includes a `.cratis/ai.json` with the Cratis AI profiles, languages, and coding agent harnesses for this template — the full-stack selection covering Arc, Chronicle, Components, C#, and TypeScript. Make sure the [Cratis CLI](/cli/) is installed, then run:
+The scaffolded solution includes a `.cratis/ai.json` selecting the `cratis/application/csharp` profile with the C# and TypeScript languages. Make sure the [Cratis CLI](/cli/) is installed, then run from the solution folder:
 
 ```bash
 cratis ai update
 ```
 
-That installs the AI rules, skills, and harness integration for the coding agents you selected — `AGENTS.md` instructions plus `.claude/`, `.cursor/`, `.github/`, `.opencode/`, and `.pi/` integration — and records what it installed in `.cratis/ai.manifest.json`. `dotnet new` prints this reminder after scaffolding, and re-running the command only refreshes Cratis-managed files, never yours. See the [CLI AI documentation](/cli/ai/) for the full command reference.
+That installs the AI rules, skills, and harness integration for the selected coding agents (`AGENTS.md` plus `.claude/`, `.cursor/`, `.github/`, `.opencode/`, and `.pi/`) and records what it installed in `.cratis/ai.manifest.json`. `dotnet new` prints this reminder after scaffolding; `cratis new` runs the update for you. Running it again refreshes only Cratis-managed files. See the [CLI AI documentation](/cli/ai/) for the full command reference.

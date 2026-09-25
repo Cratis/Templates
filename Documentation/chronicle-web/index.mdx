@@ -3,17 +3,27 @@ title: The Chronicle Web template
 description: A minimal ASP.NET Core application wired to Chronicle — events in over HTTP, projections out, no frontend.
 ---
 
-The `cratis-chronicle-web` template is a minimal ASP.NET Core application connected to Chronicle. It is deliberately small: two endpoints, one event, one projection — the server-side skeleton without Arc, without a frontend, and without anything else in the way.
+The `cratis-chronicle-web` template is a minimal ASP.NET Core application connected to Chronicle. It is deliberately small: two endpoints, one event, one projection. You get the server-side skeleton without Arc, without a frontend, and without anything else in the way.
 
 ```bash
 dotnet new cratis-chronicle-web -n MyApi
 ```
 
-These templates scaffold a Chronicle **client** — pass `--Database` (`MongoDB` by default, or `PostgreSQL`, `MsSql`, `SQLite`) to choose which database the Chronicle kernel in `docker-compose.yml` persists to.
+You need the .NET 10 SDK and Docker with the Compose plugin.
+
+## Options
+
+| Option | Values | Default |
+| --- | --- | --- |
+| `--Database` | `MongoDB`, `PostgreSQL`, `MsSql`, `SQLite` | `MongoDB` |
+| `--Framework` | `net10.0` | `net10.0` |
+| `--SkipAiUpdateInstructions` | `true`, `false` | `false` |
+
+The template scaffolds a Chronicle **client**. `--Database` changes only where the Chronicle kernel in `docker-compose.yml` stores its data.
 
 ## What you get
 
-A `Program.cs` with the Cratis middleware wired and two minimal API endpoints:
+`Program.cs` wires Chronicle into ASP.NET Core and maps two minimal API endpoints. This is the top of the file; the `TestEvent`, `TestProjection`, and `TestReactor` types follow below it:
 
 ```csharp
 var builder = WebApplication.CreateBuilder(args)
@@ -26,31 +36,41 @@ app.UseCratisChronicle();
 app.MapGet("/", (IEventLog log) => log.Append(Guid.NewGuid().ToString(), new TestEvent("Hello, Chronicle!")));
 app.MapGet("/projection", (IReadModels readModels) => readModels.GetInstances<TestProjection>());
 
-app.RunAsync();
+await app.RunAsync();
 ```
+
+`appsettings.json` names the event store after your project and connects to the local development kernel with the development client credentials.
 
 ## Run it
 
-Start the infrastructure, run the app, and hit the two endpoints:
+Start the infrastructure and the app:
 
 ```bash
-docker-compose up -d
+docker compose up -d
 dotnet run
+```
 
+The app listens on `http://localhost:5000`. In another terminal, call the two endpoints:
+
+```bash
 curl http://localhost:5000/           # appends a TestEvent to the log
 curl http://localhost:5000/projection # reads the projected read model
 ```
 
+The first call returns the append result with `"isSuccess":true`, and the app logs `Received event with message: Hello, Chronicle!` from the reactor. The second returns every projected instance, for example `[{"message":"Hello, Chronicle!","eventSource":"…"}]`.
+
+The sample appends on a `GET` to keep the demo to one `curl`. Use `POST` for anything that changes state in your own endpoints.
+
 ## What it is for
 
-Use this template when you know you want Chronicle inside an ASP.NET Core service and you would rather grow the application yourself. When you want model-bound commands and queries with routes and TypeScript proxies handled for you, that is the [Cratis Web Application](/templates/cratis-web/) template.
+Use this template when you know you want Chronicle inside an ASP.NET Core service and you would rather grow the application yourself. When you want model-bound commands and queries with routes and TypeScript proxies handled for you, use the [Cratis Web Application](/templates/cratis-web/) template.
 
 ## AI assistance
 
-The scaffolded project includes a `.cratis/ai.json` with the Cratis AI profiles, languages, and coding agent harnesses for this template — the Chronicle-on-.NET selection. Make sure the [Cratis CLI](/cli/) is installed, then run:
+The scaffolded project includes a `.cratis/ai.json` selecting the `cratis/application/chronicle-dotnet` profile with the C# language. Make sure the [Cratis CLI](/cli/) is installed, then run:
 
 ```bash
 cratis ai update
 ```
 
-That installs the AI rules, skills, and harness integration for the coding agents you selected — `AGENTS.md` instructions plus `.claude/`, `.cursor/`, `.github/`, `.opencode/`, and `.pi/` integration — and records what it installed in `.cratis/ai.manifest.json`. `dotnet new` prints this reminder after scaffolding, and re-running the command only refreshes Cratis-managed files, never yours. See the [CLI AI documentation](/cli/ai/) for the full command reference.
+That installs the AI rules, skills, and harness integration for the selected coding agents (`AGENTS.md` plus `.claude/`, `.cursor/`, `.github/`, `.opencode/`, and `.pi/`) and records what it installed in `.cratis/ai.manifest.json`. `dotnet new` prints this reminder after scaffolding; `cratis new` runs the update for you. Running it again refreshes only Cratis-managed files. See the [CLI AI documentation](/cli/ai/) for the full command reference.

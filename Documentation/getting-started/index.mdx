@@ -1,109 +1,147 @@
 ---
 title: Getting started with the Cratis templates
-description: Install the Cratis.Templates package and scaffold your first event-sourced application.
+description: Install Cratis.Templates, scaffold the full-stack cratis application, run it against a local Chronicle, and register your first event.
 ---
 
-Everything you need is one NuGet package: `Cratis.Templates`. Install it once per machine:
+This tutorial takes you from an empty folder to a running Cratis application: an ASP.NET Core backend with Arc commands and queries, Chronicle storing events locally, and a React page that registers an item and shows it in a list.
+
+## Before you begin
+
+The C# path below needs:
+
+- The **.NET 10 SDK**. Every .NET template targets `net10.0`, and `net10.0` is its only `--Framework` choice.
+- **Docker** with the Compose plugin (`docker compose`). The generated `docker-compose.yml` runs the Chronicle development image and an Aspire dashboard.
+- **Node.js `^20.19.0` or `>=22.12.0`** (what Vite 8 accepts) and a package manager: yarn (the default), pnpm, or npm.
+
+The Kotlin and Java variants need a JDK 17 instead of the .NET SDK to build. See [the Kotlin template](/templates/cratis-kotlin/) and [the Java template](/templates/cratis-java/).
+
+## Install the templates
 
 ```bash
 dotnet new install Cratis.Templates
 ```
 
-To install a specific version:
-
-```bash
-dotnet new install Cratis.Templates::1.2.0
-```
+To install a specific version, append it: `dotnet new install Cratis.Templates::<version>`.
 
 ## See what is available
 
-List the templates and their short names:
-
 ```bash
-dotnet new cratis
+dotnet new list cratis
 ```
 
-You should see the four Cratis templates alongside the built-in .NET templates. Each template has its own help page with every option:
+You should see four rows: `cratis`, `cratis-aspire`, `cratis-chronicle-console`, and `cratis-chronicle-web`. The `cratis` row lists `[C#],Java,Kotlin` because the package carries all three languages of the web application; `--language` picks one. Each template documents its own options:
 
 ```bash
-dotnet new cratis -h
+dotnet new cratis --help
 ```
-
-## Two ways to scaffold: dotnet new and cratis new
-
-The templates work unchanged through both doors:
-
-```bash
-dotnet new install Cratis.Templates     # the .NET SDK path — needs the SDK installed
-cratis new                               # the CLI path — no .NET SDK required at all
-```
-
-`cratis new` is the Cratis CLI's own scaffolding command. It ships a self-contained template
-engine that reads this package's `template.json` files directly, so the same templates, the same
-parameters and the same post actions run on a machine with nothing but `cratis` installed —
-package references with `Version="*"` are resolved to concrete versions through the CLI's own
-NuGet client. The one toolchain-dependent step is `dotnet restore`: it runs when dotnet is on
-your PATH and is otherwise reported with instructions, never silently skipped.
-
-```bash
-cratis new                     # list the four templates
-cratis new cratis -n MyStore    # scaffold — same parameters as dotnet new
-cratis new cratis -n MyStore --packageManager pnpm --Framework net10.0
-```
-
-No authoring changes are needed for any of this — a template that works through `dotnet new`
-works through `cratis new`. See the [CLI creating-projects documentation](https://cratis.io/cli/new/)
-for the full command reference, the `--allow-scripts` contract, and how the two template stores
-stay isolated from each other.
 
 ## Scaffold your first application
-
-The `cratis` template creates a complete full-stack application — ASP.NET Core backend with Arc, Chronicle event sourcing, and a React frontend:
 
 ```bash
 dotnet new cratis -n MyStore
 cd MyStore
 ```
 
-The template asks which frontend package manager you use (yarn, pnpm, npm, or none) and which target framework you want (net8.0, net9.0, or net10.0). Both can also be passed directly:
+The post-creation actions add the Cratis NuGet packages at their current release (the generated `.csproj` records the exact versions), restore them, and install the frontend dependencies with yarn. `dotnet new` asks before it runs the yarn step; accept it. To choose the package manager or database up front, pass them as options:
 
 ```bash
-dotnet new cratis -n MyStore --packageManager pnpm --Framework net10.0
+dotnet new cratis -n MyStore --packageManager npm --Database MongoDB
 ```
+
+In a script, CI job, or dev container where there is no interactive terminal, opt in to the yarn step explicitly with `--allow-scripts yes`. Without it, `dotnet new` keeps waiting for a yes or no answer it cannot receive.
+
+:::caution[Yarn 2 and later]
+If `yarn --version` prints 2 or higher, yarn installs with Plug'n'Play by default, and `yarn build` then fails with errors such as `Cannot find module 'react-router-dom'`, because the TypeScript 7 compiler the starter uses cannot resolve Plug'n'Play packages. Before installing, add a `.yarnrc.yml` containing `nodeLinker: node-modules` and run `yarn install` again, or scaffold with `--packageManager npm` or `pnpm`.
+:::
+
+## Two ways to scaffold: dotnet new and cratis new
+
+The [Cratis CLI](/cli/) can scaffold the same templates with its own template engine:
+
+```bash
+cratis new                                                # interactive wizard
+cratis new list                                           # list the templates
+cratis new cratis --language csharp -n MyStore -o MyStore
+```
+
+The differences that matter on a first run:
+
+- `--language` (`csharp`, `kotlin`, or `java`) is required when you name a template.
+- `--allow-scripts` defaults to `no`, so pass `--allow-scripts yes` to install frontend dependencies.
+- `cratis new` sets up the project's AI guidance itself, so you skip the `cratis ai update` step below.
+
+See [Creating projects with cratis new](/cli/new/) for the full command reference.
 
 ## Set up AI assistance
 
-Every template ships with a `.cratis/ai.json` describing its Cratis AI configuration — the AI profiles, languages, and coding agent harnesses for that template. Right after scaffolding, set your coding agents up with it:
-
-1. Make sure the Cratis CLI is installed — see [cratis.io/cli](https://cratis.io/cli/) for install options (Homebrew and the .NET global tool).
-2. From the project root, run:
+Every template ships a `.cratis/ai.json` that selects the Cratis AI profiles, languages, and coding-agent harnesses for that template. After `dotnet new`, install the [Cratis CLI](/cli/) and run this from the project root:
 
 ```bash
 cratis ai update
 ```
 
-This installs the Cratis-owned AI rules, skills, and harness integration for the coding agents you selected — `AGENTS.md` instructions plus `.claude/`, `.cursor/`, `.github/`, `.opencode/`, and `.pi/` integration — and records what it installed in `.cratis/ai.manifest.json`. Commit the installed content along with your project so your whole team shares the same guidance.
-
-`dotnet new` prints this same reminder after scaffolding. Re-run `cratis ai update` whenever you want the latest guidance — it only touches Cratis-managed files, never yours.
+It installs the Cratis-managed rules, skills, and harness integration (`AGENTS.md` plus `.claude/`, `.cursor/`, `.github/`, `.opencode/`, and `.pi/`) and records every installed file in `.cratis/ai.manifest.json`. Commit the result so your team shares the same guidance. Running it again later refreshes only files Cratis installed; `cratis ai status` reports whether a newer revision is available.
 
 ## Start the infrastructure
 
-Every template ships a `docker-compose.yml` with a local Chronicle development container (MongoDB bundled) and an Aspire dashboard:
+```bash
+docker compose up -d
+```
+
+This starts the `cratis/chronicle:latest-development` image, which bundles Chronicle with MongoDB, and an Aspire dashboard at `http://localhost:18888`. Chronicle is ready when this prints `Healthy`:
 
 ```bash
-docker-compose up -d
+curl --insecure https://localhost:35000/health
 ```
+
+:::caution[Development only]
+The compose file publishes its ports (27017, 35000, 18888, and others) on every network interface, and the Chronicle image uses well-known development credentials. Use it only on a trusted machine. To keep the services on this machine, prefix each mapping in `docker-compose.yml` with `127.0.0.1:`, for example `127.0.0.1:35000:35000`.
+:::
 
 ## Run it
 
-For the web templates, restore frontend dependencies and start the backend:
+Start the backend:
 
 ```bash
-npm install
 dotnet run
 ```
 
-The backend serves Swagger at `http://localhost:5000/swagger`, and the React frontend runs on the Vite dev server (`npm run dev`, port 5173). Append a command and watch the event land in Chronicle — then open the Workbench at `https://localhost:35000` (accept the self-signed development certificate) to see the log.
+It listens on `http://localhost:5000`; Swagger UI is at `http://localhost:5000/swagger`. In a second terminal, start the frontend dev server:
+
+```bash
+yarn dev
+```
+
+Vite serves the frontend on `http://localhost:9000`, opens it in your browser, and forwards `/api`, `/.cratis`, and `/swagger` to the backend. Open **Demo**, select **Register**, and enter a name. The backend terminal logs `Registered: <name>` from the sample reactor, and the name appears in the list.
+
+You can also register from the terminal:
+
+```bash
+curl -X POST http://localhost:5000/api/some-module/some-feature/registration \
+  -H "Content-Type: application/json" \
+  -d '{ "name": "Cratis" }'
+```
+
+A successful call returns `"isSuccess":true` and, in `response`, the identity the event was appended under.
+
+To see the event itself, open the Chronicle Workbench at `https://localhost:35000`, accept the self-signed development certificate, and sign in with the development account described in [Workbench — Development](/chronicle/workbench/development/).
+
+## Stop and clean up
+
+Stop the backend and the Vite server with Ctrl+C, then stop the containers and keep their data:
+
+```bash
+docker compose stop
+```
+
+To remove the containers instead, run `docker compose down`. With the default MongoDB setup, events and read models live inside the Chronicle container, so this deletes them. `docker compose down -v` also removes named volumes, where the SQLite variant stores its data.
+
+## Troubleshooting
+
+- **`yarn build` reports `Cannot find module`.** You are on Yarn 2 or later with Plug'n'Play; see the Yarn caution under [Scaffold your first application](#scaffold-your-first-application).
+- **`docker compose up` reports that a port is already allocated.** Another Chronicle, MongoDB, or dashboard is using 35000, 27017, or 18888. Stop it, or change the host side of the mapping in `docker-compose.yml` and update `Cratis:Chronicle:ConnectionString` and `Cratis:MongoDB:Server` in `appsettings.json` to match.
+- **`docker-compose: command not found`.** Projects scaffolded from older template versions print the standalone `docker-compose` spelling. The Compose plugin's `docker compose` accepts the same arguments.
+- **The backend cannot reach Chronicle.** Check that the health command above prints `Healthy`. The first `docker compose up` downloads the image, which can take several minutes.
 
 ## Keep the templates current
 
@@ -111,4 +149,9 @@ The backend serves Swagger at `http://localhost:5000/swagger`, and the React fro
 dotnet new update
 ```
 
-updates every installed template package. Uninstall with `dotnet new uninstall Cratis.Templates`.
+This updates every installed template package. To remove the templates, run `dotnet new uninstall Cratis.Templates`.
+
+## Next steps
+
+- [The Cratis Web Application template](/templates/cratis-web/) walks through the sample slices and the generated TypeScript proxies.
+- [The Chronicle documentation](/chronicle/get-started/) explains events, projections, and reactors.

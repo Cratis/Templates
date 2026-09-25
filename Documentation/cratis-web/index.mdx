@@ -9,18 +9,33 @@ The `cratis` template is the full-stack starting point for a Cratis application.
 dotnet new cratis -n MyStore
 ```
 
-MongoDB is the default database. Pass `--Database` to scaffold against PostgreSQL, MsSql, or SQLite instead — the template then references `Cratis.Arc.EntityFrameworkCore` instead of `Cratis.Arc.MongoDB`, and `docker-compose.yml` provisions a matching database for the Chronicle kernel:
+You need the .NET 10 SDK (`net10.0` is the only target framework), Docker with the Compose plugin, and Node.js `^20.19.0` or `>=22.12.0`. [Getting started](/templates/getting-started/) takes you through scaffolding, running, and registering your first item.
+
+## Options
+
+| Option | Values | Default |
+| --- | --- | --- |
+| `--Database` | `MongoDB`, `PostgreSQL`, `MsSql`, `SQLite` | `MongoDB` |
+| `--packageManager` | `yarn`, `pnpm`, `npm`, `none` | `yarn` |
+| `--Framework` | `net10.0` | `net10.0` |
+| `--SkipAiUpdateInstructions` | `true`, `false` | `false` |
+
+With a database other than MongoDB, the project references `Cratis.Arc.EntityFrameworkCore` instead of `Cratis.Arc.MongoDB`. The Chronicle container in `docker-compose.yml` then stores its data in a PostgreSQL or SQL Server container, or in an SQLite file on a named volume:
 
 ```bash
 dotnet new cratis -n MyStore --Database PostgreSQL
 ```
+
+:::caution[PostgreSQL read-model queries fail as scaffolded]
+In the PostgreSQL variant, `ConnectionStrings:Cratis` in `appsettings.json` signs in as `cratis`, but the PostgreSQL container in `docker-compose.yml` only creates the `chronicle` role. Commands succeed, but the listing query fails with `28P01: password authentication failed for user "cratis"`. The MsSql variant has not been verified end to end.
+:::
 
 ## What you get
 
 ```text
 MyStore/
 ├── Program.cs              — app setup: Arc, Chronicle, Swagger, static files
-├── appsettings.json        — Chronicle and MongoDB connection settings
+├── appsettings.json        — Chronicle and database connection settings, route conventions
 ├── docker-compose.yml      — Chronicle dev container + Aspire dashboard
 ├── package.json            — frontend tooling (Vite, React, Tailwind)
 ├── .frontend/              — Vite and TypeScript configuration
@@ -29,15 +44,15 @@ MyStore/
     └── SomeFeature/        — a feature with two vertical slices
         ├── SomeName.cs     — a ConceptAs<T> value type
         ├── SomeId.cs       — an EventSourceId<T> identity type
-        ├── Registration/   — command slice: Register command, event, reactor
-        ├── Listing/        — read-model slice: Listing projected from events
+        ├── Registration/   — command slice: Register command, Registered event, reactor, dialog
+        ├── Listing/        — read-model slice: Listing projected from events, list page
         ├── SomeFeature.tsx — the feature's composition page
         └── index.ts        — TypeScript barrel export
 ```
 
 ## The sample slices teach the conventions
 
-The `Registration` slice shows the command side — a model-bound command that returns the event source id it decided on plus the event to append. No controller, no handler class, no route registration:
+The `Registration` slice shows the command side: a model-bound command that returns the event source id it chose plus the event to append. There is no controller, handler class, or route registration. This excerpt from `SomeModule/SomeFeature/Registration/Registration.cs` omits the event and reactor declared in the same file:
 
 ```csharp
 [Command]
@@ -54,7 +69,7 @@ public record Register(SomeName Name)
 
 `SomeId` is a strongly-typed identity — a `Guid`-backed value deriving from `EventSourceId<Guid>` — rather than a raw `Guid`. Every feature gets its own identity type this way instead of passing bare `Guid`s around.
 
-The `Listing` slice shows the read side — a read model projected from events, with a query for all instances:
+The `Listing` slice shows the read side: a read model projected from `Registered` events, with an observable query for all instances. This is the MongoDB variant from `Listing/Listing.cs`; the other databases query `CratisAppDbContext` instead:
 
 ```csharp
 [ReadModel]
@@ -66,7 +81,7 @@ public record Listing(Guid Id, SomeName Name, EventSourceId EventSourceId)
 }
 ```
 
-Post to the command route and the whole loop runs — command handled, event appended to Chronicle, reactor notified, read model updated in MongoDB:
+With Chronicle and the backend running, post to the command route and the whole loop runs: Arc handles the command, Chronicle appends the event, the reactor logs it, and the projection updates the read model.
 
 ```bash
 curl -X POST http://localhost:5000/api/some-module/some-feature/registration \
@@ -74,16 +89,25 @@ curl -X POST http://localhost:5000/api/some-module/some-feature/registration \
   -d '{ "name": "Cratis" }'
 ```
 
+The response carries `"isSuccess":true` and the new identity in `response`, and the backend logs `Registered: Cratis`. Open the **Demo** page of the frontend to see the item in the list.
+
+The route comes from the namespace: `CratisApp.SomeModule.SomeFeature.Registration` with the first segment skipped (`SegmentsToSkipForRoute: 1`) and the command name left out (`IncludeCommandNameInRoute: false`). These settings live in `appsettings.json` and have matching `CratisProxies*` properties in the `.csproj`; change them together, or the generated proxies call routes the backend does not map. See [Proxy generator configuration](/arc/backend/csharp/proxy-generation/configuration/).
+
 ## TypeScript proxies are generated at build time
 
-Every `dotnet build` regenerates typed TypeScript proxies for your commands and queries next to their C# sources. The frontend imports them and gets compile-time safety across the stack — change a C# property and the frontend stops compiling until it catches up:
+Every `dotnet build` regenerates typed TypeScript proxies for your commands and queries next to their C# sources: `Registration.cs` produces `Registration.ts`. The frontend imports them and gets compile-time safety across the stack. Change a C# property and the frontend stops compiling until it catches up.
+
+From a file in the `Registration` folder, you can execute the command directly:
 
 ```typescript
 import { Register } from './Registration';
 
-const command = new Register({ name: 'Cratis' });
-await command.execute();
+const command = new Register();
+command.name = 'Cratis';
+const result = await command.execute();
 ```
+
+The sample UI does not call `execute()` itself. `RegisterDialog.tsx` passes the `Register` type to a Cratis Components `CommandDialog`, which binds the form fields and executes the command.
 
 ## Add your first feature
 
@@ -97,4 +121,4 @@ The scaffolded project includes a `.cratis/ai.json` with the Cratis AI profiles,
 cratis ai update
 ```
 
-That installs the AI rules, skills, and harness integration for the coding agents you selected — `AGENTS.md` instructions plus `.claude/`, `.cursor/`, `.github/`, `.opencode/`, and `.pi/` integration — and records what it installed in `.cratis/ai.manifest.json`. `dotnet new` prints this reminder after scaffolding, and re-running the command only refreshes Cratis-managed files, never yours. See the [CLI AI documentation](/cli/ai/) for the full command reference.
+That installs the AI rules, skills, and harness integration for the coding agents you selected (`AGENTS.md` plus `.claude/`, `.cursor/`, `.github/`, `.opencode/`, and `.pi/`) and records what it installed in `.cratis/ai.manifest.json`. `dotnet new` prints this reminder after scaffolding; `cratis new` runs the update for you. Running it again refreshes only Cratis-managed files. See the [CLI AI documentation](/cli/ai/) for the full command reference.
