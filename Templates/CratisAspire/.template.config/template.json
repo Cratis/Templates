@@ -74,32 +74,6 @@
             "replaces": "DATABASE",
             "enableQuotelessLiterals": true
         },
-        "databaseAppConnectionString": {
-            "type": "generated",
-            "generator": "switch",
-            "replaces": "DATABASE_APP_CONNECTION",
-            "parameters": {
-                "evaluator": "C++",
-                "cases": [
-                    {
-                        "condition": "(Database == \"MongoDB\")",
-                        "value": ""
-                    },
-                    {
-                        "condition": "(Database == \"PostgreSQL\")",
-                        "value": "Host=localhost;Port=5432;Database=CratisApp;Username=cratis;Password=cratis-dev-2026"
-                    },
-                    {
-                        "condition": "(Database == \"MsSql\")",
-                        "value": "Server=localhost,1433;Database=CratisApp;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=true"
-                    },
-                    {
-                        "condition": "(Database == \"SQLite\")",
-                        "value": "Data Source=CratisApp.db"
-                    }
-                ]
-            }
-        },
         "cratisMongoDb": {
             "type": "computed",
             "value": "(Database == \"MongoDB\")"
@@ -165,7 +139,25 @@
                 "projectFileExtensions": ".csproj",
                 "targetFiles": "[\"**/CratisAspire.csproj\"]"
             },
-            "continueOnError": true
+            "continueOnError": true,
+            "condition": "(Database == \"MongoDB\")"
+        },
+        {
+            "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+            "description": "Add Cratis Arc Entity Framework Core NuGet package.",
+            "manualInstructions": [
+                {
+                    "text": "Add a reference to the Cratis.Arc.EntityFrameworkCore NuGet package"
+                }
+            ],
+            "args": {
+                "referenceType": "package",
+                "reference": "Cratis.Arc.EntityFrameworkCore",
+                "projectFileExtensions": ".csproj",
+                "targetFiles": "[\"**/CratisAspire.csproj\"]"
+            },
+            "continueOnError": true,
+            "condition": "(Database != \"MongoDB\")"
         },
         {
             "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
