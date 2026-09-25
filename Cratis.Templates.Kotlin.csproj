@@ -15,6 +15,14 @@
         <IncludeContentInPack>true</IncludeContentInPack>
         <NoWarn>$(NoWarn);CS8805;CS0103;IDE0073;SA1512;SA1515;SA1005</NoWarn>
         <IncludeBuildOutput>false</IncludeBuildOutput>
+
+        <!--
+            Template content includes files whose names start with a dot - .gitignore
+            and .yarnrc.yml - that the scaffolded project needs. NuGet leaves those out
+            unless default excludes are turned off; the Content Remove items below keep
+            local tool output out instead.
+        -->
+        <NoDefaultExcludes>true</NoDefaultExcludes>
     </PropertyGroup>
 
     <ItemGroup>
@@ -52,6 +60,10 @@
         <Content Remove="Templates/Cratis.Kotlin/**/node_modules/**" />
         <Content Remove="Templates/Cratis.Kotlin/**/src/main/resources/static/**" />
         <Content Remove="Templates/Cratis.Kotlin/**/Properties/launchSettings.json" />
+        <Content Remove="Templates/Cratis.Kotlin/**/.DS_Store" />
+        <Content Remove="Templates/Cratis.Kotlin/**/.yarn/**" />
+        <Content Remove="Templates/Cratis.Kotlin/**/.pnp.*" />
+        <Content Remove="Templates/Cratis.Kotlin/**/chronicle-data/**" />
     </ItemGroup>
 
     <ItemGroup>

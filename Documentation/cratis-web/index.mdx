@@ -20,15 +20,11 @@ You need the .NET 10 SDK (`net10.0` is the only target framework), Docker with t
 | `--Framework` | `net10.0` | `net10.0` |
 | `--SkipAiUpdateInstructions` | `true`, `false` | `false` |
 
-With a database other than MongoDB, the project references `Cratis.Arc.EntityFrameworkCore` instead of `Cratis.Arc.MongoDB`. The Chronicle container in `docker-compose.yml` then stores its data in a PostgreSQL or SQL Server container, or in an SQLite file on a named volume:
+With a database other than MongoDB, the project references `Cratis.Arc.EntityFrameworkCore` instead of `Cratis.Arc.MongoDB`, and `appsettings.json` sets `Cratis:Chronicle:DefaultSinkTypeId` to `SQL`. Chronicle then projects read models into a table (`Listings`) in a database named `chronicle+<your event store>`, and `ConnectionStrings:Cratis` points Entity Framework Core at that database. The Chronicle container in `docker-compose.yml` stores its data in a PostgreSQL or SQL Server container, or, for SQLite, in a `chronicle-data` folder in your project that the backend reads directly:
 
 ```bash
 dotnet new cratis -n MyStore --Database PostgreSQL
 ```
-
-:::caution[PostgreSQL read-model queries fail as scaffolded]
-In the PostgreSQL variant, `ConnectionStrings:Cratis` in `appsettings.json` signs in as `cratis`, but the PostgreSQL container in `docker-compose.yml` only creates the `chronicle` role. Commands succeed, but the listing query fails with `28P01: password authentication failed for user "cratis"`. The MsSql variant has not been verified end to end.
-:::
 
 ## What you get
 
@@ -69,12 +65,15 @@ public record Register(SomeName Name)
 
 `SomeId` is a strongly-typed identity — a `Guid`-backed value deriving from `EventSourceId<Guid>` — rather than a raw `Guid`. Every feature gets its own identity type this way instead of passing bare `Guid`s around.
 
-The `Listing` slice shows the read side: a read model projected from `Registered` events, with an observable query for all instances. This is the MongoDB variant from `Listing/Listing.cs`; the other databases query `CratisAppDbContext` instead:
+The `Listing` slice shows the read side: a read model projected from `Registered` events, with an observable query for all instances. `Name` maps from the event by convention, and `[SetFromContext]` copies the event source id from the event's context. This is the MongoDB variant from `Listing/Listing.cs`; the other databases query `CratisAppDbContext` instead:
 
 ```csharp
 [ReadModel]
 [FromEvent<Registered>]
-public record Listing(Guid Id, SomeName Name, EventSourceId EventSourceId)
+public record Listing(
+    Guid Id,
+    SomeName Name,
+    [SetFromContext<Registered>(nameof(EventContext.EventSourceId))] EventSourceId EventSourceId)
 {
     public static ISubject<IEnumerable<Listing>> AllListings(IMongoCollection<Listing> collection) =>
         collection.Observe();

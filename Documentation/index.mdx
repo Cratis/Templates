@@ -44,7 +44,7 @@ dotnet new install Cratis.Templates
 
 ## Package versions
 
-- **.NET templates.** The template source references Cratis packages with a floating `Version="*"`. When you scaffold, the post-creation actions add those packages at their current release and write the concrete version into the generated `.csproj`, so your project stays on the versions it was created with until you update them like any other package. One exception: the `cratis-aspire` SQL variants keep `Cratis.Arc.EntityFrameworkCore` at `Version="*"`; see [the Aspire template](/templates/cratis-aspire/).
+- **.NET templates.** The template source references Cratis packages with a floating `Version="*"`. When you scaffold, the post-creation actions add those packages at their current release and write the concrete version into the generated `.csproj`, so your project stays on the versions it was created with until you update them like any other package.
 - **Kotlin and Java templates.** `build.gradle.kts` requests the Arc Gradle plugin (`io.cratis.arc`) and the `io.cratis:cratis` dependency as `latest.release`. Gradle resolves them when it builds, and `io.cratis:cratis` brings the matching Chronicle client with it, so you do not choose the Arc and Chronicle pairing yourself. Gradle caches a dynamic version for up to 24 hours by default; `./gradlew build --refresh-dependencies` picks up a release published since. For reproducible builds, replace `latest.release` with an exact version, or use Gradle dependency locking.
 - **Frontend.** `package.json` uses caret ranges. Commit the lockfile your package manager writes to record exactly what you installed.
 

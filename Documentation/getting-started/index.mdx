@@ -50,9 +50,7 @@ dotnet new cratis -n MyStore --packageManager npm --Database MongoDB
 
 In a script, CI job, or dev container where there is no interactive terminal, opt in to the yarn step explicitly with `--allow-scripts yes`. Without it, `dotnet new` keeps waiting for a yes or no answer it cannot receive.
 
-:::caution[Yarn 2 and later]
-If `yarn --version` prints 2 or higher, yarn installs with Plug'n'Play by default, and `yarn build` then fails with errors such as `Cannot find module 'react-router-dom'`, because the TypeScript 7 compiler the starter uses cannot resolve Plug'n'Play packages. Before installing, add a `.yarnrc.yml` containing `nodeLinker: node-modules` and run `yarn install` again, or scaffold with `--packageManager npm` or `pnpm`.
-:::
+The project includes a `.yarnrc.yml` that sets `nodeLinker: node-modules`, so Yarn 2 and later install into `node_modules` instead of Plug'n'Play, which the TypeScript 7 compiler cannot resolve. npm, pnpm, and Yarn 1 ignore the file.
 
 ## Two ways to scaffold: dotnet new and cratis new
 
@@ -134,11 +132,11 @@ Stop the backend and the Vite server with Ctrl+C, then stop the containers and k
 docker compose stop
 ```
 
-To remove the containers instead, run `docker compose down`. With the default MongoDB setup, events and read models live inside the Chronicle container, so this deletes them. `docker compose down -v` also removes named volumes, where the SQLite variant stores its data.
+To remove the containers instead, run `docker compose down`. With the default MongoDB setup, events and read models live inside the Chronicle container, so this deletes them. With `--Database SQLite`, Chronicle writes its files to the `chronicle-data` folder in your project instead, which `docker compose down` leaves in place; delete the folder to start over.
 
 ## Troubleshooting
 
-- **`yarn build` reports `Cannot find module`.** You are on Yarn 2 or later with Plug'n'Play; see the Yarn caution under [Scaffold your first application](#scaffold-your-first-application).
+- **`yarn build` reports `Cannot find module`.** Yarn 2 or later installed with Plug'n'Play, usually because `.yarnrc.yml` is missing (projects scaffolded from earlier template versions do not have one). Add a `.yarnrc.yml` containing `nodeLinker: node-modules` and run `yarn install` again.
 - **`docker compose up` reports that a port is already allocated.** Another Chronicle, MongoDB, or dashboard is using 35000, 27017, or 18888. Stop it, or change the host side of the mapping in `docker-compose.yml` and update `Cratis:Chronicle:ConnectionString` and `Cratis:MongoDB:Server` in `appsettings.json` to match.
 - **`docker-compose: command not found`.** Projects scaffolded from older template versions print the standalone `docker-compose` spelling. The Compose plugin's `docker compose` accepts the same arguments.
 - **The backend cannot reach Chronicle.** Check that the health command above prints `Healthy`. The first `docker compose up` downloads the image, which can take several minutes.

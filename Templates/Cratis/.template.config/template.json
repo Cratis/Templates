@@ -59,32 +59,6 @@
             "replaces": "DATABASE",
             "enableQuotelessLiterals": true
         },
-        "databaseAppConnectionString": {
-            "type": "generated",
-            "generator": "switch",
-            "replaces": "DATABASE_APP_CONNECTION",
-            "parameters": {
-                "evaluator": "C++",
-                "cases": [
-                    {
-                        "condition": "(Database == \"MongoDB\")",
-                        "value": ""
-                    },
-                    {
-                        "condition": "(Database == \"PostgreSQL\")",
-                        "value": "Host=localhost;Port=5432;Database=CratisApp;Username=cratis;Password=cratis-dev-2026"
-                    },
-                    {
-                        "condition": "(Database == \"MsSql\")",
-                        "value": "Server=localhost,1433;Database=CratisApp;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=true"
-                    },
-                    {
-                        "condition": "(Database == \"SQLite\")",
-                        "value": "Data Source=CratisApp.db"
-                    }
-                ]
-            }
-        },
         "databaseKernelConnectionDetails": {
             "type": "generated",
             "generator": "switch",
@@ -138,7 +112,7 @@
                 "cases": [
                     {
                         "condition": "(Database == \"SQLite\")",
-                        "value": "volumes:\n      - chronicle-data:/data"
+                        "value": "volumes:\n      - ./chronicle-data:/data"
                     },
                     {
                         "condition": "(Database != \"SQLite\")",
@@ -178,7 +152,7 @@
                 "cases": [
                     {
                         "condition": "(Database == \"SQLite\")",
-                        "value": "volumes:\n  chronicle-data:"
+                        "value": ""
                     },
                     {
                         "condition": "(Database != \"SQLite\")",

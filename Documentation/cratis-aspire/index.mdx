@@ -19,13 +19,13 @@ You need the .NET 10 SDK, Docker (the app host runs Chronicle and any database a
 | `--Framework` | `net10.0` | `net10.0` |
 | `--SkipAiUpdateInstructions` | `true`, `false` | `false` |
 
-With a database other than MongoDB, the app host provisions the matching resource and wires the Chronicle container to it (`WithPostgreSql`, `WithMsSql`, or `WithSqlite` with a data volume), and the backend reads its read models through Entity Framework Core:
+The app host always runs the Chronicle development image, which carries the development client credentials the backend connects with. With a database other than MongoDB, it also starts a PostgreSQL or SQL Server container (or, for SQLite, uses a `chronicle-data` folder next to the solution), stores Chronicle's data there, and gives the backend a connection to the `chronicle+<event store>` database Chronicle projects read models into. The backend reads them through Entity Framework Core:
 
 ```bash
 dotnet new cratis-aspire -n MyStore --Database PostgreSQL
 ```
 
-Unlike `cratis`, this template has no `--packageManager` option and does not install frontend dependencies for you. Its post-creation actions also add `Cratis.Arc.MongoDB` for every database and never pin `Cratis.Arc.EntityFrameworkCore`, so the PostgreSQL, MsSql, and SQLite variants keep a floating `Version="*"` for Entity Framework Core. Replace it with the version you tested for reproducible builds.
+Unlike `cratis`, this template has no `--packageManager` option and does not install frontend dependencies for you.
 
 ## What you get
 
@@ -34,7 +34,7 @@ A solution with three projects instead of one:
 | Project | Role |
 | --- | --- |
 | `<App>` | The full-stack web application: Arc backend, Chronicle client, React frontend, and the same `SomeModule/SomeFeature` slices |
-| `<App>.Composition` | The Aspire app host: starts Chronicle with `AddCratisChronicle()`, launches the backend, and passes it the references |
+| `<App>.Composition` | The Aspire app host: starts Chronicle with `AddCratisChronicle()` and any database, launches the backend, and passes it the Chronicle and read-model connections |
 | `<App>.Infrastructure` | Shared service defaults: OpenTelemetry, health checks, resilience, and service discovery |
 
 ## Run it
@@ -52,10 +52,6 @@ dotnet run --project MyStore.Composition
 Aspire starts the containers and the backend and prints the dashboard address with a one-time login token, for example `https://localhost:57075/login?t=…`. The port changes between runs, so open the link from your terminal. The dashboard shows every resource with its logs and telemetry.
 
 For frontend hot reload, run `yarn dev` in the `MyStore` folder. Vite serves on `http://localhost:9000` and forwards `/api`, `/.cratis`, and `/swagger` to `http://localhost:5000`.
-
-:::caution[The MongoDB backend exits at startup]
-With the default `--Database MongoDB`, the backend resource currently stops a few seconds after starting, and its log shows `DataAnnotation validation failed for 'MongoDBOptions' members: 'Server' with the error: 'The Server field is required.'`. The app host passes the backend a reference to Chronicle but no MongoDB server address, and the backend's `appsettings.json` does not set `Cratis:MongoDB:Server`. Verified with Aspire 13.5.3 and Cratis.Chronicle.Aspire 19.6.1.
-:::
 
 ## What it is for
 

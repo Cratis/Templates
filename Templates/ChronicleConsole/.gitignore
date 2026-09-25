@@ -1,0 +1,10 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+
+# IDE and editor files
+.vs/
+.idea/
+*.user
+*.suo
+.DS_Store

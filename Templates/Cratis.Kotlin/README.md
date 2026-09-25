@@ -51,7 +51,7 @@ Skip this if the scaffold already installed them.
 PACKAGE_MGR_INSTALL
 ```
 
-If you use Yarn 2 or later, first add a `.yarnrc.yml` containing `nodeLinker: node-modules`. With Yarn's default Plug'n'Play mode the frontend build fails with `Cannot find module` errors.
+The project's `.yarnrc.yml` sets `nodeLinker: node-modules`, so Yarn 2 and later install into `node_modules`; the TypeScript 7 compiler cannot resolve Yarn's default Plug'n'Play installs.
 
 ### 4. Run it
 

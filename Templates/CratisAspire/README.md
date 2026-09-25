@@ -18,7 +18,7 @@ A full-stack web application built with Cratis Arc and Chronicle, orchestrated f
    cd ..
    ```
 
-   If you use Yarn 2 or later, first add a `.yarnrc.yml` containing `nodeLinker: node-modules` to that folder. With Yarn's default Plug'n'Play mode the frontend build fails with `Cannot find module` errors. npm and pnpm need no extra step.
+   The folder's `.yarnrc.yml` sets `nodeLinker: node-modules`, so Yarn 2 and later install into `node_modules`; the TypeScript 7 compiler cannot resolve Yarn's default Plug'n'Play installs.
 
 2. Run the application through the Aspire app host:
 
@@ -37,9 +37,6 @@ A full-stack web application built with Cratis Arc and Chronicle, orchestrated f
 
    Vite serves the frontend on `http://localhost:9000` and forwards `/api`, `/.cratis`, and `/swagger` to `http://localhost:5000`.
 
-> [!WARNING]
-> With the default MongoDB database, the backend resource currently stops a few seconds after it starts. Its log in the dashboard shows `DataAnnotation validation failed for 'MongoDBOptions' members: 'Server' with the error: 'The Server field is required.'`. The app host passes the backend a reference to Chronicle but no MongoDB server address. Verified with Aspire 13.5.3 and Cratis.Chronicle.Aspire 19.6.1.
-
 ## Choosing a database
 
 MongoDB is the default. To use another database, pass `--Database` when you create the solution:
@@ -52,8 +49,9 @@ dotnet new cratis-aspire --Database SQLite
 
 The choice determines:
 
-- Which Arc read-model integration the backend uses: MongoDB, or Entity Framework Core with the connection the app host passes in.
-- How the app host provisions Chronicle: the development image with its embedded MongoDB for the default, or a PostgreSQL, SQL Server, or SQLite store wired with `WithPostgreSql`, `WithMsSql`, or `WithSqlite`.
+- Which Arc read-model integration the backend uses: MongoDB, or Entity Framework Core with `Cratis:Chronicle:DefaultSinkTypeId` set to `SQL`.
+- How the app host provisions Chronicle. It always runs the Chronicle development image, with its embedded MongoDB for the default, or storing its data in a PostgreSQL or SQL Server container or in SQLite files in a `chronicle-data` folder next to the solution.
+- Which connections the backend receives: the Chronicle address with the development client credentials, plus the embedded MongoDB, or the `chronicle+CratisAspire` database Chronicle projects read models into.
 
 ## AI assistance
 

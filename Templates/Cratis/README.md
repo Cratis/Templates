@@ -56,7 +56,7 @@ To stop, press Ctrl+C in both terminals and run `docker compose down`. With Mong
 
 ### Yarn 2 and later
 
-If you use Yarn 2 or later, it installs with Plug'n'Play by default, and the frontend build then fails with `Cannot find module` errors. Add a `.yarnrc.yml` containing `nodeLinker: node-modules` and run `yarn install` again, or use npm or pnpm.
+The project's `.yarnrc.yml` sets `nodeLinker: node-modules`, because the TypeScript 7 compiler used by the frontend build cannot resolve Yarn's default Plug'n'Play installs. Keep it if you use Yarn 2 or later; npm, pnpm, and Yarn 1 ignore it.
 
 ## Choosing a database
 
@@ -70,11 +70,10 @@ dotnet new cratis --Database SQLite
 
 The choice determines:
 
-- Which Arc read-model package the project uses: `Cratis.Arc.MongoDB` for MongoDB, `Cratis.Arc.EntityFrameworkCore` for the others, with the connection string in `ConnectionStrings:Cratis`.
-- How the Chronicle container in `docker-compose.yml` stores its data: its embedded MongoDB, a PostgreSQL or SQL Server container, or an SQLite file on a named volume.
+- Which Arc read-model package the project uses: `Cratis.Arc.MongoDB` for MongoDB, `Cratis.Arc.EntityFrameworkCore` for the others.
+- How the Chronicle container in `docker-compose.yml` stores its data: its embedded MongoDB, a PostgreSQL or SQL Server container, or SQLite files in the `chronicle-data` folder of this project.
+- Where the read models live. With a SQL database, `Cratis:Chronicle:DefaultSinkTypeId` is `SQL`, Chronicle projects the `Listings` table into the `chronicle+CratisApp` database (for SQLite, the file `chronicle-data/chronicle+CratisApp.db`), and `ConnectionStrings:Cratis` points Entity Framework Core at it.
 
-> [!WARNING]
-> In the PostgreSQL variant, `ConnectionStrings:Cratis` signs in as `cratis`, but the PostgreSQL container only creates the `chronicle` role, so read-model queries fail with `28P01: password authentication failed`. The MsSql variant has not been verified end to end.
 
 ## AI assistance
 

@@ -5,8 +5,9 @@ builder.AddCratis(
     configureChronicleBuilder: chronicleBuilder => chronicleBuilder.WithCamelCaseNamingPolicy(),
     configureArcBuilder: arcBuilder => arcBuilder.WithMongoDB(configureMongoDB: mongoBuilder => mongoBuilder.WithCamelCaseNamingPolicy()));
 #else
+// Chronicle's SQL sink names tables and columns after the read model (Listings, Id, Name), which is
+// what Entity Framework Core maps by default, so the camel-case naming policy is left out here.
 builder.AddCratis(
-    configureChronicleBuilder: chronicleBuilder => chronicleBuilder.WithCamelCaseNamingPolicy(),
     configureArcBuilder: arcBuilder => arcBuilder.WithEntityFrameworkCore(options => options.ConnectionString =
         builder.Configuration.GetConnectionString("Cratis")!));
 #endif
