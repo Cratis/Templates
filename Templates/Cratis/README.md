@@ -1,31 +1,66 @@
 # CratisApp
 
-A web application built with Cratis Arc and Chronicle.
+A full-stack web application built with Cratis Arc and Chronicle: an ASP.NET Core backend with model-bound commands and queries, Chronicle for event sourcing, and a React + Vite frontend using generated TypeScript proxies.
 
 ## Prerequisites
 
-- .NET 9.0 or later
-- Docker and Docker Compose (for running Chronicle and Aspire Dashboard)
-- Node.js 20.19+, 22.13+, or 24+
-- A package manager (yarn, pnpm, or npm)
+- .NET 10 SDK (the project targets `net10.0`)
+- Docker with the Compose plugin (`docker compose`)
+- Node.js `^20.19.0` or `>=22.12.0`
+- The package manager you chose when scaffolding (yarn, pnpm, or npm)
 
-## Getting Started
+## Getting started
 
 1. Start the infrastructure:
 
-```bash
-docker-compose up -d
-```
+   ```bash
+   docker compose up -d
+   ```
 
-This will start:
+   This starts the Chronicle development image, with MongoDB bundled, on port 35000 (MongoDB on 27017), and an Aspire dashboard on `http://localhost:18888`. Chronicle is ready when `curl --insecure https://localhost:35000/health` prints `Healthy`.
 
-- Chronicle (with MongoDB on port 27017)
-- Aspire Dashboard (on port 18888)
+2. Install the frontend dependencies, if the scaffold did not already do it:
 
-### Choosing a database
+   ```bash
+   PACKAGE_MGR_INSTALL
+   ```
 
-The template defaults to MongoDB. To scaffold the application with a different database, pass
-the `--Database` option when creating the project:
+3. Run the backend:
+
+   ```bash
+   dotnet run
+   ```
+
+4. In a second terminal, start the frontend development server:
+
+   ```bash
+   PACKAGE_MGR_DEV
+   ```
+
+Vite opens `http://localhost:9000` in your browser and forwards `/api`, `/.cratis`, and `/swagger` to the backend. Open **Demo**, select **Register**, and enter a name: the backend logs `Registered: <name>` and the name appears in the list.
+
+| What | Where |
+| --- | --- |
+| Frontend (Vite dev server) | `http://localhost:9000` |
+| Backend API | `http://localhost:5000` |
+| Swagger UI | `http://localhost:5000/swagger` |
+| Chronicle Workbench | `https://localhost:35000` (self-signed development certificate) |
+| Aspire dashboard | `http://localhost:18888` |
+
+The Workbench uses the development account described in the [Chronicle Workbench development guide](https://www.cratis.io/chronicle/workbench/development/).
+
+To stop, press Ctrl+C in both terminals and run `docker compose down`. With MongoDB, the events and read models live inside the Chronicle container and are removed with it; use `docker compose stop` to keep them.
+
+> [!CAUTION]
+> The compose file publishes its ports on every network interface, and Chronicle runs with well-known development credentials. Use it only on a trusted machine, or prefix each port mapping with `127.0.0.1:` to keep it local.
+
+### Yarn 2 and later
+
+If you use Yarn 2 or later, it installs with Plug'n'Play by default, and the frontend build then fails with `Cannot find module` errors. Add a `.yarnrc.yml` containing `nodeLinker: node-modules` and run `yarn install` again, or use npm or pnpm.
+
+## Choosing a database
+
+MongoDB is the default. To use another database, pass `--Database` when you create the project:
 
 ```bash
 dotnet new cratis --Database PostgreSQL
@@ -33,198 +68,92 @@ dotnet new cratis --Database MsSql
 dotnet new cratis --Database SQLite
 ```
 
-The database choice determines:
+The choice determines:
 
-- Which Arc read-model package is referenced (`Cratis.Arc.MongoDB` for MongoDB,
-  `Cratis.Arc.EntityFrameworkCore` for the others) and how the application connects to it.
-- How the Chronicle kernel started by `docker-compose` persists its event stores — for MongoDB it
-  uses the embedded server, for the others a dedicated database container (or a mounted file for
-  SQLite).
+- Which Arc read-model package the project uses: `Cratis.Arc.MongoDB` for MongoDB, `Cratis.Arc.EntityFrameworkCore` for the others, with the connection string in `ConnectionStrings:Cratis`.
+- How the Chronicle container in `docker-compose.yml` stores its data: its embedded MongoDB, a PostgreSQL or SQL Server container, or an SQLite file on a named volume.
 
-MongoDB and SQLite need no extra container; PostgreSQL and MsSql add one to `docker-compose.yml`.
-
-2. Install frontend dependencies:
-
-```bash
-PACKAGE_MGR_INSTALL
-```
-
-3. Start the frontend development server:
-
-```bash
-PACKAGE_MGR_DEV
-```
-
-4. Run the application:
-
-```bash
-dotnet run
-```
-
-The application will be available at:
-
-- Backend API: http://localhost:5000
-- Swagger UI: http://localhost:5000/swagger
-- Frontend: http://localhost:5173 (Vite dev server)
-- Aspire Dashboard: http://localhost:18888
+> [!WARNING]
+> In the PostgreSQL variant, `ConnectionStrings:Cratis` signs in as `cratis`, but the PostgreSQL container only creates the `chronicle` role, so read-model queries fail with `28P01: password authentication failed`. The MsSql variant has not been verified end to end.
 
 ## AI assistance
 
-This project ships with a `.cratis/ai.json` holding its Cratis AI configuration — the Cratis AI profiles, languages, and coding agent harnesses to set up.
+This project ships with a `.cratis/ai.json` that selects its Cratis AI profiles, languages, and coding-agent harnesses.
 
-To get all the AI things in place:
-
-1. Make sure the Cratis CLI is installed — see [https://cratis.io/cli](https://cratis.io/cli).
+1. Make sure the Cratis CLI is installed; see [https://cratis.io/cli](https://cratis.io/cli).
 2. Run:
 
-```bash
-cratis ai update
-```
+   ```bash
+   cratis ai update
+   ```
 
-This installs the Cratis-owned AI rules, skills, and harness integration for the coding agents you selected — things like `AGENTS.md` instructions and `.claude/`, `.cursor/`, `.github/`, `.opencode/`, and `.pi/` integration — and records everything it installed in `.cratis/ai.manifest.json`. Commit the installed content along with your project.
+This installs the Cratis-managed AI rules, skills, and harness integration for the selected coding agents, such as `AGENTS.md` and the `.claude/`, `.cursor/`, `.github/`, `.opencode/`, and `.pi/` folders, and records everything it installed in `.cratis/ai.manifest.json`. Commit the installed content with your project. If you scaffolded with `cratis new`, this step has already run.
 
-Re-run `cratis ai update` whenever you want the latest guidance; it only touches Cratis-managed files, never yours. `cratis ai status` shows what is installed and whether a newer revision is available.
+Run `cratis ai update` again whenever you want the latest guidance; it only touches Cratis-managed files, never yours. `cratis ai status` shows what is installed and whether a newer revision is available.
 
-## Project Structure
+## Project structure
 
 ```shell
-CratisApp.csproj          - .NET project file
+CratisApp.csproj          - .NET project file, including proxy generation settings
 Program.cs                - Application entry point
 GlobalUsings.cs           - Global using directives
-appsettings.json          - Configuration
-package.json              - Node.js dependencies
+CratisAppDbContext.cs     - Entity Framework Core context for the SQL database choices
+appsettings.json          - Chronicle, database, and route configuration
+package.json              - Frontend dependencies and scripts
 tsconfig.json             - TypeScript configuration
-docker-compose.yml        - Infrastructure services
-.frontend/                - Frontend application shell
+eslint.config.mjs         - Lint configuration
+docker-compose.yml        - Local Chronicle and Aspire dashboard
+App.tsx, Home.tsx         - Root React component and home page
+.frontend/                - Frontend shell
   index.html              - HTML entry point
   main.tsx                - React entry point
-  App.tsx                 - Root React component
   index.css               - Global styles
-  vite.config.ts          - Vite configuration
+  vite.config.ts          - Vite configuration, dev server port and proxies
 <Module>/                 - A domain module
-  <Feature>/              - A vertical slice
+  <Feature>/              - A feature
     <Feature>.tsx         - React composition page
-    <Feature>.cs          - Backend C# code
     index.ts              - TypeScript barrel export
-    <Slice>/              - Sub-slice
+    <Slice>/              - A vertical slice: C# and TypeScript side by side
       ...
 ```
 
-## Vertical Slices
+## Vertical slices
 
-This template follows a **vertical slice architecture** where backend and frontend code live side by side in the same folder. Each feature folder holds all the artifacts needed for that slice — C# commands, queries, events, and React components — rather than separating them by layer (e.g. `Controllers/`, `Services/`, `Components/`).
+Backend and frontend code for a behavior live side by side in the same folder. `SomeModule/SomeFeature/Registration/` holds the `Register` command, the `Registered` event, and a reactor in `Registration.cs`, the generated `Registration.ts` proxy, and the `RegisterDialog.tsx` component. You work on a feature in one place instead of across `Controllers/`, `Services/`, and `Components/`.
 
-This makes it easy to reason about a feature, evolve it independently, and keep related code together.
+Run `dotnet build` after backend changes to regenerate the TypeScript proxies the frontend uses.
 
-- Each slice is a self-contained unit of functionality from UI to backend.
-- C# and TypeScript files coexist in the same directory.
-- Run `dotnet build` after backend changes to regenerate the TypeScript proxies used by the frontend.
+## TypeScript proxy generation
 
-## Cratis Build Tool (Proxy Generation)
-
-This template is designed to work with `Cratis.Arc.ProxyGenerator.Build`, which generates TypeScript command/query proxies during `dotnet build`.
-
-### Add package reference
-
-If not already present, add the build package to your `.csproj`:
+The `Cratis` package brings in `Cratis.Arc.ProxyGenerator.Build`, which regenerates the TypeScript proxies for your commands and queries on every `dotnet build`. The project file configures it like this:
 
 ```xml
-<ItemGroup>
-  <PackageReference Include="Cratis.Arc.ProxyGenerator.Build" Version="*" />
-</ItemGroup>
+<CratisProxiesOutputPath>$(MSBuildThisFileDirectory)</CratisProxiesOutputPath>
+<CratisProxiesSegmentsToSkip>1</CratisProxiesSegmentsToSkip>
+<CratisProxiesSkipOutputDeletion>true</CratisProxiesSkipOutputDeletion>
+<CratisProxiesSkipCommandNameInRoute>true</CratisProxiesSkipCommandNameInRoute>
+<CratisProxiesUseSourceFileAsOutputFile>true</CratisProxiesUseSourceFileAsOutputFile>
 ```
 
-### Required setting
+Each proxy is written next to the C# file that declares it, so `Registration.cs` produces `Registration.ts`.
 
-`CratisProxiesOutputPath` tells the build tool where generated TypeScript proxies should be written.
+Arc maps the backend routes from `Cratis:Arc:GeneratedApis` in `appsettings.json`, and the proxies must call the same routes. Keep these pairs in step:
 
-```xml
-<PropertyGroup>
-  <CratisProxiesOutputPath>$(MSBuildThisFileDirectory)Features</CratisProxiesOutputPath>
-</PropertyGroup>
-```
+| `appsettings.json` | `.csproj` | This project |
+| --- | --- | --- |
+| `RoutePrefix` | `CratisProxiesApiPrefix` | `api` for both (the defaults) |
+| `SegmentsToSkipForRoute` | `CratisProxiesSegmentsToSkip` | `1` for both |
+| `IncludeCommandNameInRoute` | `CratisProxiesSkipCommandNameInRoute` (inverted) | `false` / `true` |
+| `IncludeQueryNameInRoute` | `CratisProxiesSkipQueryNameInRoute` (inverted) | defaults: `true` / `false` |
 
-### Common configuration
+With these settings the `Register` command in `CratisApp.SomeModule.SomeFeature.Registration` is served at `/api/some-module/some-feature/registration`. If the pairs drift apart, the generated proxies call routes the backend does not map.
 
-```xml
-<PropertyGroup>
-  <CratisProxiesOutputPath>$(MSBuildThisFileDirectory)Features</CratisProxiesOutputPath>
-  <CratisProxiesSegmentsToSkip>1</CratisProxiesSegmentsToSkip>
-  <CratisProxiesSkipOutputDeletion>true</CratisProxiesSkipOutputDeletion>
-  <CratisProxiesSkipCommandNameInRoute>true</CratisProxiesSkipCommandNameInRoute>
-  <CratisProxiesSkipQueryNameInRoute>false</CratisProxiesSkipQueryNameInRoute>
-  <CratisProxiesApiPrefix>api</CratisProxiesApiPrefix>
-  <CratisProxiesSkipFileIndexTracking>false</CratisProxiesSkipFileIndexTracking>
-  <CratisProxiesSkipIndexGeneration>false</CratisProxiesSkipIndexGeneration>
-</PropertyGroup>
-```
+## Learn more
 
-### What each setting does
-
-- `CratisProxiesOutputPath`: Output directory for generated proxies.
-- `CratisProxiesSegmentsToSkip`: Skips namespace segments when creating folder paths.
-- `CratisProxiesSkipOutputDeletion`: When `false` (default), output folder is deleted on each build; set `true` for incremental generation.
-- `CratisProxiesSkipCommandNameInRoute`: Excludes command names from generated routes when possible.
-- `CratisProxiesSkipQueryNameInRoute`: Excludes query names from generated routes when possible.
-- `CratisProxiesApiPrefix`: API prefix used in generated routes (default `api`).
-- `CratisProxiesSkipFileIndexTracking`: Disables orphan-file tracking when `true`.
-- `CratisProxiesSkipIndexGeneration`: Disables `index.ts` generation when `true`.
-
-### Automatic routes and proxy generation
-
-Arc automatically maps model-bound commands and queries to HTTP routes based on namespace conventions.
-
-Keep runtime (`appsettings.json`) and proxy generation (`.csproj`) settings aligned:
-
-- `Cratis:Arc:GeneratedApis:RoutePrefix` <-> `CratisProxiesApiPrefix`
-- `Cratis:Arc:GeneratedApis:SegmentsToSkipForRoute` <-> `CratisProxiesSegmentsToSkip`
-- `Cratis:Arc:GeneratedApis:IncludeCommandNameInRoute` <-> inverse of `CratisProxiesSkipCommandNameInRoute`
-- `Cratis:Arc:GeneratedApis:IncludeQueryNameInRoute` <-> inverse of `CratisProxiesSkipQueryNameInRoute`
-
-If these are out of sync, generated TypeScript proxies can call routes that do not match mapped backend endpoints.
-
-In this template, both segment-skip settings are set to `1`:
-
-```json
-{
-  "Cratis": {
-    "Arc": {
-      "GeneratedApis": {
-        "RoutePrefix": "api",
-        "IncludeCommandNameInRoute": false,
-        "SegmentsToSkipForRoute": 1
-      }
-    }
-  }
-}
-```
-
-```xml
-<PropertyGroup>
-  <CratisProxiesSegmentsToSkip>1</CratisProxiesSegmentsToSkip>
-  <CratisProxiesSkipCommandNameInRoute>true</CratisProxiesSkipCommandNameInRoute>
-</PropertyGroup>
-```
-
-`IncludeQueryNameInRoute` is not explicitly set in this template, so the Arc default (`true`) applies. This matches proxy generation default `CratisProxiesSkipQueryNameInRoute=false`.
-
-When command/query names are excluded, both runtime mapping and proxy generation automatically re-include names when needed to avoid route collisions.
-
-### Verify generation
-
-Run:
-
-```bash
-dotnet build
-```
-
-Then inspect your configured `CratisProxiesOutputPath` directory for generated proxies.
-
-## Learn More
-
-- [Cratis Arc Documentation](https://www.cratis.io/docs/Arc/)
-- [Cratis Arc ASP.NET Core Configuration](https://www.cratis.io/docs/Arc/backend/asp-net-core/configuration.html)
-- [Cratis Arc Proxy Generation Configuration](https://www.cratis.io/docs/Arc/backend/proxy-generation/index.html)
-- [Cratis Arc Model Bound Commands](https://www.cratis.io/docs/Arc/backend/commands/model-bound/index.html)
-- [Cratis Arc Model Bound Queries](https://www.cratis.io/docs/Arc/backend/queries/model-bound/index.html)
-- [Chronicle Documentation](https://www.cratis.io/docs/Chronicle/)
+- [Cratis Arc documentation](https://www.cratis.io/arc/)
+- [Arc ASP.NET Core configuration](https://www.cratis.io/arc/backend/csharp/asp-net-core/configuration/)
+- [Arc proxy generator configuration](https://www.cratis.io/arc/backend/csharp/proxy-generation/configuration/)
+- [Arc model-bound commands](https://www.cratis.io/arc/backend/csharp/commands/model-bound/)
+- [Arc model-bound queries](https://www.cratis.io/arc/backend/csharp/queries/model-bound/)
+- [Chronicle documentation](https://www.cratis.io/chronicle/)
+- [Cratis templates documentation](https://www.cratis.io/templates/)
