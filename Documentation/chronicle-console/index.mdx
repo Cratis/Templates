@@ -9,34 +9,56 @@ The `cratis-chronicle-console` template is the smallest complete Chronicle appli
 dotnet new cratis-chronicle-console -n MyConsole
 ```
 
-These templates scaffold a Chronicle **client** — pass `--Database` (`MongoDB` by default, or `PostgreSQL`, `MsSql`, `SQLite`) to choose which database the Chronicle kernel in `docker-compose.yml` persists to.
+You need the .NET 10 SDK and Docker with the Compose plugin.
+
+## Options
+
+| Option | Values | Default |
+| --- | --- | --- |
+| `--Database` | `MongoDB`, `PostgreSQL`, `MsSql`, `SQLite` | `MongoDB` |
+| `--Framework` | `net10.0` | `net10.0` |
+| `--SkipAiUpdateInstructions` | `true`, `false` | `false` |
+
+The template scaffolds a Chronicle **client**. `--Database` changes only where the Chronicle kernel in `docker-compose.yml` stores its data; the console code is the same for every choice.
 
 ## What you get
 
-A single `Program.cs` with the whole story:
+A single `Program.cs` holds the whole story:
 
-- A `ChronicleClient` connected to the local development kernel (`chronicle://localhost:35000`, development credentials).
-- A `[EventType]` record — the fact your application produces.
-- A model-bound `[FromEvent]` projection — a read model kept in sync by Chronicle.
-- An `IReactor` — a callback that fires the moment the event is observed.
+- A `ChronicleClient` created without arguments, which connects to the local development kernel (`chronicle://localhost:35000` with the development client credentials), and an event store named after your project.
+- A `[EventType]` record, `TestEvent`: the fact your application produces.
+- A model-bound `[FromEvent<TestEvent>]` read model, `TestProjection`, kept in sync by Chronicle.
+- An `IReactor`, `TestReactor`, that prints each `TestEvent` it observes.
 
-Start the infrastructure, run the app, and watch the reactor print:
+## Run it
+
+Start the infrastructure, then run the app from an interactive terminal:
 
 ```bash
-docker-compose up -d
+docker compose up -d
 dotnet run
 ```
 
+The app appends one `TestEvent` and prints:
+
+```text
+Received event with message: Hello world!
+```
+
+It then waits for a key press so the reactor has time to run; press any key to exit. Because it reads a key, run it in a terminal rather than with redirected input. Each run appends another event to the same event source, `some-event-source`.
+
+When you are done, `docker compose down` removes the containers. With the default MongoDB setup, the events are stored inside the Chronicle container and are removed with it.
+
 ## What it is for
 
-This template is the fastest way to check that your machine, your container, and your client packages agree — and the cleanest place to experiment with events, projections, and reactors without an HTTP layer in the way. When you are ready for commands, queries, and a frontend, move to the [Cratis Web Application](/templates/cratis-web/) template.
+This template is the fastest way to check that your machine, your container, and your client packages agree, and the cleanest place to experiment with events, projections, and reactors without an HTTP layer in the way. When you are ready for commands, queries, and a frontend, move to the [Cratis Web Application](/templates/cratis-web/) template.
 
 ## AI assistance
 
-The scaffolded project includes a `.cratis/ai.json` with the Cratis AI profiles, languages, and coding agent harnesses for this template — the Chronicle-on-.NET selection. Make sure the [Cratis CLI](/cli/) is installed, then run:
+The scaffolded project includes a `.cratis/ai.json` selecting the `cratis/application/chronicle-dotnet` profile with the C# language. Make sure the [Cratis CLI](/cli/) is installed, then run:
 
 ```bash
 cratis ai update
 ```
 
-That installs the AI rules, skills, and harness integration for the coding agents you selected — `AGENTS.md` instructions plus `.claude/`, `.cursor/`, `.github/`, `.opencode/`, and `.pi/` integration — and records what it installed in `.cratis/ai.manifest.json`. `dotnet new` prints this reminder after scaffolding, and re-running the command only refreshes Cratis-managed files, never yours. See the [CLI AI documentation](/cli/ai/) for the full command reference.
+That installs the AI rules, skills, and harness integration for the selected coding agents (`AGENTS.md` plus `.claude/`, `.cursor/`, `.github/`, `.opencode/`, and `.pi/`) and records what it installed in `.cratis/ai.manifest.json`. `dotnet new` prints this reminder after scaffolding; `cratis new` runs the update for you. Running it again refreshes only Cratis-managed files. See the [CLI AI documentation](/cli/ai/) for the full command reference.

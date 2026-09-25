@@ -4,7 +4,7 @@
 
 This repository contains all creation templates used by Cratis. It holds `dotnet new` project templates you can use to scaffold new event-sourced and CQRS applications built with [Cratis Chronicle](https://github.com/Cratis/Chronicle) (event-sourcing database and processing runtime) and [Cratis Arc](https://github.com/Cratis/Arc) (CQRS application framework for ASP.NET Core). The JVM templates scaffold the same full-stack application on Spring Boot — in Kotlin or Java — using [Arc for Kotlin and Java](https://github.com/Cratis/Arc.Kotlin). Everything is MIT licensed and free to use.
 
-The templates ship as three NuGet packages: `Cratis.Templates` (the .NET templates), `Cratis.Templates.Kotlin`, and `Cratis.Templates.Java`. The JVM templates are kept in separate packages so they do not show up in `dotnet new` by accident — the [Cratis CLI](https://github.com/cratis/cli) installs and invokes them directly when creating Kotlin or Java projects.
+The templates ship as three NuGet packages. `Cratis.Templates` contains every template, including the Kotlin and Java versions of the `cratis` web application, which `--language Kotlin` or `--language Java` selects. `Cratis.Templates.Kotlin` and `Cratis.Templates.Java` publish the JVM templates on their own. The [Cratis CLI](https://github.com/cratis/cli) can scaffold all of them with `cratis new`.
 
 ## Available templates
 
@@ -34,20 +34,20 @@ dotnet new install Cratis.Templates
 - Optional: install a specific version:
 
 ```bash
-dotnet new install Cratis.Templates::<version>
+dotnet new install Cratis.Templates@<version>
 ```
 
-- Optional: install prerelease builds from GitHub Packages:
+- Optional: install prerelease builds from GitHub Packages. `--store-password-in-clear-text` writes the token unencrypted to your user `NuGet.Config`, and the command line lands in your shell history; use a token with only `read:packages` and remove the source with `dotnet nuget remove source cratis-github` when you are done:
 
 ```bash
 dotnet nuget add source --name cratis-github --username <github-username> --password <github-token> --store-password-in-clear-text https://nuget.pkg.github.com/cratis/index.json
-dotnet new install Cratis.Templates::<version> --nuget-source https://nuget.pkg.github.com/cratis/index.json
+dotnet new install Cratis.Templates@<version> --nuget-source https://nuget.pkg.github.com/cratis/index.json
 ```
 
-- List available templates and note the `Short Name` you want:
+- List the Cratis templates and note the `Short Name` you want:
 
 ```bash
-dotnet new --list
+dotnet new list cratis
 ```
 
 - Create a new project from a template (replace `<shortname>`):
@@ -56,11 +56,11 @@ dotnet new --list
 dotnet new <shortname> -n MyApp -o MyApp
 ```
 
-- Many templates accept parameters; run `dotnet new <shortname> --help` to see available options.
+- Many templates accept parameters; run `dotnet new <shortname> --help` to see available options. The .NET templates target `net10.0`, so you need the .NET 10 SDK. The Kotlin and Java templates need a JDK 17 to build.
 - All application templates (`cratis` — C#, Kotlin, and Java — and `cratis-aspire`) and the Chronicle client templates accept a `--Database` choice — `MongoDB` (default), `PostgreSQL`, `MsSql`, or `SQLite` — selecting which database the Chronicle kernel persists its event stores and read models to, and which read-model package the generated .NET application uses.
 
 > [!IMPORTANT]
-> The `cratis` and `cratis-aspire` templates keep selected NuGet references as `Version="*"` in the template source. Their post-creation package actions intentionally resolve those references and pin the generated project to the current latest package versions. The `cratis` template can also install frontend dependencies (yarn/pnpm/npm) as a post-creation step.
+> The `cratis` and `cratis-aspire` templates keep selected NuGet references as `Version="*"` in the template source. Their post-creation package actions intentionally resolve those references and pin the generated project to the current latest package versions. The exception is `cratis-aspire` with a SQL database: its post-actions do not pin `Cratis.Arc.EntityFrameworkCore`, which stays at `Version="*"`. The `cratis` template can also install frontend dependencies (yarn/pnpm/npm) as a post-creation step.
 >
 > Keep frontend dependencies on their latest published releases. The declarations set explicit minimum versions rather than relying only on npm's `latest` tag, which can resolve an older version while satisfying peer dependencies. Components 4 supplies the starter's provider, widgets, and styles directly; no PrimeReact adapter is required. Commit the generated application's lockfile to record the versions you installed. Incompatibilities between current releases should be reported and fixed, not bypassed with `--force` or worked around by downgrading.
 >
@@ -81,15 +81,15 @@ Every template ships a `.cratis/ai.json` describing its Cratis AI configuration 
 | `cratis-chronicle-console`, `cratis-chronicle-web` | `cratis/application/chronicle-dotnet` | `csharp` |
 | `cratis`, `cratis-aspire` | `cratis/application/csharp` | `csharp`, `typescript` |
 | `cratis --language Kotlin` | `cratis/application/kotlin` | `kotlin`, `typescript` |
-| `cratis --language Java` | `cratis/application/kotlin` | `java`, `kotlin`, `typescript` |
+| `cratis --language Java` | `cratis/application/java` | `java`, `typescript` |
 
-All templates assume support for every harness (`claude`, `codex`, `copilot`, `cursor`, `opencode`, `pi`). After scaffolding — `dotnet new` prints a reminder about this — make sure the Cratis CLI is installed (see [https://cratis.io/cli](https://cratis.io/cli)) and run:
+All templates select every harness (`claude`, `codex`, `copilot`, `cursor`, `opencode`, `pi`). After scaffolding with `dotnet new`, which prints a reminder about this, make sure the Cratis CLI is installed (see [https://cratis.io/cli](https://cratis.io/cli)) and run:
 
 ```bash
 cratis ai update
 ```
 
-This installs the Cratis-owned AI rules, skills, and harness integration for the selected coding agents — `AGENTS.md` instructions plus `.claude/`, `.cursor/`, `.github/`, `.opencode/`, and `.pi/` integration — and records what it installed in `.cratis/ai.manifest.json`. Commit the installed content with the generated project. Re-running `cratis ai update` refreshes only Cratis-managed files; the generated `README.md` and the [template documentation](https://www.cratis.io/templates/) describe this in full.
+This installs the Cratis-owned AI rules, skills, and harness integration for the selected coding agents — `AGENTS.md` instructions plus `.claude/`, `.cursor/`, `.github/`, `.opencode/`, and `.pi/` integration — and records what it installed in `.cratis/ai.manifest.json`. Commit the installed content with the generated project. Re-running `cratis ai update` refreshes only Cratis-managed files. `cratis new` runs this step itself. The generated `README.md` and the [template documentation](https://www.cratis.io/templates/) describe this in full.
 
 - Uninstall when needed:
 
@@ -126,7 +126,7 @@ To update to a specific version:
 
 ```bash
 dotnet new uninstall Cratis.Templates
-dotnet new install Cratis.Templates::<version>
+dotnet new install Cratis.Templates@<version>
 ```
 
 
@@ -134,42 +134,47 @@ dotnet new install Cratis.Templates::<version>
 
 Prerequisites:
 
-- .NET SDK (recommended 8.0+)
-- Latest stable Node.js and npm (if testing frontend/Vite templates; CI resolves the latest Node release)
+- .NET 10 SDK (`global.json` requires 10.0 with `latestFeature` roll-forward)
+- Latest stable Node.js and npm, for the templates with a Vite frontend (CI resolves the latest Node release)
+- A JDK 17 for building the scaffolded Kotlin and Java applications
+- Docker, if you want to run the scaffolded applications against a local Chronicle
 
 ### Pack and install the templates locally
 
+To keep your normally installed templates untouched, install into an isolated template-engine hive and pass the same `--debug:custom-hive` to every `dotnet new` command:
+
 ```bash
 dotnet pack Cratis.Templates.csproj -c Release -o ./nupkgs
-dotnet new -i ./nupkgs
+dotnet new install ./nupkgs/Cratis.Templates.1.0.0.nupkg --debug:custom-hive ./Testing/hive
+dotnet new list cratis --debug:custom-hive ./Testing/hive
 ```
 
-If you prefer to install directly from the template folder (unpacked):
+`Cratis.Templates.Kotlin.csproj` and `Cratis.Templates.Java.csproj` pack the standalone JVM packages the same way. `Testing/` is ignored by Git and excluded from the template projects' compile globs, so it is a safe place for local scaffolds.
+
+To install straight from the template folders into your normal template store, as CI does, run:
 
 ```bash
-dotnet new -i ./Cratis.Templates
+./install-local.sh
 ```
 
-### List available templates and find the short name
+It uninstalls and reinstalls this repository folder with `dotnet new install <repo> --force`.
+
+### Create a test project from a template
 
 ```bash
-dotnet new --list
-```
-
-### Create a test project from a template (replace <shortname> with the template short name)
-
-```bash
-dotnet new <shortname> -n MyTestApp
-cd MyTestApp
-dotnet restore
+dotnet new cratis -n MyTestApp -o ./Testing/MyTestApp --allow-scripts yes --debug:custom-hive ./Testing/hive
+cd ./Testing/MyTestApp
 dotnet build
+docker compose up -d
 dotnet run
 ```
+
+For a Kotlin or Java scaffold, add `--language Kotlin` or `--language Java`, then run `./gradlew build` and `./gradlew bootRun` instead of the `dotnet` commands.
 
 ### If the generated project includes a frontend (Vite/Node)
 
 ```bash
-cd path/to/generated/frontend
+cd path/to/generated/app
 npm install
 npm run dev
 ```
@@ -214,8 +219,10 @@ This regenerates proxies and checks their response type, executes the actual sca
 ### Uninstall the local template when finished
 
 ```bash
-dotnet new -u <package-id-or-folder>
+dotnet new uninstall <package-id-or-folder>
 ```
+
+A custom hive is just a folder: delete `./Testing/hive` to discard it.
 
 Iterate on the template sources, repack, and reinstall to test changes quickly.
 

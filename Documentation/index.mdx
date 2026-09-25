@@ -3,7 +3,7 @@ title: Cratis Templates
 description: Official dotnet-new templates for scaffolding event-sourced CQRS applications on the Cratis stack — from a minimal Chronicle console app to full-stack Arc web applications with React, in C#, Kotlin, or Java.
 ---
 
-import { CardGrid, Aside } from '@astrojs/starlight/components';
+import { CardGrid } from '@astrojs/starlight/components';
 import SimpleCard from '@components/SimpleCard.astro';
 import TopicHero from '@components/TopicHero.astro';
 
@@ -11,13 +11,13 @@ import TopicHero from '@components/TopicHero.astro';
 Every Cratis application follows the same conventions: vertical slices, model-bound commands and queries, events as facts, read models projected from the log. The Cratis templates give you a working application with those conventions already in place — a real project you can run in minutes, not a blank folder you fill in from documentation.
 </TopicHero>
 
-Install the .NET templates once:
+Install the templates once per machine, then follow [Getting started](/templates/getting-started/) to scaffold and run your first application:
 
 ```bash
 dotnet new install Cratis.Templates
 ```
 
-The Kotlin and Java templates ship as separate packages — `Cratis.Templates.Kotlin` and `Cratis.Templates.Java` — so they do not show up in `dotnet new` unless you want them; the Cratis CLI installs and invokes them directly when you create a JVM project.
+`Cratis.Templates` contains every template, including the Kotlin and Java versions of the full-stack application: `dotnet new cratis --language Kotlin` or `--language Java` selects them. The JVM templates are also published on their own as `Cratis.Templates.Kotlin` and `Cratis.Templates.Java`, and the [Cratis CLI](/cli/new/) can scaffold every template with `cratis new`.
 
 ## The templates
 
@@ -42,17 +42,21 @@ The Kotlin and Java templates ship as separate packages — `Cratis.Templates.Ko
   </SimpleCard>
 </CardGrid>
 
-<Aside type="note">
-The .NET templates reference the Cratis packages with a floating version (`*`), so `dotnet new` always scaffolds against the latest released Cratis stack. Run `dotnet restore` right after scaffolding to pick up the current versions, and update them later the same way you would any other package. The Kotlin and Java templates pin their verified Maven versions — Arc 7.2.0 with Chronicle 4.0.0, Kotlin 2.4.20, and Spring Boot 4.1.1 — since Gradle has no floating-version equivalent; bump them deliberately when you upgrade.
-</Aside>
+## Package versions
 
-## What the templates have in common
+- **.NET templates.** The template source references Cratis packages with a floating `Version="*"`. When you scaffold, the post-creation actions add those packages at their current release and write the concrete version into the generated `.csproj`, so your project stays on the versions it was created with until you update them like any other package. One exception: the `cratis-aspire` SQL variants keep `Cratis.Arc.EntityFrameworkCore` at `Version="*"`; see [the Aspire template](/templates/cratis-aspire/).
+- **Kotlin and Java templates.** `build.gradle.kts` requests the Arc Gradle plugin (`io.cratis.arc`) and the `io.cratis:cratis` dependency as `latest.release`. Gradle resolves them when it builds, and `io.cratis:cratis` brings the matching Chronicle client with it, so you do not choose the Arc and Chronicle pairing yourself. Gradle caches a dynamic version for up to 24 hours by default; `./gradlew build --refresh-dependencies` picks up a release published since. For reproducible builds, replace `latest.release` with an exact version, or use Gradle dependency locking.
+- **Frontend.** `package.json` uses caret ranges. Commit the lockfile your package manager writes to record exactly what you installed.
 
-- **Vertical slices** — everything for a behavior lives in one folder: the C# command or query, the events it produces, the React component that calls it, and the generated TypeScript proxy.
-- **Model-bound by default** — commands and queries are plain records the framework maps to HTTP routes; no controllers to write.
-- **Infrastructure included** — a `docker-compose.yml` that starts a local Chronicle development container (with its bundled MongoDB) and an Aspire dashboard for telemetry.
-- **AI-ready** — every template ships a `.cratis/ai.json` with the Cratis AI profiles, languages, and coding agent harnesses for that template. Install the [Cratis CLI](/cli/) and run `cratis ai update` to get the AI rules, skills, and harness integration in place — `dotnet new` prints this reminder after scaffolding.
-- **Builds clean** — the sample code compiles with zero warnings under the Cratis analyzers, so the first warning you see is your own.
+## What the application templates have in common
+
+The full-stack templates (`cratis` in C#, Kotlin, or Java, and `cratis-aspire`) share one shape:
+
+- **Vertical slices.** Each behavior is one slice: the command or query, the events it produces, and the React component that calls it through a generated TypeScript proxy. In the C# templates all of it shares one folder. In Kotlin and Java the backend slice lives under `src/main/`, its React components under `SomeModule/`, and the proxies under `build/generated/arc-proxies/`.
+- **Model-bound by default.** Commands and queries are plain records the framework maps to HTTP routes; there are no controllers to write.
+- **Local infrastructure included.** `cratis` ships a `docker-compose.yml` that starts the Chronicle development image (MongoDB bundled) and an Aspire dashboard. `cratis-aspire` starts Chronicle from its Aspire app host instead.
+- **AI-ready.** Every template, including the two Chronicle client templates, ships a `.cratis/ai.json` that selects its Cratis AI profiles, languages, and coding-agent harnesses. Run `cratis ai update` after `dotnet new` to install the guidance; `cratis new` does it for you. See [Cratis AI in the CLI](/cli/ai/).
+- **Builds clean.** The .NET sample code compiles with zero warnings under the Cratis analyzers, so the first warning you see is your own.
 
 ## Learn more
 
