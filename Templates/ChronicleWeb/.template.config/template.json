@@ -230,7 +230,7 @@
             "continueOnError": true,
             "manualInstructions": [
                 {
-                    "text": "Your project is ready! Next steps:\n  1. Start Chronicle and the Aspire dashboard:  docker-compose up -d\n  2. Run the web app:                           dotnet run"
+                    "text": "Your project is ready! Next steps:\n  1. Start Chronicle and the Aspire dashboard:  docker compose up -d\n  2. Run the web app:                           dotnet run"
                 }
             ],
             "args": {

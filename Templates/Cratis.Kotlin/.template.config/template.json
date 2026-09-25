@@ -332,7 +332,7 @@
             "continueOnError": true,
             "manualInstructions": [
                 {
-                    "text": "Your project is ready! Next steps:\n\n  Requirements: JDK 17 and Docker.\n  1. Start infrastructure:  docker-compose up -d\n     (or just run everything: ./run.sh)\n  2. Build (generates the frontend proxies):  ./gradlew build\n  3. Run the application:    ./gradlew bootRun\n  4. Frontend dev server:    yarn dev\n\nSee README.md for full details."
+                    "text": "Your project is ready! Next steps:\n\n  Requirements: JDK 17 and Docker.\n  1. Start infrastructure:  docker compose up -d\n     (or just run everything: ./run.sh)\n  2. Build (generates the frontend proxies):  ./gradlew build\n  3. Run the application:    ./gradlew bootRun\n  4. Frontend dev server:    yarn dev\n\nSee README.md for full details."
                 }
             ],
             "args": {
@@ -360,7 +360,7 @@
             "continueOnError": true,
             "manualInstructions": [
                 {
-                    "text": "Your project is ready! Next steps:\n\n  Requirements: JDK 17 and Docker.\n  1. Start infrastructure:  docker-compose up -d\n     (or just run everything: ./run.sh)\n  2. Build (generates the frontend proxies):  ./gradlew build\n  3. Run the application:    ./gradlew bootRun\n  4. Frontend dev server:    pnpm dev\n\nSee README.md for full details."
+                    "text": "Your project is ready! Next steps:\n\n  Requirements: JDK 17 and Docker.\n  1. Start infrastructure:  docker compose up -d\n     (or just run everything: ./run.sh)\n  2. Build (generates the frontend proxies):  ./gradlew build\n  3. Run the application:    ./gradlew bootRun\n  4. Frontend dev server:    pnpm dev\n\nSee README.md for full details."
                 }
             ],
             "args": {
@@ -388,7 +388,7 @@
             "continueOnError": true,
             "manualInstructions": [
                 {
-                    "text": "Your project is ready! Next steps:\n\n  Requirements: JDK 17 and Docker.\n  1. Start infrastructure:  docker-compose up -d\n     (or just run everything: ./run.sh)\n  2. Build (generates the frontend proxies):  ./gradlew build\n  3. Run the application:    ./gradlew bootRun\n  4. Frontend dev server:    npm run dev\n\nSee README.md for full details."
+                    "text": "Your project is ready! Next steps:\n\n  Requirements: JDK 17 and Docker.\n  1. Start infrastructure:  docker compose up -d\n     (or just run everything: ./run.sh)\n  2. Build (generates the frontend proxies):  ./gradlew build\n  3. Run the application:    ./gradlew bootRun\n  4. Frontend dev server:    npm run dev\n\nSee README.md for full details."
                 }
             ],
             "args": {
@@ -416,7 +416,7 @@
             "continueOnError": true,
             "manualInstructions": [
                 {
-                    "text": "Your project is ready! Next steps:\n\n  Requirements: JDK 17 and Docker.\n  1. Start infrastructure:  docker-compose up -d\n     (or just run everything: ./run.sh)\n  2. Build (generates the frontend proxies):  ./gradlew build\n  3. Run the application:    ./gradlew bootRun\n  4. Frontend dev server:    # Run your preferred package manager dev command (e.g. npm run dev)\n\nSee README.md for full details."
+                    "text": "Your project is ready! Next steps:\n\n  Requirements: JDK 17 and Docker.\n  1. Start infrastructure:  docker compose up -d\n     (or just run everything: ./run.sh)\n  2. Build (generates the frontend proxies):  ./gradlew build\n  3. Run the application:    ./gradlew bootRun\n  4. Frontend dev server:    # Run your preferred package manager dev command (e.g. npm run dev)\n\nSee README.md for full details."
                 }
             ],
             "args": {

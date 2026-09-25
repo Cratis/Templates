@@ -401,7 +401,7 @@
             "continueOnError": true,
             "manualInstructions": [
                 {
-                    "text": "Your project is ready! Next steps:\n  1. Start infrastructure:  docker-compose up -d\n  2. Run the application:   dotnet run\n  3. Frontend dev server:   yarn dev"
+                    "text": "Your project is ready! Next steps:\n  1. Start infrastructure:  docker compose up -d\n  2. Run the application:   dotnet run\n  3. Frontend dev server:   yarn dev"
                 }
             ],
             "args": {
@@ -429,7 +429,7 @@
             "continueOnError": true,
             "manualInstructions": [
                 {
-                    "text": "Your project is ready! Next steps:\n  1. Start infrastructure:  docker-compose up -d\n  2. Run the application:   dotnet run\n  3. Frontend dev server:   pnpm dev"
+                    "text": "Your project is ready! Next steps:\n  1. Start infrastructure:  docker compose up -d\n  2. Run the application:   dotnet run\n  3. Frontend dev server:   pnpm dev"
                 }
             ],
             "args": {
@@ -457,7 +457,7 @@
             "continueOnError": true,
             "manualInstructions": [
                 {
-                    "text": "Your project is ready! Next steps:\n  1. Start infrastructure:  docker-compose up -d\n  2. Run the application:   dotnet run\n  3. Frontend dev server:   npm run dev"
+                    "text": "Your project is ready! Next steps:\n  1. Start infrastructure:  docker compose up -d\n  2. Run the application:   dotnet run\n  3. Frontend dev server:   npm run dev"
                 }
             ],
             "args": {
@@ -485,7 +485,7 @@
             "continueOnError": true,
             "manualInstructions": [
                 {
-                    "text": "Your project is ready! Next steps:\n  1. Install frontend dependencies manually (e.g. npm install)\n  2. Start infrastructure:  docker-compose up -d\n  3. Run the application:   dotnet run\n  4. Frontend dev server:   npm run dev"
+                    "text": "Your project is ready! Next steps:\n  1. Install frontend dependencies manually (e.g. npm install)\n  2. Start infrastructure:  docker compose up -d\n  3. Run the application:   dotnet run\n  4. Frontend dev server:   npm run dev"
                 }
             ],
             "args": {

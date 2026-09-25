@@ -39,7 +39,7 @@ echo "==> Building the backend (also generates the frontend proxies)…"
 if [ "$NO_FRONTEND" = false ] && [ -f package.json ]; then
   echo "==> Installing frontend dependencies…"
   yarn install --silent 2>/dev/null || npm install --silent
-  echo "==> Starting the frontend dev server on http://localhost:5173…"
+  echo "==> Starting the frontend dev server on http://localhost:9000…"
   (yarn dev 2>/dev/null || npm run dev) &
   FRONTEND_PID=$!
 fi
