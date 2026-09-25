@@ -167,6 +167,42 @@ jobs:
           run_dotnet_new dotnet new cratis-aspire -n ValidateCratisAspirePostgreSql -o "$validation_root/ValidateCratisAspirePostgreSql" --Framework net10.0 --Database PostgreSQL
           build_generated_project "$validation_root/ValidateCratisAspirePostgreSql"
 
+      - name: Validate scaffolded files that a build does not exercise
+        timeout-minutes: 5
+        shell: bash
+        run: |
+          set -euo pipefail
+          # NuGet drops files whose names start with a dot unless default excludes are off,
+          # and a template conditional the engine cannot parse silently removes its block.
+          # Both still compile, so check the scaffolded output directly.
+          checked=0
+          failed=0
+          expect_file() {
+            checked=$((checked + 1))
+            if [[ ! -f "$1" ]]; then
+              echo "::error::missing scaffolded file: $1"
+              failed=1
+            fi
+          }
+          expect_text() {
+            checked=$((checked + 1))
+            if ! grep -qF "$2" "$1"; then
+              echo "::error::$1 does not contain: $2"
+              failed=1
+            fi
+          }
+          for app in ValidateChronicleConsole ValidateChronicleWeb ValidateCratis ValidateCratisAspire ValidateCratisPostgreSql ValidateCratisAspirePostgreSql; do
+            expect_file "$validation_root/$app/.gitignore"
+          done
+          for app in ValidateCratis ValidateCratisPostgreSql ValidateCratisAspire/ValidateCratisAspire ValidateCratisAspirePostgreSql/ValidateCratisAspirePostgreSql; do
+            expect_file "$validation_root/$app/.yarnrc.yml"
+          done
+          expect_text "$validation_root/ValidateCratisAspirePostgreSql/ValidateCratisAspirePostgreSql.Composition/Program.cs" ".WithReference(readModels)"
+          expect_text "$validation_root/ValidateCratisPostgreSql/appsettings.json" '"DefaultSinkTypeId": "SQL"'
+          expect_text "$validation_root/ValidateCratisAspirePostgreSql/ValidateCratisAspirePostgreSql/appsettings.json" '"DefaultSinkTypeId": "SQL"'
+          echo "Checked $checked scaffolded expectations"
+          exit "$failed"
+
       - name: Validate registration returns the persisted identity
         timeout-minutes: 10
         shell: bash
@@ -247,6 +283,26 @@ jobs:
           # A non-default database proves the SQL sink switch and compose tokens scaffold.
           dotnet new cratis -n ValidateCratisKotlinSqlite -o "$validation_root/ValidateCratisKotlinSqlite" --language Kotlin --packageManager none --Database SQLite --allow-scripts Yes
           dotnet new cratis -n ValidateCratisJavaPostgreSql -o "$validation_root/ValidateCratisJavaPostgreSql" --language Java --packageManager none --Database PostgreSQL --allow-scripts Yes
+
+      - name: Validate scaffolded dotfiles
+        timeout-minutes: 5
+        shell: bash
+        run: |
+          set -euo pipefail
+          # NuGet drops files whose names start with a dot unless default excludes are off.
+          checked=0
+          failed=0
+          for app in ValidateCratisKotlin ValidateCratisJava; do
+            for file in .gitignore .yarnrc.yml; do
+              checked=$((checked + 1))
+              if [[ ! -f "$validation_root/$app/$file" ]]; then
+                echo "::error::missing scaffolded file: $app/$file"
+                failed=1
+              fi
+            done
+          done
+          echo "Checked $checked scaffolded files"
+          exit "$failed"
 
       - name: Build scaffolded Kotlin application
         timeout-minutes: 20
