@@ -11,10 +11,10 @@ import App from '../App.tsx';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-        <CratisComponentsProvider>
-            <Arc>
+        <Arc>
+            <CratisComponentsProvider toaster>
                 <App />
-            </Arc>
-        </CratisComponentsProvider>
+            </CratisComponentsProvider>
+        </Arc>
     </React.StrictMode>
 );
