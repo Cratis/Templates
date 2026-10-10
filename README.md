@@ -1,6 +1,6 @@
 # Cratis Templates
 
-[![Nuget](https://img.shields.io/nuget/v/Cratis.Templates?logo=nuget)](http://nuget.org/packages/Cratis.Templates) [![Nuget](https://img.shields.io/nuget/v/Cratis.Templates.Kotlin?logo=nuget)](http://nuget.org/packages/Cratis.Templates.Kotlin) [![Nuget](https://img.shields.io/nuget/v/Cratis.Templates.Java?logo=nuget)](http://nuget.org/packages/Cratis.Templates.Java)
+[![Nuget](https://img.shields.io/nuget/v/Cratis.Templates?logo=nuget)](http://nuget.org/packages/Cratis.Templates) [![Nuget](https://img.shields.io/nuget/v/Cratis.Templates.Kotlin?logo=nuget)](http://nuget.org/packages/Cratis.Templates.Kotlin) [![Nuget](https://img.shields.io/nuget/v/Cratis.Templates.Java?logo=nuget)](http://nuget.org/packages/Cratis.Templates.Java) [![Discord](https://img.shields.io/discord/1182595891576717413?label=Discord&logo=discord&color=7289da)](https://discord.gg/kt4AMpV8WV)
 
 This repository contains all creation templates used by Cratis. It holds `dotnet new` project templates you can use to scaffold new event-sourced and CQRS applications built with [Cratis Chronicle](https://github.com/Cratis/Chronicle) (event-sourcing database and processing runtime) and [Cratis Arc](https://github.com/Cratis/Arc) (CQRS application framework for ASP.NET Core). The JVM templates scaffold the same full-stack application on Spring Boot — in Kotlin or Java — using [Arc for Kotlin and Java](https://github.com/Cratis/Arc.Kotlin). Everything is MIT licensed and free to use.
 
@@ -225,6 +225,10 @@ dotnet new uninstall <package-id-or-folder>
 A custom hive is just a folder: delete `./Testing/hive` to discard it.
 
 Iterate on the template sources, repack, and reinstall to test changes quickly.
+
+## Questions?
+
+If you hit a problem with a project generated from these templates, ask the Cratis team and other developers on the [Cratis Discord](https://discord.gg/kt4AMpV8WV). Template bugs and feature requests belong in [GitHub Issues](https://github.com/Cratis/Templates/issues).
 
 ## The Cratis ecosystem
 
