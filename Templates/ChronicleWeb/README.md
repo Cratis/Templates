@@ -2,6 +2,10 @@
 
 Scaffolded ASP.NET Core web application built with Cratis Chronicle.
 
+## Documentation and help
+
+Read the [Cratis documentation](https://www.cratis.io), or join the [Cratis Discord](https://discord.gg/kt4AMpV8WV) to ask questions and get help from the Cratis team and other developers.
+
 ## Prerequisites
 
 - .NET 10 SDK (the project targets `net10.0`)
