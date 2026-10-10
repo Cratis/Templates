@@ -2,6 +2,10 @@
 
 A full-stack web application built with Cratis Arc and Chronicle: an ASP.NET Core backend with model-bound commands and queries, Chronicle for event sourcing, and a React + Vite frontend using generated TypeScript proxies.
 
+## Documentation and help
+
+Read the [Cratis documentation](https://www.cratis.io), or join the [Cratis Discord](https://discord.gg/kt4AMpV8WV) to ask questions and get help from the Cratis team and other developers.
+
 ## Prerequisites
 
 - .NET 10 SDK (the project targets `net10.0`)

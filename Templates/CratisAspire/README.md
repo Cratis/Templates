@@ -2,6 +2,10 @@
 
 A full-stack web application built with Cratis Arc and Chronicle, orchestrated for local development by an Aspire app host.
 
+## Documentation and help
+
+Read the [Cratis documentation](https://www.cratis.io), or join the [Cratis Discord](https://discord.gg/kt4AMpV8WV) to ask questions and get help from the Cratis team and other developers.
+
 ## Prerequisites
 
 - .NET 10 SDK (the projects target `net10.0`)

@@ -4,6 +4,10 @@ A [Cratis](https://cratis.io) application built with **Java**, **Spring Boot**, 
 
 Scaffolded with `dotnet new cratis --language Java` (or `cratis new cratis --language java`).
 
+## Documentation and help
+
+Read the [Cratis documentation](https://www.cratis.io), or join the [Cratis Discord](https://discord.gg/kt4AMpV8WV) to ask questions and get help from the Cratis team and other developers.
+
 ## Prerequisites
 
 - A JDK **17**. The build's Gradle toolchain requires Java 17 and does not download one, so a newer JDK on its own fails with `Cannot find a Java installation ... matching: {languageVersion=17 ...}`. Point `JAVA_HOME` at a JDK 17.
