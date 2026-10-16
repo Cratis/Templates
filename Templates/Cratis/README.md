@@ -2,6 +2,8 @@
 
 A full-stack web application built with Cratis Arc and Chronicle: an ASP.NET Core backend with model-bound commands and queries, Chronicle for event sourcing, and a React + Vite frontend using generated TypeScript proxies.
 
+Read protection is `On` by default: supported read models taken by commands and validators guard the command's append. To measure without enforcing protection, set `<CratisReadProtection>Measure</CratisReadProtection>` in `CratisApp.csproj`; set it to `Off` to disable it. See [read protection and its limits](https://cratis.io/arc/backend/csharp/chronicle/consistency/).
+
 ## Documentation and help
 
 Read the [Cratis documentation](https://www.cratis.io), or join the [Cratis Discord](https://discord.gg/kt4AMpV8WV) to ask questions and get help from the Cratis team and other developers.
