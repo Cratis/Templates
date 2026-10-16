@@ -197,6 +197,10 @@ jobs:
           for app in ValidateCratis ValidateCratisPostgreSql ValidateCratisAspire/ValidateCratisAspire ValidateCratisAspirePostgreSql/ValidateCratisAspirePostgreSql; do
             expect_file "$validation_root/$app/.yarnrc.yml"
           done
+          expect_text "$validation_root/ValidateCratis/ValidateCratis.csproj" '<CratisReadProtection>On</CratisReadProtection>'
+          expect_text "$validation_root/ValidateCratisAspire/ValidateCratisAspire/ValidateCratisAspire.csproj" '<CratisReadProtection>On</CratisReadProtection>'
+          expect_text "$validation_root/ValidateCratisPostgreSql/ValidateCratisPostgreSql.csproj" '<CratisReadProtection>On</CratisReadProtection>'
+          expect_text "$validation_root/ValidateCratisAspirePostgreSql/ValidateCratisAspirePostgreSql/ValidateCratisAspirePostgreSql.csproj" '<CratisReadProtection>On</CratisReadProtection>'
           expect_text "$validation_root/ValidateCratisAspirePostgreSql/ValidateCratisAspirePostgreSql.Composition/Program.cs" ".WithReference(readModels)"
           expect_text "$validation_root/ValidateCratisPostgreSql/appsettings.json" '"DefaultSinkTypeId": "SQL"'
           expect_text "$validation_root/ValidateCratisAspirePostgreSql/ValidateCratisAspirePostgreSql/appsettings.json" '"DefaultSinkTypeId": "SQL"'
