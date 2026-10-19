@@ -9,6 +9,7 @@
         <Description>A template for creating Kotlin web applications with Cratis Arc and Chronicle on Spring Boot</Description>
         <Author>Cratis</Author>
         <PackageTags>dotnet;templates;cratis;arc;chronicle;web;kotlin;springboot</PackageTags>
+        <PackageProjectUrl>https://www.cratis.io/templates/</PackageProjectUrl>
         <RepositoryUrl>https://github.com/Cratis/Templates</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <License>MIT</License>
