@@ -2,7 +2,7 @@
 
 A full-stack web application built with Cratis Arc and Chronicle: an ASP.NET Core backend with model-bound commands and queries, Chronicle for event sourcing, and a React + Vite frontend using generated TypeScript proxies.
 
-Read protection is `On` by default: supported read models taken by commands and validators guard the command's append. To measure without enforcing protection, set `<CratisReadProtection>Measure</CratisReadProtection>` in `CratisApp.csproj`; set it to `Off` to disable it. See [read protection and its limits](https://cratis.io/arc/backend/csharp/chronicle/consistency/).
+Read protection is `On` by default: supported read models taken by commands and validators guard the command's append. To measure without enforcing protection, set `<CratisReadProtection>Measure</CratisReadProtection>` in `CratisApp.csproj`; set it to `Off` to disable it. See [read protection and its limits](https://www.cratis.io/arc/backend/csharp/chronicle/consistency/).
 
 ## Documentation and help
 
@@ -85,7 +85,7 @@ The choice determines:
 
 This project ships with a `.cratis/ai.json` that selects its Cratis AI profiles, languages, and coding-agent harnesses.
 
-1. Make sure the Cratis CLI is installed; see [https://cratis.io/cli](https://cratis.io/cli).
+1. Make sure the Cratis CLI is installed; see [https://www.cratis.io/cli/](https://www.cratis.io/cli/).
 2. Run:
 
    ```bash

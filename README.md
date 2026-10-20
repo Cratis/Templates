@@ -83,7 +83,7 @@ Every template ships a `.cratis/ai.json` describing its Cratis AI configuration 
 | `cratis --language Kotlin` | `cratis/application/kotlin` | `kotlin`, `typescript` |
 | `cratis --language Java` | `cratis/application/java` | `java`, `typescript` |
 
-All templates select every harness (`claude`, `codex`, `copilot`, `cursor`, `opencode`, `pi`). After scaffolding with `dotnet new`, which prints a reminder about this, make sure the Cratis CLI is installed (see [https://cratis.io/cli](https://cratis.io/cli)) and run:
+All templates select every harness (`claude`, `codex`, `copilot`, `cursor`, `opencode`, `pi`). After scaffolding with `dotnet new`, which prints a reminder about this, make sure the Cratis CLI is installed (see [https://www.cratis.io/cli/](https://www.cratis.io/cli/)) and run:
 
 ```bash
 cratis ai update

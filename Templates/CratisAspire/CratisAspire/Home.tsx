@@ -64,7 +64,7 @@ export const Home = () => {
 
             <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'stretch', marginBottom: '2rem' }}>
                 <InfoCard emoji="📖" title="README.md" description="Setup guide, project structure & getting started" />
-                <InfoCard emoji="🔗" title="cratis.io" description="Documentation, guides & community" link="https://cratis.io" />
+                <InfoCard emoji="🔗" title="cratis.io" description="Documentation, guides & community" link="https://www.cratis.io" />
                 <InfoCard emoji="🛠️" title="Swagger UI" description="Explore your API endpoints" link="/swagger" />
                 <InfoCard emoji="📊" title="Aspire Dashboard" description="Metrics, traces & logs" link="http://localhost:15888" />
                 <InfoCard emoji="🎮" title="Demo" description="See it in action with a live example" link="/demo" />

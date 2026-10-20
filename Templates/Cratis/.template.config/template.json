@@ -389,7 +389,7 @@
             "continueOnError": true,
             "manualInstructions": [
                 {
-                    "text": "Your project ships with a .cratis/ai.json holding its Cratis AI configuration.\n  Make sure the Cratis CLI is installed - see https://cratis.io/cli - and run:\n      cratis ai update\n  to get all the AI rules, skills, and coding agent integration in place.\n\nSee README.md for full details."
+                    "text": "Your project ships with a .cratis/ai.json holding its Cratis AI configuration.\n  Make sure the Cratis CLI is installed - see https://www.cratis.io/cli/ - and run:\n      cratis ai update\n  to get all the AI rules, skills, and coding agent integration in place.\n\nSee README.md for full details."
                 }
             ],
             "args": {
@@ -417,7 +417,7 @@
             "continueOnError": true,
             "manualInstructions": [
                 {
-                    "text": "Your project ships with a .cratis/ai.json holding its Cratis AI configuration.\n  Make sure the Cratis CLI is installed - see https://cratis.io/cli - and run:\n      cratis ai update\n  to get all the AI rules, skills, and coding agent integration in place.\n\nSee README.md for full details."
+                    "text": "Your project ships with a .cratis/ai.json holding its Cratis AI configuration.\n  Make sure the Cratis CLI is installed - see https://www.cratis.io/cli/ - and run:\n      cratis ai update\n  to get all the AI rules, skills, and coding agent integration in place.\n\nSee README.md for full details."
                 }
             ],
             "args": {
@@ -445,7 +445,7 @@
             "continueOnError": true,
             "manualInstructions": [
                 {
-                    "text": "Your project ships with a .cratis/ai.json holding its Cratis AI configuration.\n  Make sure the Cratis CLI is installed - see https://cratis.io/cli - and run:\n      cratis ai update\n  to get all the AI rules, skills, and coding agent integration in place.\n\nSee README.md for full details."
+                    "text": "Your project ships with a .cratis/ai.json holding its Cratis AI configuration.\n  Make sure the Cratis CLI is installed - see https://www.cratis.io/cli/ - and run:\n      cratis ai update\n  to get all the AI rules, skills, and coding agent integration in place.\n\nSee README.md for full details."
                 }
             ],
             "args": {
@@ -473,7 +473,7 @@
             "continueOnError": true,
             "manualInstructions": [
                 {
-                    "text": "Your project ships with a .cratis/ai.json holding its Cratis AI configuration.\n  Make sure the Cratis CLI is installed - see https://cratis.io/cli - and run:\n      cratis ai update\n  to get all the AI rules, skills, and coding agent integration in place.\n\nSee README.md for full details."
+                    "text": "Your project ships with a .cratis/ai.json holding its Cratis AI configuration.\n  Make sure the Cratis CLI is installed - see https://www.cratis.io/cli/ - and run:\n      cratis ai update\n  to get all the AI rules, skills, and coding agent integration in place.\n\nSee README.md for full details."
                 }
             ],
             "args": {
