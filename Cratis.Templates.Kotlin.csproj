@@ -13,7 +13,8 @@
         <PackageProjectUrl>https://www.cratis.io/templates/</PackageProjectUrl>
         <RepositoryUrl>https://github.com/Cratis/Templates</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
-        <License>MIT</License>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageIcon>logo.png</PackageIcon>
         <IncludeContentInPack>true</IncludeContentInPack>
         <NoWarn>$(NoWarn);CS8805;CS0103;IDE0073;SA1512;SA1515;SA1005</NoWarn>
         <IncludeBuildOutput>false</IncludeBuildOutput>
@@ -70,5 +71,6 @@
 
     <ItemGroup>
         <None Update="README.md" Pack="true" PackagePath="/" />
+        <None Include="logo.png" Pack="true" PackagePath="/" />
     </ItemGroup>
 </Project>
