@@ -1,6 +1,6 @@
 # CratisApp
 
-A [Cratis](https://cratis.io) application built with **Kotlin**, **Spring Boot**, **Cratis Arc** (CQRS: commands, queries and generated TypeScript proxies) and **Cratis Chronicle** (event sourcing). The frontend is **React + Vite** using Cratis Components.
+A [Cratis](https://www.cratis.io) application built with **Kotlin**, **Spring Boot**, **Cratis Arc** (CQRS: commands, queries and generated TypeScript proxies) and **Cratis Chronicle** (event sourcing). The frontend is **React + Vite** using Cratis Components.
 
 Scaffolded with `dotnet new cratis --language Kotlin` (or `cratis new cratis --language kotlin`).
 
@@ -137,7 +137,7 @@ Upgrade these by bumping them in `build.gradle.kts` and `gradle/wrapper/gradle-w
 
 ## AI assistance
 
-This project ships with a `.cratis/ai.json` holding its Cratis AI configuration. Make sure the Cratis CLI is installed — see [https://cratis.io/cli](https://cratis.io/cli) — and run:
+This project ships with a `.cratis/ai.json` holding its Cratis AI configuration. Make sure the Cratis CLI is installed — see [https://www.cratis.io/cli/](https://www.cratis.io/cli/) — and run:
 
 ```bash
 cratis ai update

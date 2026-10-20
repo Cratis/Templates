@@ -36,7 +36,7 @@ To stop Chronicle, run `docker compose down`. With the default MongoDB setup the
 
 This project ships with a `.cratis/ai.json` that selects its Cratis AI profiles, languages, and coding-agent harnesses.
 
-1. Make sure the Cratis CLI is installed; see [https://cratis.io/cli](https://cratis.io/cli).
+1. Make sure the Cratis CLI is installed; see [https://www.cratis.io/cli/](https://www.cratis.io/cli/).
 2. Run:
 
    ```bash

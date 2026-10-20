@@ -5,7 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
 
-        <!-- Read models taken by commands and validators guard the command's append. See https://cratis.io/arc/backend/csharp/chronicle/consistency/ -->
+        <!-- Read models taken by commands and validators guard the command's append. See https://www.cratis.io/arc/backend/csharp/chronicle/consistency/ -->
         <CratisReadProtection>On</CratisReadProtection>
 
         <CratisProxiesOutputPath>$(MSBuildThisFileDirectory)</CratisProxiesOutputPath>

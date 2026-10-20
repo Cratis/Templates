@@ -8,6 +8,7 @@
         <Title>Cratis Templates</Title>
         <Description>A collection of templates for creating applications with Cratis Arc and Chronicle</Description>
         <Author>Cratis</Author>
+        <Authors>Cratis</Authors>
         <PackageTags>dotnet;templates;cratis;arc;chronicle;web;aspnetcore</PackageTags>
         <PackageProjectUrl>https://www.cratis.io/templates/</PackageProjectUrl>
         <RepositoryUrl>https://github.com/Cratis/Arc</RepositoryUrl>
