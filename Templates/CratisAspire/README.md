@@ -57,7 +57,7 @@ The choice determines:
 
 - Which Arc read-model integration the backend uses: MongoDB, or Entity Framework Core with `Cratis:Chronicle:DefaultSinkTypeId` set to `SQL`.
 - How the app host provisions Chronicle. It always runs the Chronicle development image, with its embedded MongoDB for the default, or storing its data in a PostgreSQL or SQL Server container or in SQLite files in a `chronicle-data` folder next to the solution.
-- Which connections the backend receives: the Chronicle address with the development client credentials, plus the embedded MongoDB, or the `chronicle+CratisAspire` database Chronicle projects read models into.
+- Which connections the backend receives: the Chronicle address with the development client credentials, plus the embedded MongoDB, or the `chronicle+EVENT_STORE_NAME` database Chronicle projects read models into.
 
 ## AI assistance
 
@@ -157,6 +157,8 @@ SomeModule/
 ## TypeScript proxy generation
 
 The `Cratis` package brings in `Cratis.Arc.ProxyGenerator.Build`, which regenerates the TypeScript proxies on every `dotnet build`. `CratisAspire/CratisAspire.csproj` writes each proxy next to the C# file that declares it and uses the same route settings as `Cratis:Arc:GeneratedApis` in `appsettings.json`; change them together, or the proxies call routes the backend does not map. See the [Arc proxy generator configuration](https://www.cratis.io/arc/backend/csharp/proxy-generation/configuration/).
+
+The template counts the segments of your project name for both `CratisProxiesSegmentsToSkip` and `SegmentsToSkipForRoute`, so a dotted name like `Contoso.Shop` gets `2`.
 
 ## Learn More
 

@@ -78,7 +78,7 @@ The choice determines:
 
 - Which Arc read-model package the project uses: `Cratis.Arc.MongoDB` for MongoDB, `Cratis.Arc.EntityFrameworkCore` for the others.
 - How the Chronicle container in `docker-compose.yml` stores its data: its embedded MongoDB, a PostgreSQL or SQL Server container, or SQLite files in the `chronicle-data` folder of this project.
-- Where the read models live. With a SQL database, `Cratis:Chronicle:DefaultSinkTypeId` is `SQL`, Chronicle projects the `Listings` table into the `chronicle+CratisApp` database (for SQLite, the file `chronicle-data/chronicle+CratisApp.db`), and `ConnectionStrings:Cratis` points Entity Framework Core at it.
+- Where the read models live. With a SQL database, `Cratis:Chronicle:DefaultSinkTypeId` is `SQL`, Chronicle projects the `Listings` table into the `chronicle+EVENT_STORE_NAME` database (for SQLite, the file `chronicle-data/chronicle+EVENT_STORE_NAME.db`), and `ConnectionStrings:Cratis` points Entity Framework Core at it.
 
 
 ## AI assistance
@@ -134,7 +134,7 @@ The `Cratis` package brings in `Cratis.Arc.ProxyGenerator.Build`, which regenera
 
 ```xml
 <CratisProxiesOutputPath>$(MSBuildThisFileDirectory)</CratisProxiesOutputPath>
-<CratisProxiesSegmentsToSkip>1</CratisProxiesSegmentsToSkip>
+<CratisProxiesSegmentsToSkip>NAMESPACE_SEGMENTS</CratisProxiesSegmentsToSkip>
 <CratisProxiesSkipOutputDeletion>true</CratisProxiesSkipOutputDeletion>
 <CratisProxiesSkipCommandNameInRoute>true</CratisProxiesSkipCommandNameInRoute>
 <CratisProxiesUseSourceFileAsOutputFile>true</CratisProxiesUseSourceFileAsOutputFile>
@@ -147,9 +147,11 @@ Arc maps the backend routes from `Cratis:Arc:GeneratedApis` in `appsettings.json
 | `appsettings.json` | `.csproj` | This project |
 | --- | --- | --- |
 | `RoutePrefix` | `CratisProxiesApiPrefix` | `api` for both (the defaults) |
-| `SegmentsToSkipForRoute` | `CratisProxiesSegmentsToSkip` | `1` for both |
+| `SegmentsToSkipForRoute` | `CratisProxiesSegmentsToSkip` | `NAMESPACE_SEGMENTS` for both (one per segment of the root namespace) |
 | `IncludeCommandNameInRoute` | `CratisProxiesSkipCommandNameInRoute` (inverted) | `false` / `true` |
 | `IncludeQueryNameInRoute` | `CratisProxiesSkipQueryNameInRoute` (inverted) | defaults: `true` / `false` |
+
+The template counts the segments of your project name, so a dotted name like `Contoso.Shop` gets `2`.
 
 With these settings the `Register` command in `CratisApp.SomeModule.SomeFeature.Registration` is served at `/api/some-module/some-feature/registration`. If the pairs drift apart, the generated proxies call routes the backend does not map.
 
