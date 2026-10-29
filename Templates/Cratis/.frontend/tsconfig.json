@@ -23,11 +23,7 @@
         "strict": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
-        "noFallthroughCasesInSwitch": true,
-        /* Path aliases */
-        "paths": {
-            "Api/*": ["./../Features/*"]
-        }
+        "noFallthroughCasesInSwitch": true
     },
     "include": [
         "../**/*.ts",

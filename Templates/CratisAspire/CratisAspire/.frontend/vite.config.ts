@@ -38,10 +38,5 @@ export default defineConfig({
                 ws: true
             }
         }
-    },
-    resolve: {
-        alias: {
-            'Api': fileURLToPath(new URL('../Features', import.meta.url)),
-        }
     }
 });
