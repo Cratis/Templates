@@ -186,7 +186,7 @@ jobs:
           }
           expect_text() {
             checked=$((checked + 1))
-            if ! grep -qF "$2" "$1"; then
+            if ! grep -qF -- "$2" "$1"; then
               echo "::error::$1 does not contain: $2"
               failed=1
             fi
