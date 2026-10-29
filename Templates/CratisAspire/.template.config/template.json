@@ -24,7 +24,34 @@
             "path": "CratisAspire.sln"
         }
     ],
+    "forms": {
+        "storageSafe": { "identifier": "replace", "pattern": "[/\\\\. \"$*<>:|?]", "replacement": "" },
+        "identifierSafe": { "identifier": "replace", "pattern": "(((?<=\\.)|^)(?=\\d)|\\W)", "replacement": "_" },
+        "dbContextSuffix": { "identifier": "replace", "pattern": "$", "replacement": "DbContext" },
+        "dbContextName": { "identifier": "chain", "steps": [ "identifierSafe", "dbContextSuffix" ] },
+        "projectsPrefix": { "identifier": "replace", "pattern": "^", "replacement": "Projects." },
+        "aspireProjectType": { "identifier": "chain", "steps": [ "identifierSafe", "projectsPrefix" ] }
+    },
     "symbols": {
+        "eventStoreName": {
+            "type": "derived",
+            "valueSource": "name",
+            "valueTransform": "storageSafe",
+            "replaces": "EVENT_STORE_NAME"
+        },
+        "dbContextName": {
+            "type": "derived",
+            "valueSource": "name",
+            "valueTransform": "dbContextName",
+            "replaces": "CratisAspireDbContext",
+            "fileRename": "CratisAspireDbContext"
+        },
+        "aspireProjectType": {
+            "type": "derived",
+            "valueSource": "name",
+            "valueTransform": "aspireProjectType",
+            "replaces": "Projects.CratisAspire"
+        },
         "Framework": {
             "type": "parameter",
             "datatype": "choice",

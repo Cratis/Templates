@@ -78,7 +78,7 @@ The choice determines:
 
 - Which Arc read-model package the project uses: `Cratis.Arc.MongoDB` for MongoDB, `Cratis.Arc.EntityFrameworkCore` for the others.
 - How the Chronicle container in `docker-compose.yml` stores its data: its embedded MongoDB, a PostgreSQL or SQL Server container, or SQLite files in the `chronicle-data` folder of this project.
-- Where the read models live. With a SQL database, `Cratis:Chronicle:DefaultSinkTypeId` is `SQL`, Chronicle projects the `Listings` table into the `chronicle+CratisApp` database (for SQLite, the file `chronicle-data/chronicle+CratisApp.db`), and `ConnectionStrings:Cratis` points Entity Framework Core at it.
+- Where the read models live. With a SQL database, `Cratis:Chronicle:DefaultSinkTypeId` is `SQL`, Chronicle projects the `Listings` table into the `chronicle+EVENT_STORE_NAME` database (for SQLite, the file `chronicle-data/chronicle+EVENT_STORE_NAME.db`), and `ConnectionStrings:Cratis` points Entity Framework Core at it.
 
 
 ## AI assistance
@@ -134,7 +134,7 @@ The `Cratis` package brings in `Cratis.Arc.ProxyGenerator.Build`, which regenera
 
 ```xml
 <CratisProxiesOutputPath>$(MSBuildThisFileDirectory)</CratisProxiesOutputPath>
-<CratisProxiesSegmentsToSkip>1</CratisProxiesSegmentsToSkip>
+<CratisProxiesSegmentsToSkip>$([System.String]::Copy('$(RootNamespace)').Split('.').Length)</CratisProxiesSegmentsToSkip>
 <CratisProxiesSkipOutputDeletion>true</CratisProxiesSkipOutputDeletion>
 <CratisProxiesSkipCommandNameInRoute>true</CratisProxiesSkipCommandNameInRoute>
 <CratisProxiesUseSourceFileAsOutputFile>true</CratisProxiesUseSourceFileAsOutputFile>
@@ -142,14 +142,16 @@ The `Cratis` package brings in `Cratis.Arc.ProxyGenerator.Build`, which regenera
 
 Each proxy is written next to the C# file that declares it, so `Registration.cs` produces `Registration.ts`.
 
-Arc maps the backend routes from `Cratis:Arc:GeneratedApis` in `appsettings.json`, and the proxies must call the same routes. Keep these pairs in step:
+Arc maps the backend routes from `Cratis:Arc:GeneratedApis` in `appsettings.json`, with the segment count set by `PostConfigure<ArcOptions>` in `Program.cs`. The proxies must call the same routes. Keep these pairs in step:
 
-| `appsettings.json` | `.csproj` | This project |
+| Runtime route configuration | `.csproj` | This project |
 | --- | --- | --- |
 | `RoutePrefix` | `CratisProxiesApiPrefix` | `api` for both (the defaults) |
-| `SegmentsToSkipForRoute` | `CratisProxiesSegmentsToSkip` | `1` for both |
+| `SegmentsToSkipForRoute` (`Program.cs`) | `CratisProxiesSegmentsToSkip` | Number of segments in the root namespace for both |
 | `IncludeCommandNameInRoute` | `CratisProxiesSkipCommandNameInRoute` (inverted) | `false` / `true` |
 | `IncludeQueryNameInRoute` | `CratisProxiesSkipQueryNameInRoute` (inverted) | defaults: `true` / `false` |
+
+MSBuild counts the segments of `RootNamespace` for the proxies. After `AddCratis`, `Program.cs` post-configures the route count from the same dotted namespace, so a name like `Contoso.Shop` gets `2`, with no fixed segment limit. If you change the root namespace, update both `RootNamespace` in the project file and the namespace string in `Program.cs`.
 
 With these settings the `Register` command in `CratisApp.SomeModule.SomeFeature.Registration` is served at `/api/some-module/some-feature/registration`. If the pairs drift apart, the generated proxies call routes the backend does not map.
 

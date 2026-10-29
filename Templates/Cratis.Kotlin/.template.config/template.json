@@ -20,7 +20,32 @@
     },
     "sourceName": "CratisApp",
     "preferNameDirectory": true,
+    "forms": {
+        "storageSafe": { "identifier": "replace", "pattern": "[/\\\\. \"$*<>:|?]", "replacement": "" },
+        "identifierSafe": { "identifier": "replace", "pattern": "(((?<=\\.)|^)(?=\\d)|\\W)", "replacement": "_" },
+        "applicationSuffix": { "identifier": "replace", "pattern": "$", "replacement": "Application" },
+        "applicationClassName": { "identifier": "chain", "steps": [ "identifierSafe", "applicationSuffix" ] }
+    },
     "symbols": {
+        "eventStoreName": {
+            "type": "derived",
+            "valueSource": "name",
+            "valueTransform": "storageSafe",
+            "replaces": "EVENT_STORE_NAME"
+        },
+        "appIdentifier": {
+            "type": "derived",
+            "valueSource": "name",
+            "valueTransform": "identifierSafe",
+            "replaces": "APP_IDENTIFIER"
+        },
+        "applicationClassName": {
+            "type": "derived",
+            "valueSource": "name",
+            "valueTransform": "applicationClassName",
+            "replaces": "CratisAppApplication",
+            "fileRename": "CratisAppApplication"
+        },
         "Database": {
             "type": "parameter",
             "datatype": "choice",

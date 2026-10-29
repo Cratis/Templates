@@ -24,7 +24,26 @@
             "path": "CratisApp.csproj"
         }
     ],
+    "forms": {
+        "storageSafe": { "identifier": "replace", "pattern": "[/\\\\. \"$*<>:|?]", "replacement": "" },
+        "identifierSafe": { "identifier": "replace", "pattern": "(((?<=\\.)|^)(?=\\d)|\\W)", "replacement": "_" },
+        "dbContextSuffix": { "identifier": "replace", "pattern": "$", "replacement": "DbContext" },
+        "dbContextName": { "identifier": "chain", "steps": [ "identifierSafe", "dbContextSuffix" ] }
+    },
     "symbols": {
+        "eventStoreName": {
+            "type": "derived",
+            "valueSource": "name",
+            "valueTransform": "storageSafe",
+            "replaces": "EVENT_STORE_NAME"
+        },
+        "dbContextName": {
+            "type": "derived",
+            "valueSource": "name",
+            "valueTransform": "dbContextName",
+            "replaces": "CratisAppDbContext",
+            "fileRename": "CratisAppDbContext"
+        },
         "Framework": {
             "type": "parameter",
             "datatype": "choice",

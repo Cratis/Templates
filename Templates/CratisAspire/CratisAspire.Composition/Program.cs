@@ -18,7 +18,7 @@ var mongoDB = chronicle.GetEndpoint("mongodb");
 // which is the database the backend reads through Entity Framework Core.
 var postgres = builder.AddPostgres("database");
 var chronicleDatabase = postgres.AddDatabase("chronicle-storage", databaseName: "chronicle");
-var readModels = postgres.AddDatabase("Cratis", databaseName: "chronicle+CratisAspire");
+var readModels = postgres.AddDatabase("Cratis", databaseName: "chronicle+EVENT_STORE_NAME");
 var chronicle = builder
     .AddCratisChronicle(configure: chronicleBuilder => chronicleBuilder.WithPostgreSql(chronicleDatabase))
     .WithImageTag(ChronicleContainerImageTags.DevelopmentTag)
@@ -29,7 +29,7 @@ var chronicle = builder
 // which is the database the backend reads through Entity Framework Core.
 var sqlServer = builder.AddSqlServer("database");
 var chronicleDatabase = sqlServer.AddDatabase("chronicle-storage", databaseName: "chronicle");
-var readModels = sqlServer.AddDatabase("Cratis", databaseName: "chronicle+CratisAspire");
+var readModels = sqlServer.AddDatabase("Cratis", databaseName: "chronicle+EVENT_STORE_NAME");
 var chronicle = builder
     .AddCratisChronicle(configure: chronicleBuilder => chronicleBuilder.WithMsSql(chronicleDatabase))
     .WithImageTag(ChronicleContainerImageTags.DevelopmentTag)
@@ -65,7 +65,7 @@ builder.AddProject<Projects.CratisAspire>("backend")
     .WaitFor(readModels)
 #endif
 #if cratisSqlite
-    .WithEnvironment("ConnectionStrings__Cratis", $"Data Source={Path.Combine(dataFolder, "chronicle+CratisAspire.db")}")
+    .WithEnvironment("ConnectionStrings__Cratis", $"Data Source={Path.Combine(dataFolder, "chronicle+EVENT_STORE_NAME.db")}")
 #endif
     .WaitFor(chronicle);
 
