@@ -50,7 +50,7 @@ dotnet new install Cratis.Templates
 
 ## Project names with dots
 
-You can scaffold with `-n Contoso.Shop` in `dotnet new` or `cratis new` without changing your namespace: it keeps the dotted name. Your event store and database names drop dots and other characters MongoDB forbids, giving you `ContosoShop`; class names use underscores, such as `Contoso_ShopDbContext` and `Projects.Contoso_Shop`. In the C# application templates, proxy and route segment skipping follows your project name, with support for up to eight namespace segments.
+You can scaffold with `-n Contoso.Shop` in `dotnet new` or `cratis new` without changing your namespace: it keeps the dotted name. Your event store and database names drop dots and other characters MongoDB forbids, giving you `ContosoShop`; class names use underscores, such as `Contoso_ShopDbContext` and `Projects.Contoso_Shop`. In the C# application templates, proxy and route segment skipping follows your project name without a fixed segment limit: MSBuild counts `RootNamespace` for the proxies, while `Program.cs` post-configures Arc's route count from the same namespace. If you rename that namespace later, update both settings together.
 
 Keep your event store names short: Chronicle appends suffixes such as `+es+Default`, and MongoDB limits database names to 63 bytes.
 

@@ -239,6 +239,11 @@ jobs:
           echo "Checked $checked scaffolded expectations"
           exit "$failed"
 
+      - name: Validate project-name segment boundaries without builds
+        timeout-minutes: 5
+        shell: bash
+        run: node Verification/ProjectNames/verify-boundaries.mjs "$validation_root/ProjectNameBoundaries"
+
       - name: Validate project-name derived settings
         timeout-minutes: 5
         shell: bash

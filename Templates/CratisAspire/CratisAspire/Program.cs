@@ -1,3 +1,5 @@
+using Cratis.Arc;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 #if cratisMongoDb
@@ -11,6 +13,9 @@ builder.AddCratis(
     configureArcBuilder: arcBuilder => arcBuilder.WithEntityFrameworkCore(options => options.ConnectionString =
         builder.Configuration.GetConnectionString("Cratis")!));
 #endif
+
+// Keep route skipping paired with CratisProxiesSegmentsToSkip in the project file.
+builder.Services.PostConfigure<ArcOptions>(o => o.GeneratedApis.SegmentsToSkipForRoute = "CratisAspire".Split('.').Length);
 
 builder.Services.AddControllers();
 builder.Services.AddMvc();

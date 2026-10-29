@@ -156,9 +156,9 @@ SomeModule/
 
 ## TypeScript proxy generation
 
-The `Cratis` package brings in `Cratis.Arc.ProxyGenerator.Build`, which regenerates the TypeScript proxies on every `dotnet build`. `CratisAspire/CratisAspire.csproj` writes each proxy next to the C# file that declares it and uses the same route settings as `Cratis:Arc:GeneratedApis` in `appsettings.json`; change them together, or the proxies call routes the backend does not map. See the [Arc proxy generator configuration](https://www.cratis.io/arc/backend/csharp/proxy-generation/configuration/).
+The `Cratis` package brings in `Cratis.Arc.ProxyGenerator.Build`, which regenerates the TypeScript proxies on every `dotnet build`. `CratisAspire/CratisAspire.csproj` writes each proxy next to the C# file that declares it and uses the same route settings as `Cratis:Arc:GeneratedApis` in `appsettings.json`, with `SegmentsToSkipForRoute` set by `PostConfigure<ArcOptions>` in `Program.cs`; change the paired settings together, or the proxies call routes the backend does not map. See the [Arc proxy generator configuration](https://www.cratis.io/arc/backend/csharp/proxy-generation/configuration/).
 
-The template counts the segments of your project name for both `CratisProxiesSegmentsToSkip` and `SegmentsToSkipForRoute`, so a dotted name like `Contoso.Shop` gets `2`.
+MSBuild counts the segments of `RootNamespace` for `CratisProxiesSegmentsToSkip`. After `AddCratis`, `Program.cs` post-configures `SegmentsToSkipForRoute` from the same dotted namespace, so a name like `Contoso.Shop` gets `2`, with no fixed segment limit. If you change the root namespace, update both `RootNamespace` in the project file and the namespace string in `Program.cs`.
 
 ## Learn More
 

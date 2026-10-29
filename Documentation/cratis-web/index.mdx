@@ -90,7 +90,7 @@ curl -X POST http://localhost:5000/api/some-module/some-feature/registration \
 
 The response carries `"isSuccess":true` and the new identity in `response`, and the backend logs `Registered: Cratis`. Open the **Demo** page of the frontend to see the item in the list.
 
-The route comes from the namespace: `CratisApp.SomeModule.SomeFeature.Registration` with the root namespace's segments skipped (`SegmentsToSkipForRoute` is the number of segments in your project name, `1` for `CratisApp`) and the command name left out (`IncludeCommandNameInRoute: false`). These settings live in `appsettings.json` and have matching `CratisProxies*` properties in the `.csproj`; change them together, or the generated proxies call routes the backend does not map. See [Proxy generator configuration](/arc/backend/csharp/proxy-generation/configuration/).
+The route comes from the namespace: `CratisApp.SomeModule.SomeFeature.Registration` with the root namespace's segments skipped (`Program.cs` post-configures `SegmentsToSkipForRoute` to the namespace segment count, paired with the MSBuild count of `RootNamespace` for `CratisProxiesSegmentsToSkip`) and the command name left out (`IncludeCommandNameInRoute: false`). These settings live in `appsettings.json` and have matching `CratisProxies*` properties in the `.csproj`; change them together, or the generated proxies call routes the backend does not map. See [Proxy generator configuration](/arc/backend/csharp/proxy-generation/configuration/).
 
 ## TypeScript proxies are generated at build time
 

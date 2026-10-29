@@ -57,11 +57,27 @@ function paths(root, requireRegister = false) {
     }
 }
 
+function routing(root, settings) {
+    const settingsFile = join(root, 'appsettings.json');
+    check(settingsFile, !Object.hasOwn(settings.Cratis?.Arc?.GeneratedApis ?? {}, 'SegmentsToSkipForRoute'), 'route segment count must be configured in Program.cs');
+    const project = join(root, `${name}.csproj`);
+    contains(project, `<RootNamespace>${name}</RootNamespace>`);
+    contains(project, "<CratisProxiesSegmentsToSkip>$([System.String]::Copy('$(RootNamespace)').Split('.').Length)</CratisProxiesSegmentsToSkip>");
+    const program = join(root, 'Program.cs');
+    const text = read(program);
+    check(program, text.includes('using Cratis.Arc;'), 'must import ArcOptions');
+    const route = text.match(/builder\.Services\.PostConfigure<ArcOptions>\(o => o\.GeneratedApis\.SegmentsToSkipForRoute = "([^"]+)"\.Split\('\.'\)\.Length\);/);
+    check(program, route?.[1] === name && route[1].split('.').length === segments, `route skipping must count the ${segments} root namespace segments`);
+    const position = route ? text.indexOf(route[0]) : -1;
+    const addCratis = text.lastIndexOf('builder.AddCratis(');
+    check(program, addCratis >= 0 && position > addCratis && position < text.indexOf('builder.Build()'), 'route count must be post-configured after AddCratis and before Build');
+}
+
 function web(root, connectionFile = join(root, 'appsettings.json')) {
     const settingsFile = join(root, 'appsettings.json');
     const settings = JSON.parse(read(settingsFile));
     check(settingsFile, settings.Cratis?.Chronicle?.EventStore === store, `EventStore must be ${store}`);
-    check(settingsFile, settings.Cratis?.Arc?.GeneratedApis?.SegmentsToSkipForRoute === segments, `SegmentsToSkipForRoute must be ${segments}`);
+    routing(root, settings);
     const sql = settings.Cratis?.Chronicle?.DefaultSinkTypeId === 'SQL';
     if (sql) {
         contains(connectionFile, `chronicle+${store}`);
@@ -70,7 +86,6 @@ function web(root, connectionFile = join(root, 'appsettings.json')) {
     } else {
         check(settingsFile, settings.Cratis?.MongoDB?.Database === store, `Database must be ${store}`);
     }
-    contains(join(root, `${name}.csproj`), `<CratisProxiesSegmentsToSkip>${segments}<`);
     const vite = join(root, '.frontend/vite.config.ts');
     check(vite, !read(vite).includes("'Api'"), 'must not have an Api alias');
     const tsconfig = join(root, '.frontend/tsconfig.json');

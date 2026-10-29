@@ -9,7 +9,7 @@
         <CratisReadProtection>On</CratisReadProtection>
 
         <CratisProxiesOutputPath>$(MSBuildThisFileDirectory)</CratisProxiesOutputPath>
-        <CratisProxiesSegmentsToSkip>NAMESPACE_SEGMENTS</CratisProxiesSegmentsToSkip>
+        <CratisProxiesSegmentsToSkip>$([System.String]::Copy('$(RootNamespace)').Split('.').Length)</CratisProxiesSegmentsToSkip>
         <CratisProxiesSkipOutputDeletion>true</CratisProxiesSkipOutputDeletion>
         <CratisProxiesSkipCommandNameInRoute>true</CratisProxiesSkipCommandNameInRoute>
         <CratisProxiesUseSourceFileAsOutputFile>true</CratisProxiesUseSourceFileAsOutputFile>

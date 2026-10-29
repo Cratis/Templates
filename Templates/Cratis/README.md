@@ -134,7 +134,7 @@ The `Cratis` package brings in `Cratis.Arc.ProxyGenerator.Build`, which regenera
 
 ```xml
 <CratisProxiesOutputPath>$(MSBuildThisFileDirectory)</CratisProxiesOutputPath>
-<CratisProxiesSegmentsToSkip>NAMESPACE_SEGMENTS</CratisProxiesSegmentsToSkip>
+<CratisProxiesSegmentsToSkip>$([System.String]::Copy('$(RootNamespace)').Split('.').Length)</CratisProxiesSegmentsToSkip>
 <CratisProxiesSkipOutputDeletion>true</CratisProxiesSkipOutputDeletion>
 <CratisProxiesSkipCommandNameInRoute>true</CratisProxiesSkipCommandNameInRoute>
 <CratisProxiesUseSourceFileAsOutputFile>true</CratisProxiesUseSourceFileAsOutputFile>
@@ -142,16 +142,16 @@ The `Cratis` package brings in `Cratis.Arc.ProxyGenerator.Build`, which regenera
 
 Each proxy is written next to the C# file that declares it, so `Registration.cs` produces `Registration.ts`.
 
-Arc maps the backend routes from `Cratis:Arc:GeneratedApis` in `appsettings.json`, and the proxies must call the same routes. Keep these pairs in step:
+Arc maps the backend routes from `Cratis:Arc:GeneratedApis` in `appsettings.json`, with the segment count set by `PostConfigure<ArcOptions>` in `Program.cs`. The proxies must call the same routes. Keep these pairs in step:
 
-| `appsettings.json` | `.csproj` | This project |
+| Runtime route configuration | `.csproj` | This project |
 | --- | --- | --- |
 | `RoutePrefix` | `CratisProxiesApiPrefix` | `api` for both (the defaults) |
-| `SegmentsToSkipForRoute` | `CratisProxiesSegmentsToSkip` | `NAMESPACE_SEGMENTS` for both (one per segment of the root namespace) |
+| `SegmentsToSkipForRoute` (`Program.cs`) | `CratisProxiesSegmentsToSkip` | Number of segments in the root namespace for both |
 | `IncludeCommandNameInRoute` | `CratisProxiesSkipCommandNameInRoute` (inverted) | `false` / `true` |
 | `IncludeQueryNameInRoute` | `CratisProxiesSkipQueryNameInRoute` (inverted) | defaults: `true` / `false` |
 
-The template counts the segments of your project name, so a dotted name like `Contoso.Shop` gets `2`.
+MSBuild counts the segments of `RootNamespace` for the proxies. After `AddCratis`, `Program.cs` post-configures the route count from the same dotted namespace, so a name like `Contoso.Shop` gets `2`, with no fixed segment limit. If you change the root namespace, update both `RootNamespace` in the project file and the namespace string in `Program.cs`.
 
 With these settings the `Register` command in `CratisApp.SomeModule.SomeFeature.Registration` is served at `/api/some-module/some-feature/registration`. If the pairs drift apart, the generated proxies call routes the backend does not map.
 
