@@ -3,18 +3,18 @@
 
 package com.example.somemodule.somefeature
 
-import io.cratis.arc.concepts.ConceptAs as ArcConceptAs
 import io.cratis.chronicle.concepts.ConceptAs as ChronicleConceptAs
+import io.cratis.fundamentals.concepts.ConceptAs
 import java.util.UUID
 
 /**
  * Represents the unique identifier of something in the domain.
  *
- * A concept implements Arc's contract (the method shape the Arc tooling reads)
+ * A concept implements the Fundamentals contract (the method shape Arc reads)
  * and Chronicle's contract (the property shape the Chronicle client serializer
  * reads) so the value flows through commands, events, and read models alike.
  */
-data class SomeId(private val id: String) : ArcConceptAs<String>, ChronicleConceptAs<String> {
+data class SomeId(private val id: String) : ConceptAs<String>, ChronicleConceptAs<String> {
     /** @return The wrapped unique identifier, as read by Arc. */
     override fun value(): String = id
 

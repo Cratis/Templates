@@ -3,17 +3,17 @@
 
 package com.example.somemodule.somefeature
 
-import io.cratis.arc.concepts.ConceptAs as ArcConceptAs
 import io.cratis.chronicle.concepts.ConceptAs as ChronicleConceptAs
+import io.cratis.fundamentals.concepts.ConceptAs
 
 /**
  * Represents the name of something in the domain.
  *
- * A concept implements Arc's contract (the method shape the Arc tooling reads)
+ * A concept implements the Fundamentals contract (the method shape Arc reads)
  * and Chronicle's contract (the property shape the Chronicle client serializer
  * reads) so the value flows through commands, events, and read models alike.
  */
-data class SomeName(private val name: String) : ArcConceptAs<String>, ChronicleConceptAs<String> {
+data class SomeName(private val name: String) : ConceptAs<String>, ChronicleConceptAs<String> {
     /** @return The wrapped name, as read by Arc. */
     override fun value(): String = name
 

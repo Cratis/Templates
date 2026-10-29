@@ -186,7 +186,7 @@ jobs:
           }
           expect_text() {
             checked=$((checked + 1))
-            if ! grep -qF "$2" "$1"; then
+            if ! grep -qF -- "$2" "$1"; then
               echo "::error::$1 does not contain: $2"
               failed=1
             fi
@@ -204,6 +204,27 @@ jobs:
           expect_text "$validation_root/ValidateCratisAspirePostgreSql/ValidateCratisAspirePostgreSql.Composition/Program.cs" ".WithReference(readModels)"
           expect_text "$validation_root/ValidateCratisPostgreSql/appsettings.json" '"DefaultSinkTypeId": "SQL"'
           expect_text "$validation_root/ValidateCratisAspirePostgreSql/ValidateCratisAspirePostgreSql/appsettings.json" '"DefaultSinkTypeId": "SQL"'
+          # Every published compose port must bind to loopback only.
+          for app in ValidateChronicleConsole ValidateChronicleWeb ValidateCratis ValidateCratisPostgreSql; do
+            compose="$validation_root/$app/docker-compose.yml"
+            checked=$((checked + 1))
+            if grep -nE '^[[:space:]]*-[[:space:]]*"?[0-9]+:[0-9]+"?[[:space:]]*$' "$compose"; then
+              echo "::error::$compose publishes a port that is not bound to 127.0.0.1"
+              failed=1
+            fi
+            expect_text "$compose" "- 127.0.0.1:"
+          done
+          # MongoDB scaffolds must not emit the EF DbContext; relational ones keep it.
+          checked=$((checked + 1))
+          if [[ -n "$(find "$validation_root/ValidateCratis" -name '*DbContext.cs' -print -quit)" ]]; then
+            echo "::error::MongoDB scaffold ValidateCratis contains a DbContext"
+            failed=1
+          fi
+          checked=$((checked + 1))
+          if [[ -z "$(find "$validation_root/ValidateCratisPostgreSql" -name '*DbContext.cs' -print -quit)" ]]; then
+            echo "::error::PostgreSQL scaffold ValidateCratisPostgreSql is missing its DbContext"
+            failed=1
+          fi
           echo "Checked $checked scaffolded expectations"
           exit "$failed"
 
@@ -219,6 +240,7 @@ jobs:
         timeout-minutes: 10
         shell: bash
         run: |
+          set -euo pipefail
           for app in "$validation_root/ValidateCratis" "$validation_root/ValidateCratisAspire/ValidateCratisAspire"; do
             (
               cd "$app"
@@ -226,6 +248,21 @@ jobs:
               compiler_version="$(node -p "require('./node_modules/@typescript/native/package.json').version")"
               test "$(./node_modules/.bin/tsc --version)" = "Version $compiler_version"
               npm run lint
+
+              # Generated AI tooling under .cratis/ is globally ignored by lint.
+              violation=$'debugger;\nvar unused = 1;\n'
+              mkdir -p .cratis/ai/harnesses/pi/extensions
+              printf '%s' "$violation" > .cratis/ai/harnesses/pi/extensions/fixture.ts
+              npm run lint
+              rm -rf .cratis/ai/harnesses/pi/extensions/fixture.ts
+
+              # Negative control: the same violation in application source must fail lint.
+              printf '%s' "$violation" > fixture-violation.ts
+              if npm run lint; then
+                echo "::error::lint did not flag a violation in application source"
+                exit 1
+              fi
+              rm -f fixture-violation.ts
             )
           done
 
@@ -304,6 +341,19 @@ jobs:
                 failed=1
               fi
             done
+          done
+          # Every published compose port must bind to loopback only.
+          for app in ValidateCratisKotlin ValidateCratisJava ValidateCratisKotlinSqlite ValidateCratisJavaPostgreSql; do
+            compose="$validation_root/$app/docker-compose.yml"
+            checked=$((checked + 1))
+            if grep -nE '^[[:space:]]*-[[:space:]]*"?[0-9]+:[0-9]+"?[[:space:]]*$' "$compose"; then
+              echo "::error::$compose publishes a port that is not bound to 127.0.0.1"
+              failed=1
+            fi
+            if ! grep -qF -- "- 127.0.0.1:" "$compose"; then
+              echo "::error::$compose has no loopback-bound port"
+              failed=1
+            fi
           done
           echo "Checked $checked scaffolded files"
           exit "$failed"

@@ -3,12 +3,12 @@
 
 package com.example.somemodule.somefeature;
 
-import io.cratis.arc.concepts.ConceptAs;
+import io.cratis.fundamentals.concepts.ConceptAs;
 
 /**
  * Represents the unique identifier of something in the domain.
  *
- * A concept implements Arc's contract (the method shape the Arc tooling reads)
+ * A concept implements the Fundamentals contract (the method shape Arc reads)
  * and Chronicle's contract (the property shape the Chronicle client serializer
  * reads) so the value flows through commands, events, and read models alike.
  */
