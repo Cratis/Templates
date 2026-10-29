@@ -25,7 +25,16 @@
             "path": "ChronicleWeb.sln"
         }
     ],
+    "forms": {
+        "storageSafe": { "identifier": "replace", "pattern": "[/\\\\. \"$*<>:|?]", "replacement": "" }
+    },
     "symbols": {
+        "eventStoreName": {
+            "type": "derived",
+            "valueSource": "name",
+            "valueTransform": "storageSafe",
+            "replaces": "EVENT_STORE_NAME"
+        },
         "Framework": {
             "type": "parameter",
             "datatype": "choice",

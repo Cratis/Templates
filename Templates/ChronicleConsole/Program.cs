@@ -4,7 +4,7 @@ using Cratis.Chronicle.Projections.ModelBound;
 using Cratis.Chronicle.Reactors;
 
 using var client = new ChronicleClient();
-var eventStore = await client.GetEventStore("ChronicleConsole");
+var eventStore = await client.GetEventStore("EVENT_STORE_NAME");
 
 await eventStore.EventLog.Append("some-event-source", new TestEvent("Hello world!"));
 

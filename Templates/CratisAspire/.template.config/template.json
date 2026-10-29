@@ -24,7 +24,50 @@
             "path": "CratisAspire.sln"
         }
     ],
+    "forms": {
+        "storageSafe": { "identifier": "replace", "pattern": "[/\\\\. \"$*<>:|?]", "replacement": "" },
+        "identifierSafe": { "identifier": "replace", "pattern": "(((?<=\\.)|^)(?=\\d)|\\W)", "replacement": "_" },
+        "dbContextSuffix": { "identifier": "replace", "pattern": "$", "replacement": "DbContext" },
+        "dbContextName": { "identifier": "chain", "steps": [ "identifierSafe", "dbContextSuffix" ] },
+        "projectsPrefix": { "identifier": "replace", "pattern": "^", "replacement": "Projects." },
+        "aspireProjectType": { "identifier": "chain", "steps": [ "identifierSafe", "projectsPrefix" ] },
+        "dotsOnly": { "identifier": "replace", "pattern": "[^.]", "replacement": "" },
+        "segments1": { "identifier": "replace", "pattern": "^$", "replacement": "1" },
+        "segments2": { "identifier": "replace", "pattern": "^\\.$", "replacement": "2" },
+        "segments3": { "identifier": "replace", "pattern": "^\\.{2}$", "replacement": "3" },
+        "segments4": { "identifier": "replace", "pattern": "^\\.{3}$", "replacement": "4" },
+        "segments5": { "identifier": "replace", "pattern": "^\\.{4}$", "replacement": "5" },
+        "segments6": { "identifier": "replace", "pattern": "^\\.{5}$", "replacement": "6" },
+        "segments7": { "identifier": "replace", "pattern": "^\\.{6}$", "replacement": "7" },
+        "segments8": { "identifier": "replace", "pattern": "^\\.{7}$", "replacement": "8" },
+        "segmentCount": { "identifier": "chain", "steps": [ "dotsOnly", "segments1", "segments2", "segments3", "segments4", "segments5", "segments6", "segments7", "segments8" ] }
+    },
     "symbols": {
+        "eventStoreName": {
+            "type": "derived",
+            "valueSource": "name",
+            "valueTransform": "storageSafe",
+            "replaces": "EVENT_STORE_NAME"
+        },
+        "namespaceSegments": {
+            "type": "derived",
+            "valueSource": "name",
+            "valueTransform": "segmentCount",
+            "replaces": "NAMESPACE_SEGMENTS"
+        },
+        "dbContextName": {
+            "type": "derived",
+            "valueSource": "name",
+            "valueTransform": "dbContextName",
+            "replaces": "CratisAspireDbContext",
+            "fileRename": "CratisAspireDbContext"
+        },
+        "aspireProjectType": {
+            "type": "derived",
+            "valueSource": "name",
+            "valueTransform": "aspireProjectType",
+            "replaces": "Projects.CratisAspire"
+        },
         "Framework": {
             "type": "parameter",
             "datatype": "choice",

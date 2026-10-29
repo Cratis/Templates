@@ -30,7 +30,7 @@ repositories {
 }
 
 cratisArc {
-    moduleName = "CratisApp"
+    moduleName = "APP_IDENTIFIER"
     manageDependencies = true
 
     endpoints {
