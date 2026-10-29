@@ -7,10 +7,10 @@ services:
       - Cratis__Chronicle__Storage__Type=DATABASE
       - Cratis__Chronicle__Storage__ConnectionDetails=DATABASE_KERNEL_CONNECTION
     ports:
-      - 27017:27017
-      - 11111:11111
-      - 30000:30000
-      - 35000:35000
+      - 127.0.0.1:27017:27017
+      - 127.0.0.1:11111:11111
+      - 127.0.0.1:30000:30000
+      - 127.0.0.1:35000:35000
     DATABASE_DEPENDS_ON
     DATABASE_VOLUMES
 
@@ -19,12 +19,13 @@ DATABASE_SERVICE
   aspire-dashboard:
     image: mcr.microsoft.com/dotnet/aspire-dashboard:latest
     environment:
+      # Anonymous dashboard access is a dev convenience; ports are bound to loopback only.
       - DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS=true
       - DOTNET_DASHBOARD_OTLP_ENDPOINT_URL=http://chronicle:18889
       - ALLOW_UNSECURED_TRANSPORT=true
       - DOTNET_ENVIRONMENT=Development
     ports:
-      - 18888:18888
-      - 4317:18889
+      - 127.0.0.1:18888:18888
+      - 127.0.0.1:4317:18889
 
 DATABASE_TOP_VOLUMES
