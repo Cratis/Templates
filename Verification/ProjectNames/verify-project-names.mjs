@@ -38,7 +38,8 @@ function files(root) {
     return readdirSync(root, { withFileTypes: true }).flatMap(entry => {
         if (['node_modules', 'bin', 'obj', 'wwwroot', '.git'].includes(entry.name)) return [];
         const path = join(root, entry.name);
-        return entry.isDirectory() ? files(path) : [path];
+        // CLI tooling can add directory symlinks; inspect only regular application files.
+        return entry.isDirectory() ? files(path) : entry.isFile() ? [path] : [];
     });
 }
 
