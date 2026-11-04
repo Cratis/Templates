@@ -3,20 +3,7 @@ title: The Cratis Kotlin Application template
 description: A full-stack vertical-slice application on Spring Boot — Kotlin with Arc commands and queries, Chronicle event sourcing, TypeScript proxy generation through the Arc Gradle plugin, and a React frontend.
 ---
 
-The Kotlin flavor of the `cratis` template gives you the full-stack starting point on **Spring Boot**: **Arc** for commands and queries over HTTP, **Chronicle** for the event log, and a **React** frontend that talks to TypeScript proxies generated from your Kotlin code.
-
-Scaffold it with either tool:
-
-```bash
-dotnet new install Cratis.Templates
-dotnet new cratis --language Kotlin -n MyStore
-```
-
-```bash
-cratis new cratis --language kotlin -n MyStore -o MyStore --allow-scripts yes
-```
-
-`Cratis.Templates` includes the Kotlin template; `Cratis.Templates.Kotlin` publishes the same template on its own. There is no `cratis-kotlin` short name.
+Start with a Kotlin application that registers a named item and shows it in a React list. The `cratis` template supplies a Spring Boot backend, a React frontend, and local infrastructure. Cratis Arc exposes the commands and queries over HTTP; Cratis Chronicle stores the events behind the listing. First run the sample, then follow its command and read model to see how the pieces connect.
 
 ## Before you begin
 
@@ -26,19 +13,52 @@ cratis new cratis --language kotlin -n MyStore -o MyStore --allow-scripts yes
 
 The .NET SDK is needed only if you scaffold with `dotnet new`; the generated project builds with the bundled Gradle wrapper.
 
-## Options
+The run steps below use the default MongoDB storage and yarn package manager. Choose different scaffold options only if you need them; the reference is under [Options](#options).
 
-| Option | Values | Default |
-| --- | --- | --- |
-| `--Database` | `MongoDB`, `PostgreSQL`, `MsSql`, `SQLite` | `MongoDB` |
-| `--packageManager` | `yarn`, `pnpm`, `npm`, `none` | `yarn` |
-| `--SkipAiUpdateInstructions` | `true`, `false` | `false` |
-
-The application code is the same for every database, because the Chronicle kernel persists the read models. `--Database` changes how the Chronicle container in `docker-compose.yml` stores its data (embedded MongoDB, a PostgreSQL or SQL Server container, or an SQLite file on a named volume) and switches the default read-model sink in `ChronicleConfiguration.kt` between MongoDB and SQL:
+Choose one scaffolding tool. For `dotnet new`, run:
 
 ```bash
-dotnet new cratis --language Kotlin -n MyStore --Database PostgreSQL
+dotnet new install Cratis.Templates
+dotnet new cratis --language Kotlin -n MyStore
 ```
+
+Alternatively, install the [Cratis CLI](/cli/) and use its scaffold command instead:
+
+```bash
+cratis new cratis --language kotlin -n MyStore -o MyStore --allow-scripts yes
+```
+
+`Cratis.Templates` includes the Kotlin template; `Cratis.Templates.Kotlin` publishes the same template on its own. There is no `cratis-kotlin` short name.
+
+## Run it
+
+Before starting the backend, keep it local: Spring Boot listens on every interface by default. Set `server.address=127.0.0.1` in `application.properties`. The generated `docker-compose.yml` already binds its published ports to `127.0.0.1`.
+
+Start Chronicle in Docker, then build the backend before starting the frontend. The frontend's `Api` imports point to `build/generated/arc-proxies/`, the Arc Gradle plugin's configured output directory, so the backend build comes first.
+
+```bash
+cd MyStore
+docker compose up -d        # Chronicle kernel and Aspire dashboard
+./gradlew build             # compiles and generates the TypeScript proxies
+yarn install                # skip if the scaffold already installed dependencies
+./gradlew bootRun           # backend on http://localhost:8080
+```
+
+In a second terminal opened in `MyStore`, start the frontend:
+
+```bash
+yarn dev
+```
+
+Vite serves the frontend on `http://localhost:9000`, opens it in your browser, and forwards `/api` and `/.cratis` to the backend. Open **Demo**, choose **Register**, enter a name, and submit it. The expected result is that name appearing in the list. To follow the same registration without the frontend, use the command and query requests under [The sample slices teach the conventions](#the-sample-slices-teach-the-conventions).
+
+When the helper exits, whether you press Ctrl+C or a step fails, it runs `docker compose down`. This removes the containers and, with the default MongoDB storage, every event and read model. Use the manual steps with `docker compose stop` when you want to keep data between runs.
+
+Instead of the manual steps, use `./run.sh` to start Chronicle, build the backend, and launch the frontend and backend from one terminal.
+
+The helper tries yarn and falls back to npm. `./run.sh --no-frontend` starts only Chronicle and the backend.
+
+The project includes a `.yarnrc.yml` that sets `nodeLinker: node-modules`, so Yarn 2 and later install into `node_modules` instead of Plug'n'Play, which the TypeScript 7 compiler cannot resolve. npm, pnpm, and Yarn 1 ignore the file.
 
 ## What you get
 
@@ -61,31 +81,9 @@ MyStore/
     └── resources/application.properties — event store name and route settings
 ```
 
-## Run it
-
-```bash
-cd MyStore
-docker compose up -d        # Chronicle kernel and Aspire dashboard
-./gradlew build             # compiles and generates the TypeScript proxies
-yarn install                # skip if the scaffold already installed dependencies
-./gradlew bootRun           # backend on http://localhost:8080
-```
-
-In a second terminal, start the frontend:
-
-```bash
-yarn dev
-```
-
-Vite serves the frontend on `http://localhost:9000`, opens it in your browser, and forwards `/api` and `/.cratis` to the backend. Open **Demo** and register an item; it appears in the list.
-
-`./run.sh` runs the same sequence in one terminal When it exits, whether you press Ctrl+C or a step fails, it runs `docker compose down`, which removes the containers and, with the default MongoDB storage, every event and read model. Use the manual steps with `docker compose stop` when you want to keep data between runs. It uses yarn when available and falls back to npm; `./run.sh --no-frontend` starts only Chronicle and the backend.
-
-The project includes a `.yarnrc.yml` that sets `nodeLinker: node-modules`, so Yarn 2 and later install into `node_modules` instead of Plug'n'Play, which the TypeScript 7 compiler cannot resolve. npm, pnpm, and Yarn 1 ignore the file.
-
 ## The sample slices teach the conventions
 
-The `Registration` slice shows the command side: a `@Command` with a `@CommandKey`, returning the event to append. This excerpt from `registration/Registration.kt` omits the `Registered` event and the reactor declared in the same file:
+Start with `Register`: its `handle()` returns a `Registered` event containing the name. The command does not build the listing itself. This excerpt from `registration/Registration.kt` omits the event and reactor declared in the same file:
 
 ```kotlin
 @Command
@@ -98,9 +96,9 @@ data class Register(
 }
 ```
 
-`SomeId` is a strongly-typed identity, a `ConceptAs<String>`, rather than a raw `String`. The command key routes the command to its event source; the generated TypeScript command sends it as part of the payload.
+`SomeId` wraps the command's string identity. Its two `ConceptAs<String>` contracts expose that value to Arc and Chronicle. The event carries the name; the reducer takes the listing's `id` from the event context, so it refers to the same event source as the command key.
 
-The `Listing` slice shows the read side: a read model built by a `@Reducer` from the `Registered` event, with a query exposing it over HTTP. This excerpt from `listing/Listing.kt` omits the reducer:
+To put the registered name on screen, the reducer builds a `Listing` from the `Registered` event and its event-source identity. The query reads those stored listings through `IEventStore`. This excerpt from `listing/Listing.kt` omits the reducer:
 
 ```kotlin
 @ArcReadModel
@@ -120,7 +118,7 @@ data class Listing(
 }
 ```
 
-With the backend running, post to the command route and the whole loop runs: the command is handled, Chronicle appends the event, the reactor logs it, and the reducer updates the read model.
+The scaffold's `ChronicleConfiguration.kt` supplies an explicit list of the sample event, read model, reducer, and reactor. With the backend running, use the requests below to submit the command and read the listing without the React frontend.
 
 ```bash
 curl -sS -X POST http://localhost:8080/api/register \
@@ -134,9 +132,23 @@ curl -sS -X QUERY http://localhost:8080/api/listings \
 
 The first call returns `"isSuccess":true`. The second returns the listing in `data`, for example `[{"id":"…","name":"Cratis"}]`. `GET /api/listings` returns the same result.
 
+## Options
+
+| Option | Values | Default |
+| --- | --- | --- |
+| `--Database` | `MongoDB`, `PostgreSQL`, `MsSql`, `SQLite` | `MongoDB` |
+| `--packageManager` | `yarn`, `pnpm`, `npm`, `none` | `yarn` |
+| `--SkipAiUpdateInstructions` | `true`, `false` | `false` |
+
+The application code is the same for every database, because the Chronicle kernel persists the read models. `--Database` changes how the Chronicle container in `docker-compose.yml` stores its data (embedded MongoDB, a PostgreSQL or SQL Server container, or an SQLite file on a named volume) and switches the default read-model sink in `ChronicleConfiguration.kt` between MongoDB and SQL:
+
+```bash
+dotnet new cratis --language Kotlin -n MyStore --Database PostgreSQL
+```
+
 ## Versions
 
-The Arc Gradle plugin (`io.cratis.arc`) and `io.cratis:cratis`, the one dependency that bundles Arc, its Spring Boot wiring, and the Chronicle client, are requested as `latest.release`. Gradle resolves them when it builds, and the Chronicle client version follows from the Arc release, so the two stay paired without your involvement. Gradle caches a dynamic version for up to 24 hours by default; `./gradlew build --refresh-dependencies` picks up a newer release immediately.
+The Arc Gradle plugin (`io.cratis.arc`) and `io.cratis:cratis`, the one dependency that bundles Arc, its Spring Boot wiring, and the Chronicle client, are requested as `latest.release`. Gradle resolves both requests when it builds; `latest.release` does not pin a reproducible pair in this file. Gradle caches a dynamic version for up to 24 hours by default; `./gradlew build --refresh-dependencies` picks up a newer release immediately.
 
 For a reproducible or production build, replace `latest.release` with the exact version you tested, keeping the plugin and the `io.cratis:cratis` dependency on the same version, or enable Gradle dependency locking.
 
@@ -157,11 +169,9 @@ The rest of the build is pinned:
 - **`Cannot find a Java installation … languageVersion=17`.** Install a JDK 17 and point `JAVA_HOME` at it.
 - **`Cannot find module` during the frontend build.** Yarn 2 or later installed with Plug'n'Play because `.yarnrc.yml` is missing (projects scaffolded from earlier template versions do not have one). Add one containing `nodeLinker: node-modules` and run `yarn install` again.
 - **Port 8080 or 35000 is already in use.** Stop the other process, or move the service. For the backend, set `server.port` in `application.properties` and update the two `http://localhost:8080` proxy targets in `.frontend/vite.config.ts`. For Chronicle, change the host side of the mapping in `docker-compose.yml` and point `cratis.chronicle.connection-string` at the new port.
-- **The backend is reachable from other machines.** Spring Boot listens on every interface by default. Set `server.address=127.0.0.1` in `application.properties` to keep it local; the compose ports can be limited the same way by prefixing each mapping with `127.0.0.1:`.
-
 ## AI assistance
 
-The scaffolded project includes a `.cratis/ai.json` selecting the `cratis/application/kotlin` profile with the Kotlin and TypeScript languages. After `dotnet new`, make sure the [Cratis CLI](/cli/) is installed, then run:
+If you want coding-agent guidance, the scaffolded project includes a `.cratis/ai.json` selecting the `cratis/application/kotlin` profile with the Kotlin and TypeScript languages. After `dotnet new`, make sure the [Cratis CLI](/cli/) is installed, then run:
 
 ```bash
 cratis ai update
