@@ -3,7 +3,7 @@ title: Getting started with the Cratis templates
 description: Install Cratis.Templates, scaffold the full-stack cratis application, run it against a local Chronicle, and register your first event.
 ---
 
-This tutorial takes you from an empty folder to a running Cratis application: an ASP.NET Core backend with Arc commands and queries, Chronicle storing events locally, and a React page that registers an item and shows it in a list.
+Follow one C# project from creation to a visible registration: the ASP.NET Core backend handles a command, Chronicle stores its event, and the React page reads the projected list. Keep this default path for the first run; the CLI alternative and optional AI setup come after the working loop and shutdown.
 
 ## Before you begin
 
@@ -13,7 +13,7 @@ The C# path below needs:
 - **Docker** with the Compose plugin (`docker compose`). The generated `docker-compose.yml` runs the Chronicle development image and an Aspire dashboard.
 - **Node.js `^20.19.0` or `>=22.12.0`** (what Vite 8 accepts) and a package manager: yarn (the default), pnpm, or npm.
 
-The Kotlin and Java variants need a JDK 17 instead of the .NET SDK to build. See [the Kotlin template](/templates/cratis-kotlin/) and [the Java template](/templates/cratis-java/).
+The Kotlin and Java variants build with JDK 17, but choosing dotnet-new scaffolding still requires the .NET SDK. Follow [the Kotlin template](/templates/cratis-kotlin/) or [the Java template](/templates/cratis-java/) for their own prerequisites and run sequence; the C# commands below are not a JVM procedure.
 
 ## Install the templates
 
@@ -37,24 +37,82 @@ dotnet new cratis --help
 
 ## Scaffold your first application
 
+Choose the package manager and database before creating the project. The first block uses the defaults. If you want the explicit npm/database variant below, replace only the creation command with that alternative. Still enter the generated MyStore directory afterward; do not create MyStore twice:
+
 ```bash
 dotnet new cratis -n MyStore
 cd MyStore
 ```
 
-The post-creation actions add the Cratis NuGet packages at their current release (the generated `.csproj` records the exact versions), restore them, and install the frontend dependencies with yarn. `dotnet new` asks before it runs the yarn step; accept it. To choose the package manager or database up front, pass them as options:
+The post-creation actions request the Cratis NuGet packages, restore them, and install the frontend dependencies with yarn. Read their output before continuing: the actions can continue after an error, so inspect the generated `.csproj` rather than assuming package resolution succeeded. `dotnet new` asks before the yarn step; accept it only if you intend that dependency installation. The following alternative replaces the default creation command and selects npm and MongoDB explicitly:
 
 ```bash
 dotnet new cratis -n MyStore --packageManager npm --Database MongoDB
 ```
 
-In a script, CI job, or dev container where there is no interactive terminal, opt in to the yarn step explicitly with `--allow-scripts yes`. Without it, `dotnet new` keeps waiting for a yes or no answer it cannot receive.
+In a script, CI job, or dev container, do not rely on an interactive answer to the dependency-install step. Use `--allow-scripts yes` only when you intend that generated action to run, and inspect the `dotnet new` output to confirm which post-actions completed.
 
 The project includes a `.yarnrc.yml` that sets `nodeLinker: node-modules`, so Yarn 2 and later install into `node_modules` instead of Plug'n'Play, which the TypeScript 7 compiler cannot resolve. npm, pnpm, and Yarn 1 ignore the file.
 
+## Start the infrastructure
+
+:::caution[Development only]
+The generated compose file binds its published ports (27017, 35000, 18888, and others) to loopback. The Chronicle image uses well-known development credentials; use it only on a trusted development machine. Keep each host mapping in `docker-compose.yml` bound to `127.0.0.1:`, for example `127.0.0.1:35000:35000`; changing the listen address changes who can reach those services. The health command below skips certificate verification; keep that exception local to this development setup.
+:::
+
+From the MyStore directory, start the containers and check the health result before starting the backend. Container startup and application readiness are separate checks:
+
+```bash
+docker compose up -d
+```
+
+This starts the `cratis/chronicle:latest-development` image, which bundles Chronicle with MongoDB, and an Aspire dashboard at `http://localhost:18888`. Chronicle is ready when this prints `Healthy`:
+
+```bash
+curl --insecure https://localhost:35000/health
+```
+
+## Run it
+
+Keep the terminal in MyStore and start the backend. Leave it running here so you can read the sample reactor's output:
+
+```bash
+dotnet run
+```
+
+It listens on `http://localhost:5000`; Swagger UI is at `http://localhost:5000/swagger`. In a second terminal, start the frontend dev server from MyStore. The block below uses yarn; if you selected npm when scaffolding, use `npm run dev` instead:
+
+```bash
+yarn dev
+```
+
+Vite serves the frontend on `http://localhost:9000`, opens it in your browser, and forwards `/api`, `/.cratis`, and `/swagger` to the backend. Open **Demo**, select **Register**, and enter a name. The command produces the registration event; the backend terminal's `Registered: <name>` line comes from the reactor, while the list reads the projected model. Check both observations. Use the backend's Swagger UI when you need to inspect the mapped command/query routes rather than guess them.
+
+You can also register from the terminal:
+
+```bash
+curl -X POST http://localhost:5000/api/some-module/some-feature/registration \
+  -H "Content-Type: application/json" \
+  -d '{ "name": "Cratis" }'
+```
+
+A successful call returns `"isSuccess":true` and, in `response`, the identity the event was appended under. That is the command-side result, not the list's contents; return to the frontend list to inspect the read side, or use the Workbench link below to inspect the event itself.
+
+To see the event itself, open the Chronicle Workbench at `https://localhost:35000`, accept the self-signed development certificate, and sign in with the development account described in [Workbench — Development](/chronicle/workbench/development/).
+
+## Stop and clean up
+
+Stop the backend and the Vite server with Ctrl+C, then stop the containers and keep their data:
+
+```bash
+docker compose stop
+```
+
+With the default MongoDB setup, removing the Chronicle container deletes its events and read models. Run `docker compose down` only when you want to remove those containers and that default data. With `--Database SQLite`, Chronicle writes to the bind-mounted `chronicle-data` folder in your project instead; `docker compose down` leaves that folder in place. Delete the folder only when you intend to discard the SQLite data as well.
+
 ## Two ways to scaffold: dotnet new and cratis new
 
-The [Cratis CLI](/cli/) can scaffold the same templates with its own template engine:
+If you prefer the [Cratis CLI](/cli/), use it instead of dotnet-new creation, not as another step for the MyStore project you already created. Skip these creation examples for an existing project; use a separate parent folder when trying a new one. The examples show the interactive wizard, template listing and explicit creation forms:
 
 ```bash
 cratis new                                                # interactive wizard
@@ -72,67 +130,13 @@ See [Creating projects with cratis new](/cli/new/) for the full command referenc
 
 ## Set up AI assistance
 
-Every template ships a `.cratis/ai.json` that selects the Cratis AI profiles, languages, and coding-agent harnesses for that template. After `dotnet new`, install the [Cratis CLI](/cli/) and run this from the project root:
+AI guidance is optional and is not needed to run the application. Every template ships a `.cratis/ai.json` that selects its Cratis AI profiles, languages, and coding-agent harnesses. If you want that guidance after `dotnet new`, install the [Cratis CLI](/cli/) and run this from the MyStore project root:
 
 ```bash
 cratis ai update
 ```
 
 It installs the Cratis-managed rules, skills, and harness integration (`AGENTS.md` plus `.claude/`, `.cursor/`, `.github/`, `.opencode/`, and `.pi/`) and records every installed file in `.cratis/ai.manifest.json`. Commit the result so your team shares the same guidance. Running it again later refreshes only files Cratis installed; `cratis ai status` reports whether a newer revision is available.
-
-## Start the infrastructure
-
-```bash
-docker compose up -d
-```
-
-This starts the `cratis/chronicle:latest-development` image, which bundles Chronicle with MongoDB, and an Aspire dashboard at `http://localhost:18888`. Chronicle is ready when this prints `Healthy`:
-
-```bash
-curl --insecure https://localhost:35000/health
-```
-
-:::caution[Development only]
-The compose file publishes its ports (27017, 35000, 18888, and others) on every network interface, and the Chronicle image uses well-known development credentials. Use it only on a trusted machine. To keep the services on this machine, prefix each mapping in `docker-compose.yml` with `127.0.0.1:`, for example `127.0.0.1:35000:35000`.
-:::
-
-## Run it
-
-Start the backend:
-
-```bash
-dotnet run
-```
-
-It listens on `http://localhost:5000`; Swagger UI is at `http://localhost:5000/swagger`. In a second terminal, start the frontend dev server:
-
-```bash
-yarn dev
-```
-
-Vite serves the frontend on `http://localhost:9000`, opens it in your browser, and forwards `/api`, `/.cratis`, and `/swagger` to the backend. Open **Demo**, select **Register**, and enter a name. The backend terminal logs `Registered: <name>` from the sample reactor, and the name appears in the list.
-
-You can also register from the terminal:
-
-```bash
-curl -X POST http://localhost:5000/api/some-module/some-feature/registration \
-  -H "Content-Type: application/json" \
-  -d '{ "name": "Cratis" }'
-```
-
-A successful call returns `"isSuccess":true` and, in `response`, the identity the event was appended under.
-
-To see the event itself, open the Chronicle Workbench at `https://localhost:35000`, accept the self-signed development certificate, and sign in with the development account described in [Workbench — Development](/chronicle/workbench/development/).
-
-## Stop and clean up
-
-Stop the backend and the Vite server with Ctrl+C, then stop the containers and keep their data:
-
-```bash
-docker compose stop
-```
-
-To remove the containers instead, run `docker compose down`. With the default MongoDB setup, events and read models live inside the Chronicle container, so this deletes them. With `--Database SQLite`, Chronicle writes its files to the `chronicle-data` folder in your project instead, which `docker compose down` leaves in place; delete the folder to start over.
 
 ## Troubleshooting
 

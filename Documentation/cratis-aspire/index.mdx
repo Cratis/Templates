@@ -3,13 +3,13 @@ title: The Cratis Aspire template
 description: The full-stack Cratis web application composed with .NET Aspire — the same vertical slices with an orchestrated development topology.
 ---
 
-The `cratis-aspire` template is the [Cratis Web Application](/templates/cratis-web/) composed with [Aspire](https://learn.microsoft.com/en-us/dotnet/aspire/): the same vertical slices and Arc conventions, with Chronicle, its database, and your backend started and wired together by an Aspire app host instead of a `docker-compose.yml`.
+Choose `cratis-aspire` when you want an app host to start Chronicle, its database, and your backend together. It composes the C# [Cratis Web Application](/templates/cratis-web/) with [Aspire](https://learn.microsoft.com/en-us/dotnet/aspire/) instead of a `docker-compose.yml`; the event, command, query, and React slices stay in the web project. You still start Vite separately for frontend development.
+
+You need the .NET 10 SDK, Docker (the app host runs Chronicle and any database as containers), and Node.js `^20.19.0` or `>=22.12.0` with a package manager for the frontend. The commands below use yarn. [Install the templates](/templates/getting-started/#install-the-templates) first if the package is not installed.
 
 ```bash
 dotnet new cratis-aspire -n MyStore
 ```
-
-You need the .NET 10 SDK, Docker (the app host runs Chronicle and any database as containers), and Node.js `^20.19.0` or `>=22.12.0` with a package manager for the frontend.
 
 ## Options
 
@@ -19,17 +19,13 @@ You need the .NET 10 SDK, Docker (the app host runs Chronicle and any database a
 | `--Framework` | `net10.0` | `net10.0` |
 | `--SkipAiUpdateInstructions` | `true`, `false` | `false` |
 
-The app host always runs the Chronicle development image, which carries the development client credentials the backend connects with. With a database other than MongoDB, it also starts a PostgreSQL or SQL Server container (or, for SQLite, uses a `chronicle-data` folder next to the solution), stores Chronicle's data there, and gives the backend a connection to the `chronicle+<event store>` database Chronicle projects read models into. The backend reads them through Entity Framework Core:
+Leave MongoDB selected for the first run. The app host runs the Chronicle development image with development client credentials; use it only on a trusted development machine. Use disposable sample data: the generated default MongoDB composition does not request a persistent data volume.
 
-```bash
-dotnet new cratis-aspire -n MyStore --Database PostgreSQL
-```
-
-Unlike `cratis`, this template has no `--packageManager` option and does not install frontend dependencies for you.
+Unlike `cratis`, this template has no `--packageManager` option and does not install frontend dependencies for you. The run procedure below installs them in the web project; alternative database creation is described after that procedure.
 
 ## What you get
 
-A solution with three projects instead of one:
+The web application, app host, and shared service defaults each have their own project. Change application behavior in the web project and local service wiring in the app host:
 
 | Project | Role |
 | --- | --- |
@@ -39,7 +35,7 @@ A solution with three projects instead of one:
 
 ## Run it
 
-`dotnet new` creates a `MyStore` solution folder with the web project in a nested `MyStore` folder. Install the frontend dependencies in the web project, then run the app host from the solution folder:
+`dotnet new` creates a `MyStore` solution folder with the web project in a nested `MyStore` folder. The two folders have different jobs: install frontend dependencies in MyStore/MyStore, then return to the solution folder to launch the app host. Leave that terminal running; it hosts the backend and containers, not Vite:
 
 ```bash
 cd MyStore          # the solution folder
@@ -49,17 +45,25 @@ cd ..
 dotnet run --project MyStore.Composition
 ```
 
-Aspire starts the containers and the backend and prints the dashboard address with a one-time login token, for example `https://localhost:57075/login?t=…`. The port changes between runs, so open the link from your terminal. The dashboard shows every resource with its logs and telemetry.
+Aspire starts the containers and backend and prints the dashboard address with a one-time login token, for example `https://localhost:57075/login?t=…`. Open the link from your terminal because the port changes between runs. Use the backend and Chronicle resource logs there to investigate startup or connection failures; reaching the dashboard is not yet a check of the application.
 
-For frontend hot reload, run `yarn dev` in the `MyStore` folder. Vite serves on `http://localhost:9000` and forwards `/api`, `/.cratis`, and `/swagger` to `http://localhost:5000`.
+In a second terminal, run `yarn dev` from the nested `MyStore` web-project folder: MyStore/MyStore relative to where you scaffolded. Vite serves on `http://localhost:9000` and forwards `/api`, `/.cratis`, and `/swagger` to `http://localhost:5000`. Open **Demo**, select **Register**, and enter a name. The backend reactor logs `Registered: <name>`; look for the name in the list to check the projected read result separately. Follow [the web template's sample slices](/templates/cratis-web/#the-sample-slices-teach-the-conventions) to trace that command, event, and query in the web project.
+
+When you finish, stop Vite and then the app host in their terminals. This setup is managed by the app host, not Compose; do not apply the plain web template's Compose cleanup commands to it.
+
+Choose a different database at creation time, in place of the first scaffold command, not as another command inside the solution you just created. With a database other than MongoDB, the app host starts a PostgreSQL or SQL Server container (or, for SQLite, uses a `chronicle-data` folder next to the solution), stores Chronicle's data there, and gives the backend a connection to the `chronicle+<event store>` database Chronicle projects read models into. The backend reads them through Entity Framework Core:
+
+```bash
+dotnet new cratis-aspire -n MyStore --Database PostgreSQL
+```
 
 ## What it is for
 
-Use this template when your team already runs on Aspire, or when you want the local development topology, with dashboards, telemetry, and resilient HTTP, managed for you from day one. If you want the same application without the orchestration layer, use the plain [Cratis Web Application](/templates/cratis-web/) template.
+Use the Composition project when you need to change which services start together or how their connections reach the backend. The web project still owns the sample slices and frontend; changing an application feature does not require moving it into the app host. If you prefer to start the backend and containers separately, use the plain [Cratis Web Application](/templates/cratis-web/) template.
 
 ## AI assistance
 
-The scaffolded solution includes a `.cratis/ai.json` selecting the `cratis/application/csharp` profile with the C# and TypeScript languages. Make sure the [Cratis CLI](/cli/) is installed, then run from the solution folder:
+AI assistance is optional and separate from starting the application. The scaffolded solution includes a `.cratis/ai.json` selecting the `cratis/application/csharp` profile with the C# and TypeScript languages. If you want that guidance, install the [Cratis CLI](/cli/) and run this from the outer MyStore solution folder, not the nested web project:
 
 ```bash
 cratis ai update

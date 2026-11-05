@@ -3,13 +3,18 @@ title: The Cratis Web Application template
 description: A full-stack vertical-slice application — ASP.NET Core with Arc commands and queries, Chronicle event sourcing, and a React frontend with generated TypeScript proxies.
 ---
 
-The `cratis` template is the full-stack starting point for a Cratis application. One command gives you a running application with the whole stack wired: **Arc** for commands and queries over HTTP, **Chronicle** for the event log, MongoDB for read models, and a **React** frontend that talks to generated TypeScript proxies.
+Choose the `cratis` template for a full-stack C# application with Cratis Arc handling commands and queries, Cratis Chronicle storing events, and a React frontend calling generated TypeScript proxies. You start the backend, frontend, and Compose infrastructure separately. If you want an app host to start the backend and containers together, choose the [Cratis Aspire template](/templates/cratis-aspire/) instead.
+
+You need the .NET 10 SDK (`net10.0` is the only target framework), Docker with the Compose plugin, and Node.js `^20.19.0` or `>=22.12.0`. Have yarn available for the default frontend commands. [Install the templates](/templates/getting-started/#install-the-templates) before creating the project if the package is not installed.
 
 ```bash
 dotnet new cratis -n MyStore
+cd MyStore
 ```
 
-You need the .NET 10 SDK (`net10.0` is the only target framework), Docker with the Compose plugin, and Node.js `^20.19.0` or `>=22.12.0`. [Getting started](/templates/getting-started/) takes you through scaffolding, running, and registering your first item.
+The project and compose file are in MyStore; use that directory for the remaining commands. Check that the scaffold's frontend dependency installation completed, or follow the generated README's install step before starting Vite.
+
+Use this development configuration only on a trusted machine. With default MongoDB, removing the Chronicle container deletes its events and read models. To start the application, follow [Getting started](/templates/getting-started/) from Start the infrastructure onward, without scaffolding a second project. Compose runs the containers; the backend and Vite use separate terminals. The sample below explains what happens when you register a name.
 
 ## Options
 
@@ -19,6 +24,8 @@ You need the .NET 10 SDK (`net10.0` is the only target framework), Docker with t
 | `--packageManager` | `yarn`, `pnpm`, `npm`, `none` | `yarn` |
 | `--Framework` | `net10.0` | `net10.0` |
 | `--SkipAiUpdateInstructions` | `true`, `false` | `false` |
+
+Keep MongoDB for the default walkthrough. Choose another database at creation time, in place of the first scaffold command; the alternative command below is not a next step to run inside MyStore.
 
 With a database other than MongoDB, the project references `Cratis.Arc.EntityFrameworkCore` instead of `Cratis.Arc.MongoDB`, and `appsettings.json` sets `Cratis:Chronicle:DefaultSinkTypeId` to `SQL`. Chronicle then projects read models into a table (`Listings`) in a database named `chronicle+<your event store>`, and `ConnectionStrings:Cratis` points Entity Framework Core at that database. The Chronicle container in `docker-compose.yml` stores its data in a PostgreSQL or SQL Server container, or, for SQLite, in a `chronicle-data` folder in your project that the backend reads directly:
 
@@ -80,7 +87,7 @@ public record Listing(
 }
 ```
 
-With Chronicle and the backend running, post to the command route and the whole loop runs: Arc handles the command, Chronicle appends the event, the reactor logs it, and the projection updates the read model.
+With Chronicle and the backend running, send the request below to register a name without opening the dialog. It calls the same Register command as the sample UI: the command chooses an identity and returns Registered, which the Arc integration appends to Chronicle. The reactor and projection consume that event separately; check the response, backend log, and list for their different parts of the result.
 
 ```bash
 curl -X POST http://localhost:5000/api/some-module/some-feature/registration \
@@ -88,13 +95,15 @@ curl -X POST http://localhost:5000/api/some-module/some-feature/registration \
   -d '{ "name": "Cratis" }'
 ```
 
-The response carries `"isSuccess":true` and the new identity in `response`, and the backend logs `Registered: Cratis`. Open the **Demo** page of the frontend to see the item in the list.
+A successful response carries `"isSuccess":true` and the new identity in `response`. The backend reactor logs `Registered: Cratis`; that line is not a check of the projected read model. Open the frontend's **Demo** page and look for the name in its list. If the application cannot connect or start, use the [Getting started troubleshooting steps](/templates/getting-started/#troubleshooting) and inspect the Chronicle service's Compose logs.
+
+When you finish, stop the backend and Vite in their terminals. With default MongoDB, removing the Chronicle container deletes the events and read models held inside it. Use `docker compose stop` to pause the containers and keep that data; use `docker compose down` only when you intend to remove the containers and their default MongoDB data.
 
 The route comes from the namespace: `CratisApp.SomeModule.SomeFeature.Registration` with the root namespace's segments skipped (`Program.cs` post-configures `SegmentsToSkipForRoute` to the namespace segment count, paired with the MSBuild count of `RootNamespace` for `CratisProxiesSegmentsToSkip`) and the command name left out (`IncludeCommandNameInRoute: false`). These settings live in `appsettings.json` and have matching `CratisProxies*` properties in the `.csproj`; change them together, or the generated proxies call routes the backend does not map. See [Proxy generator configuration](/arc/backend/csharp/proxy-generation/configuration/).
 
 ## TypeScript proxies are generated at build time
 
-Every `dotnet build` regenerates typed TypeScript proxies for your commands and queries next to their C# sources: `Registration.cs` produces `Registration.ts`. The frontend imports them and gets compile-time safety across the stack. Change a C# property and the frontend stops compiling until it catches up.
+The project configures `dotnet build` to write typed TypeScript proxies next to their C# sources: `Registration.cs` produces `Registration.ts`. The frontend imports that generated contract to call the backend. Rebuild after changing a command or query, then update frontend code where its use no longer matches the generated shape.
 
 From a file in the `Registration` folder, you can execute the command directly:
 
@@ -110,11 +119,11 @@ The sample UI does not call `execute()` itself. `RegisterDialog.tsx` passes the 
 
 ## Add your first feature
 
-Copy the `SomeFeature` folder shape: one folder per feature, one folder per slice, C# and TypeScript side by side. A typical feature holds a command slice, a query slice, and the React components that use them. The Cratis AI skills follow this same structure when an assistant scaffolds slices for you.
+Start by changing the sample's registered name and following it from the command to the backend log and list. Then copy the `SomeFeature` folder shape for your own behavior: one folder per feature, one folder per slice, C# and TypeScript side by side. Keep the command, its read-side view, and the React components connected through their generated proxies; the route settings described above must stay paired when you rename the root namespace. Optional AI guidance follows this same slice structure.
 
 ## AI assistance
 
-The scaffolded project includes a `.cratis/ai.json` with the Cratis AI profiles, languages, and coding agent harnesses for this template — the full-stack selection covering Arc, Chronicle, Components, C#, and TypeScript. Make sure the [Cratis CLI](/cli/) is installed, then run:
+AI assistance is optional; you can run and change the sample without installing agent guidance. The scaffolded project's `.cratis/ai.json` selects `cratis/application/csharp` with C# and TypeScript for the full-stack application. If you want that guidance, install the [Cratis CLI](/cli/) and run this from the MyStore project root:
 
 ```bash
 cratis ai update

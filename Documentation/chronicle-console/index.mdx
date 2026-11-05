@@ -3,13 +3,16 @@ title: The Chronicle Console template
 description: The shortest path to a running Chronicle application — a console app that appends an event and observes it through a projection and a reactor.
 ---
 
-The `cratis-chronicle-console` template is the smallest complete Chronicle application: a console project that connects to a running Chronicle, appends an event, and shows the event flowing through a projection and a reactor.
+Use the `cratis-chronicle-console` template to try an event flow without an HTTP layer or frontend. The console app connects to Chronicle, appends a sample event, and leaves the terminal open so you can see its reactor handle that event.
+
+You need the .NET 10 SDK and Docker with the Compose plugin. If the template package is not installed, [Install the templates](/templates/getting-started/#install-the-templates) before creating the project.
 
 ```bash
 dotnet new cratis-chronicle-console -n MyConsole
+cd MyConsole
 ```
 
-You need the .NET 10 SDK and Docker with the Compose plugin.
+The example creates a MyConsole directory. Keep subsequent commands in that directory, where the generated project and compose file live.
 
 ## Options
 
@@ -23,7 +26,7 @@ The template scaffolds a Chronicle **client**. `--Database` changes only where t
 
 ## What you get
 
-A single `Program.cs` holds the whole story:
+Start with `Program.cs`: the append creates TestEvent, TestProjection describes the read model built from it, and TestReactor prints the event's message. The console does not query the projection, so the terminal output below demonstrates the reactor, not the read model's contents. The file contains:
 
 - A `ChronicleClient` created without arguments, which connects to the local development kernel (`chronicle://localhost:35000` with the development client credentials), and an event store named after your project.
 - A `[EventType]` record, `TestEvent`: the fact your application produces.
@@ -32,30 +35,30 @@ A single `Program.cs` holds the whole story:
 
 ## Run it
 
-Start the infrastructure, then run the app from an interactive terminal:
+The generated configuration uses development client credentials; run it only on a trusted development machine. From the MyConsole directory, start the infrastructure, then run the app from an interactive terminal. Compose starts the containers in the background; the console app runs in this terminal. If the client cannot connect, inspect the Chronicle service's logs in Docker Compose before starting another app instance:
 
 ```bash
 docker compose up -d
 dotnet run
 ```
 
-The app appends one `TestEvent` and prints:
+The app appends one `TestEvent`. Its reactor is the part that writes this terminal line:
 
 ```text
 Received event with message: Hello world!
 ```
 
-It then waits for a key press so the reactor has time to run; press any key to exit. Because it reads a key, run it in a terminal rather than with redirected input. Each run appends another event to the same event source, `some-event-source`.
+The main program waits for a key press. Leave the interactive terminal open until you see the reactor line above, then press any key to exit. Redirected input does not provide that key-press interaction. Each run appends another event to the same event source, `some-event-source`.
 
-When you are done, `docker compose down` removes the containers. With the default MongoDB setup, the events are stored inside the Chronicle container and are removed with it.
+With the default MongoDB setup, events are stored inside the Chronicle container: removing it deletes those events. To pause the containers and keep that data, use `docker compose stop`. When you want to remove the containers and their default MongoDB data instead, use `docker compose down`.
 
 ## What it is for
 
-This template is the fastest way to check that your machine, your container, and your client packages agree, and the cleanest place to experiment with events, projections, and reactors without an HTTP layer in the way. When you are ready for commands, queries, and a frontend, move to the [Cratis Web Application](/templates/cratis-web/) template.
+Use the console sample to change an event and follow its consumers in Program.cs without adding an HTTP surface. The reactor gives you a terminal observation; inspecting a read model is a separate task. When you need model-bound commands, queries, and a frontend, continue with the [Cratis Web Application](/templates/cratis-web/) template.
 
 ## AI assistance
 
-The scaffolded project includes a `.cratis/ai.json` selecting the `cratis/application/chronicle-dotnet` profile with the C# language. Make sure the [Cratis CLI](/cli/) is installed, then run:
+AI assistance is optional; it is not required to run the console sample. The scaffolded project includes a `.cratis/ai.json` selecting the `cratis/application/chronicle-dotnet` profile with the C# language. If you want that guidance, install the [Cratis CLI](/cli/) and run this from the MyConsole project root:
 
 ```bash
 cratis ai update

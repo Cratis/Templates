@@ -3,13 +3,16 @@ title: The Chronicle Web template
 description: A minimal ASP.NET Core application wired to Chronicle — events in over HTTP, projections out, no frontend.
 ---
 
-The `cratis-chronicle-web` template is a minimal ASP.NET Core application connected to Chronicle. It is deliberately small: two endpoints, one event, one projection. You get the server-side skeleton without Arc, without a frontend, and without anything else in the way.
+The `cratis-chronicle-web` template lets you try Chronicle through two ASP.NET Core endpoints: one appends an event and the other reads its projected model. A reactor logs the event's message. Choose this starting point when you want to own the HTTP surface without Arc or a frontend.
+
+You need the .NET 10 SDK and Docker with the Compose plugin. If the template package is not installed, [Install the templates](/templates/getting-started/#install-the-templates) before creating the project.
 
 ```bash
 dotnet new cratis-chronicle-web -n MyApi
+cd MyApi
 ```
 
-You need the .NET 10 SDK and Docker with the Compose plugin.
+The example creates a MyApi directory. Keep the infrastructure and application commands in that directory, alongside the generated compose file and project.
 
 ## Options
 
@@ -23,7 +26,7 @@ The template scaffolds a Chronicle **client**. `--Database` changes only where t
 
 ## What you get
 
-`Program.cs` wires Chronicle into ASP.NET Core and maps two minimal API endpoints. This is the top of the file; the `TestEvent`, `TestProjection`, and `TestReactor` types follow below it:
+In `Program.cs`, the root endpoint appends `TestEvent`, while the projection endpoint reads `TestProjection`. `TestReactor` logs the event's message; its log line is a different observation from the projection response. This setup is the top of the file, with those types defined below it:
 
 ```csharp
 var builder = WebApplication.CreateBuilder(args)
@@ -43,31 +46,33 @@ await app.RunAsync();
 
 ## Run it
 
-Start the infrastructure and the app:
+Use this development configuration only on a trusted development machine; its Chronicle client uses development credentials. From the MyApi directory, start the infrastructure and then the app. Compose starts the containers in the background, while the web app stays in this terminal so you can read its reactor output:
 
 ```bash
 docker compose up -d
 dotnet run
 ```
 
-The app listens on `http://localhost:5000`. In another terminal, call the two endpoints:
+The app listens on `http://localhost:5000`. The sample appends on a `GET` to keep the demo to one `curl`. Use `POST` for anything that changes state in your own endpoints.
+
+In another terminal, call the two endpoints and compare the HTTP responses with the first terminal's reactor output:
 
 ```bash
 curl http://localhost:5000/           # appends a TestEvent to the log
 curl http://localhost:5000/projection # reads the projected read model
 ```
 
-The first call returns the append result with `"isSuccess":true`, and the app logs `Received event with message: Hello, Chronicle!` from the reactor. The second returns every projected instance, for example `[{"message":"Hello, Chronicle!","eventSource":"…"}]`.
+A successful first call returns the append result with `"isSuccess":true`. The reactor logs `Received event with message: Hello, Chronicle!` in the app terminal. The projection endpoint reads the projected instances, for example `[{"message":"Hello, Chronicle!","eventSource":"…"}]`. Use that read endpoint, not the reactor line, to inspect the read model's contents. If the read is empty, repeat the projection request when checking again; calling the root endpoint again appends another event.
 
-The sample appends on a `GET` to keep the demo to one `curl`. Use `POST` for anything that changes state in your own endpoints.
+Stop the foreground web app before stopping or removing its containers. With the default MongoDB setup, removing the Chronicle container deletes its stored events and read models. To pause the containers and keep that data, use `docker compose stop`. Use `docker compose down` only when you want to remove the containers and their default MongoDB data.
 
 ## What it is for
 
-Use this template when you know you want Chronicle inside an ASP.NET Core service and you would rather grow the application yourself. When you want model-bound commands and queries with routes and TypeScript proxies handled for you, use the [Cratis Web Application](/templates/cratis-web/) template.
+Grow this sample when you want to write the HTTP endpoints around Chronicle yourself. Start by changing the sample event and checking both the reactor output and the projection response. When you want model-bound commands and queries with generated routes and TypeScript proxies, use the [Cratis Web Application](/templates/cratis-web/) template.
 
 ## AI assistance
 
-The scaffolded project includes a `.cratis/ai.json` selecting the `cratis/application/chronicle-dotnet` profile with the C# language. Make sure the [Cratis CLI](/cli/) is installed, then run:
+AI assistance is optional; the HTTP sample runs without installing agent guidance. The scaffolded project includes a `.cratis/ai.json` selecting the `cratis/application/chronicle-dotnet` profile with the C# language. If you want that guidance, install the [Cratis CLI](/cli/) and run this from the MyApi project root:
 
 ```bash
 cratis ai update
