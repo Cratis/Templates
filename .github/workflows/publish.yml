@@ -161,7 +161,7 @@ jobs:
 
           validation_root="$RUNNER_TEMP/published-template"
           dotnet new cratis -n ValidatePublished -o "$validation_root" --Framework net10.0 --allow-scripts Yes
-          dotnet build "$validation_root/ValidatePublished.csproj" --configuration Release
+          dotnet build "$validation_root/ValidatePublished.csproj" --configuration Release -p:CratisProxiesOutputPath=
 
           kotlin_root="$RUNNER_TEMP/published-kotlin-template"
           dotnet new cratis -n ValidatePublishedKotlin -o "$kotlin_root" --language Kotlin --packageManager none --allow-scripts Yes
