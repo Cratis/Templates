@@ -10,7 +10,7 @@ Read the [Cratis documentation](https://www.cratis.io), or join the [Cratis Disc
 
 ## Prerequisites
 
-- .NET 10 SDK (the projects target `net10.0`)
+- .NET 11 SDK (the projects target `net11.0`)
 - Docker (the Aspire app host runs Chronicle and any database as containers)
 - Node.js `^20.19.0` or `>=22.12.0` and a package manager (yarn, pnpm, or npm)
 

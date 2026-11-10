@@ -53,11 +53,11 @@ for (const [template, shortName, kind] of [
         const name = Array.from({ length: count }, (_, index) => `S${index + 1}`).join('.');
         const application = join(workspace, `${template}-${count}`);
         run('dotnet', ['new', shortName, '--name', name, '--output', application,
-            '--Framework', 'net10.0', '--no-update-check', ...hive]);
+            '--Framework', 'net11.0', '--no-update-check', ...hive]);
         verify(application, kind, name, count);
         if (cli) {
             const cliApplication = join(workspace, `${template}-${count}-cli`);
-            run('cratis', ['new', shortName, '--template-path', source, '--language', 'csharp', '--framework', 'net10.0',
+            run('cratis', ['new', shortName, '--template-path', source, '--language', 'csharp', '--framework', 'net11.0',
                 '--name', name, '--output', cliApplication, '--allow-scripts', 'no']);
             verify(cliApplication, kind, name, count);
         }

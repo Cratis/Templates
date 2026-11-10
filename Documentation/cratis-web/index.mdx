@@ -5,7 +5,7 @@ description: Scaffold a full-stack C# app with the Cratis Web template, combinin
 
 Choose the `cratis` template for a full-stack C# application with Cratis Arc handling commands and queries, Cratis Chronicle storing events, and a React frontend calling generated TypeScript proxies. You start the backend, frontend, and Compose infrastructure separately. If you want an app host to start the backend and containers together, choose the [Cratis Aspire template](/templates/cratis-aspire/) instead.
 
-You need the .NET 10 SDK (`net10.0` is the only target framework), Docker with the Compose plugin, and Node.js `^20.19.0` or `>=22.12.0`. Have yarn available for the default frontend commands. [Install the templates](/templates/getting-started/#install-the-templates) before creating the project if the package is not installed.
+You need the .NET 11 SDK (`net11.0` is the only target framework), Docker with the Compose plugin, and Node.js `^20.19.0` or `>=22.12.0`. Have yarn available for the default frontend commands. [Install the templates](/templates/getting-started/#install-the-templates) before creating the project if the package is not installed.
 
 ```bash
 dotnet new cratis -n MyStore
@@ -22,7 +22,7 @@ Use this development configuration only on a trusted machine. With default Mongo
 | --- | --- | --- |
 | `--Database` | `MongoDB`, `PostgreSQL`, `MsSql`, `SQLite` | `MongoDB` |
 | `--packageManager` | `yarn`, `pnpm`, `npm`, `none` | `yarn` |
-| `--Framework` | `net10.0` | `net10.0` |
+| `--Framework` | `net11.0` | `net11.0` |
 | `--SkipAiUpdateInstructions` | `true`, `false` | `false` |
 
 Keep MongoDB for the default walkthrough. Choose another database at creation time, in place of the first scaffold command; the alternative command below is not a next step to run inside MyStore.

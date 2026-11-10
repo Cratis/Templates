@@ -5,7 +5,7 @@ description: The full-stack Cratis web application composed with .NET Aspire —
 
 Choose `cratis-aspire` when you want an app host to start Chronicle, its database, and your backend together. It composes the C# [Cratis Web Application](/templates/cratis-web/) with [Aspire](https://learn.microsoft.com/en-us/dotnet/aspire/) instead of a `docker-compose.yml`; the event, command, query, and React slices stay in the web project. You still start Vite separately for frontend development.
 
-You need the .NET 10 SDK, Docker (the app host runs Chronicle and any database as containers), and Node.js `^20.19.0` or `>=22.12.0` with a package manager for the frontend. The commands below use yarn. [Install the templates](/templates/getting-started/#install-the-templates) first if the package is not installed.
+You need the .NET 11 SDK, Docker (the app host runs Chronicle and any database as containers), and Node.js `^20.19.0` or `>=22.12.0` with a package manager for the frontend. The commands below use yarn. [Install the templates](/templates/getting-started/#install-the-templates) first if the package is not installed.
 
 ```bash
 dotnet new cratis-aspire -n MyStore
@@ -16,7 +16,7 @@ dotnet new cratis-aspire -n MyStore
 | Option | Values | Default |
 | --- | --- | --- |
 | `--Database` | `MongoDB`, `PostgreSQL`, `MsSql`, `SQLite` | `MongoDB` |
-| `--Framework` | `net10.0` | `net10.0` |
+| `--Framework` | `net11.0` | `net11.0` |
 | `--SkipAiUpdateInstructions` | `true`, `false` | `false` |
 
 Leave MongoDB selected for the first run. The app host runs the Chronicle development image with development client credentials; use it only on a trusted development machine. Use disposable sample data: the generated default MongoDB composition does not request a persistent data volume.
