@@ -130,7 +130,7 @@ jobs:
             solution_file="$(find "$project_root" -maxdepth 1 -name '*.sln' | head -n 1)"
             if [[ -n "$solution_file" ]]; then
               dotnet restore "$solution_file" --configfile "$validation_root/NuGet.config"
-              dotnet build "$solution_file" --configuration Release --no-restore -p:DisableProxyGenerator=true
+              dotnet build "$solution_file" --configuration Release --no-restore -p:CratisProxiesOutputPath=
               return
             fi
 
@@ -141,7 +141,7 @@ jobs:
             fi
 
             dotnet restore "$project_file" --configfile "$validation_root/NuGet.config"
-            dotnet build "$project_file" --configuration Release --no-restore -p:DisableProxyGenerator=true
+            dotnet build "$project_file" --configuration Release --no-restore -p:CratisProxiesOutputPath=
           }
 
           run_dotnet_new dotnet new cratis-chronicle-console -n ValidateChronicleConsole -o "$validation_root/ValidateChronicleConsole" --Framework net10.0
