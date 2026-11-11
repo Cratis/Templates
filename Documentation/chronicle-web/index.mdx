@@ -5,7 +5,7 @@ description: Scaffold a minimal C# ASP.NET Core service with the Chronicle Web t
 
 The `cratis-chronicle-web` template lets you try Chronicle through two ASP.NET Core endpoints: one appends an event and the other reads its projected model. A reactor logs the event's message. Choose this starting point when you want to own the HTTP surface without Arc or a frontend.
 
-You need the .NET 10 SDK and Docker with the Compose plugin. If the template package is not installed, [Install the templates](/templates/getting-started/#install-the-templates) before creating the project.
+You need the .NET 11 SDK and Docker with the Compose plugin. If the template package is not installed, [Install the templates](/templates/getting-started/#install-the-templates) before creating the project.
 
 ```bash
 dotnet new cratis-chronicle-web -n MyApi
@@ -19,7 +19,7 @@ The example creates a MyApi directory. Keep the infrastructure and application c
 | Option | Values | Default |
 | --- | --- | --- |
 | `--Database` | `MongoDB`, `PostgreSQL`, `MsSql`, `SQLite` | `MongoDB` |
-| `--Framework` | `net10.0` | `net10.0` |
+| `--Framework` | `net11.0` | `net11.0` |
 | `--SkipAiUpdateInstructions` | `true`, `false` | `false` |
 
 The template scaffolds a Chronicle **client**. `--Database` changes only where the Chronicle kernel in `docker-compose.yml` stores its data.

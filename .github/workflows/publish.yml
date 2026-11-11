@@ -10,7 +10,7 @@ env:
   NUGET_OUTPUT: ./Artifacts/NuGet
   DOTNET8_VERSION: "8.0.407"
   DOTNET9_VERSION: "9.0.x"
-  DOTNET10_VERSION: "10.0.x"
+  DOTNET11_VERSION: "11.0.x"
 
 on:
   workflow_dispatch:
@@ -84,7 +84,7 @@ jobs:
           dotnet-version: |
             ${{ env.DOTNET8_VERSION }}
             ${{ env.DOTNET9_VERSION }}
-            ${{ env.DOTNET10_VERSION }}
+            ${{ env.DOTNET11_VERSION }}
 
       - name: Create NuGet package
         if: steps.release.outputs.should-publish == 'true'
@@ -160,7 +160,7 @@ jobs:
           done
 
           validation_root="$RUNNER_TEMP/published-template"
-          dotnet new cratis -n ValidatePublished -o "$validation_root" --Framework net10.0 --allow-scripts Yes
+          dotnet new cratis -n ValidatePublished -o "$validation_root" --Framework net11.0 --allow-scripts Yes
           dotnet build "$validation_root/ValidatePublished.csproj" --configuration Release -p:CratisProxiesOutputPath=
 
           kotlin_root="$RUNNER_TEMP/published-kotlin-template"

@@ -7,7 +7,7 @@ concurrency:
 env:
   DOTNET8_VERSION: "8.0.407"
   DOTNET9_VERSION: "9.0.x"
-  DOTNET10_VERSION: "10.0.x"
+  DOTNET11_VERSION: "11.0.x"
 
 on:
   workflow_dispatch:
@@ -61,7 +61,7 @@ jobs:
           dotnet-version: |
             ${{ env.DOTNET8_VERSION }}
             ${{ env.DOTNET9_VERSION }}
-            ${{ env.DOTNET10_VERSION }}
+            ${{ env.DOTNET11_VERSION }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v7
@@ -144,38 +144,38 @@ jobs:
             dotnet build "$project_file" --configuration Release --no-restore -p:CratisProxiesOutputPath=
           }
 
-          run_dotnet_new dotnet new cratis-chronicle-console -n ValidateChronicleConsole -o "$validation_root/ValidateChronicleConsole" --Framework net10.0
+          run_dotnet_new dotnet new cratis-chronicle-console -n ValidateChronicleConsole -o "$validation_root/ValidateChronicleConsole" --Framework net11.0
           build_generated_project "$validation_root/ValidateChronicleConsole"
 
-          run_dotnet_new dotnet new cratis-chronicle-web -n ValidateChronicleWeb -o "$validation_root/ValidateChronicleWeb" --Framework net10.0
+          run_dotnet_new dotnet new cratis-chronicle-web -n ValidateChronicleWeb -o "$validation_root/ValidateChronicleWeb" --Framework net11.0
           build_generated_project "$validation_root/ValidateChronicleWeb"
 
-          run_dotnet_new dotnet new cratis -n ValidateCratis -o "$validation_root/ValidateCratis" --Framework net10.0 --packageManager none --allow-scripts Yes
+          run_dotnet_new dotnet new cratis -n ValidateCratis -o "$validation_root/ValidateCratis" --Framework net11.0 --packageManager none --allow-scripts Yes
           build_generated_project "$validation_root/ValidateCratis"
 
           # No --allow-scripts here: this template declares no run-script
           # post-action, so dotnet new does not offer the option and rejects it
           # outright. It also has no packageManager symbol, so it installs no
           # frontend dependencies of its own - verify-asset-layout.sh does that.
-          run_dotnet_new dotnet new cratis-aspire -n ValidateCratisAspire -o "$validation_root/ValidateCratisAspire" --Framework net10.0
+          run_dotnet_new dotnet new cratis-aspire -n ValidateCratisAspire -o "$validation_root/ValidateCratisAspire" --Framework net11.0
           build_generated_project "$validation_root/ValidateCratisAspire"
 
           # A non-default database proves the Entity Framework Core package path,
           # the conditional csproj wiring, and the preprocessor branches compile.
-          run_dotnet_new dotnet new cratis -n ValidateCratisPostgreSql -o "$validation_root/ValidateCratisPostgreSql" --Framework net10.0 --packageManager none --Database PostgreSQL --allow-scripts Yes
+          run_dotnet_new dotnet new cratis -n ValidateCratisPostgreSql -o "$validation_root/ValidateCratisPostgreSql" --Framework net11.0 --packageManager none --Database PostgreSQL --allow-scripts Yes
           build_generated_project "$validation_root/ValidateCratisPostgreSql"
-          run_dotnet_new dotnet new cratis-aspire -n ValidateCratisAspirePostgreSql -o "$validation_root/ValidateCratisAspirePostgreSql" --Framework net10.0 --Database PostgreSQL
+          run_dotnet_new dotnet new cratis-aspire -n ValidateCratisAspirePostgreSql -o "$validation_root/ValidateCratisAspirePostgreSql" --Framework net11.0 --Database PostgreSQL
           build_generated_project "$validation_root/ValidateCratisAspirePostgreSql"
 
-          run_dotnet_new dotnet new cratis -n Mesta.Reporting.App -o "$validation_root/DottedCratis" --Framework net10.0 --packageManager none --allow-scripts No
+          run_dotnet_new dotnet new cratis -n Mesta.Reporting.App -o "$validation_root/DottedCratis" --Framework net11.0 --packageManager none --allow-scripts No
           build_generated_project "$validation_root/DottedCratis"
-          run_dotnet_new dotnet new cratis -n Mesta.Reporting.App -o "$validation_root/DottedCratisPostgreSql" --Framework net10.0 --packageManager none --Database PostgreSQL --allow-scripts Yes
+          run_dotnet_new dotnet new cratis -n Mesta.Reporting.App -o "$validation_root/DottedCratisPostgreSql" --Framework net11.0 --packageManager none --Database PostgreSQL --allow-scripts Yes
           build_generated_project "$validation_root/DottedCratisPostgreSql"
-          run_dotnet_new dotnet new cratis-aspire -n Mesta.Reporting.App -o "$validation_root/DottedCratisAspire" --Framework net10.0 --Database PostgreSQL
+          run_dotnet_new dotnet new cratis-aspire -n Mesta.Reporting.App -o "$validation_root/DottedCratisAspire" --Framework net11.0 --Database PostgreSQL
           build_generated_project "$validation_root/DottedCratisAspire"
-          run_dotnet_new dotnet new cratis-chronicle-console -n Mesta.Reporting.App -o "$validation_root/DottedChronicleConsole" --Framework net10.0
+          run_dotnet_new dotnet new cratis-chronicle-console -n Mesta.Reporting.App -o "$validation_root/DottedChronicleConsole" --Framework net11.0
           build_generated_project "$validation_root/DottedChronicleConsole"
-          run_dotnet_new dotnet new cratis-chronicle-web -n Mesta.Reporting.App -o "$validation_root/DottedChronicleWeb" --Framework net10.0
+          run_dotnet_new dotnet new cratis-chronicle-web -n Mesta.Reporting.App -o "$validation_root/DottedChronicleWeb" --Framework net11.0
           build_generated_project "$validation_root/DottedChronicleWeb"
 
       - name: Validate scaffolded files that a build does not exercise
@@ -327,7 +327,7 @@ jobs:
       - name: Setup .Net
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ env.DOTNET10_VERSION }}
+          dotnet-version: ${{ env.DOTNET11_VERSION }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v7

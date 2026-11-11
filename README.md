@@ -56,7 +56,7 @@ dotnet new list cratis
 dotnet new <shortname> -n MyApp -o MyApp
 ```
 
-- Many templates accept parameters; run `dotnet new <shortname> --help` to see available options. The .NET templates target `net10.0`, so you need the .NET 10 SDK. The Kotlin and Java templates need a JDK 17 to build.
+- Many templates accept parameters; run `dotnet new <shortname> --help` to see available options. The .NET templates target `net11.0`, so you need the .NET 11 SDK. The Kotlin and Java templates need a JDK 17 to build.
 - All application templates (`cratis` — C#, Kotlin, and Java — and `cratis-aspire`) and the Chronicle client templates accept a `--Database` choice — `MongoDB` (default), `PostgreSQL`, `MsSql`, or `SQLite` — selecting which database the Chronicle kernel persists its event stores and read models to, and which read-model package the generated .NET application uses.
 
 > [!IMPORTANT]
@@ -134,7 +134,7 @@ dotnet new install Cratis.Templates@<version>
 
 Prerequisites:
 
-- .NET 10 SDK (`global.json` requires 10.0 with `latestFeature` roll-forward)
+- .NET 11 SDK (`global.json` requires 11.0.100 with `latestFeature` roll-forward)
 - Latest stable Node.js and npm, for the templates with a Vite frontend (CI resolves the latest Node release)
 - A JDK 17 for building the scaffolded Kotlin and Java applications
 - Docker, if you want to run the scaffolded applications against a local Chronicle
@@ -208,7 +208,7 @@ Pass application directories to check ones you have already scaffolded:
 
 The `cratis` and `cratis-aspire` samples return `SomeId`, an `EventSourceId<Guid>`-derived identity, alongside the registered event. This tells Arc to append under that identity and return the same value to the caller. A raw `Guid` in the tuple is only a response value, not an append identity. The generated TypeScript response remains `Guid`.
 
-With .NET 10 and Python 3 installed, check already-scaffolded application directories:
+With .NET 11 and Python 3 installed, check already-scaffolded application directories:
 
 ```bash
 ./verify-registration-identity.sh path/to/MyApp path/to/MyAspireApp/MyAspireApp

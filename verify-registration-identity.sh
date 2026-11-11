@@ -51,11 +51,11 @@ if not re.search(r'super\(Guid,\s*false\)', text):
     raise SystemExit('Register proxy no longer deserializes its response as Guid')
 runner.mkdir(parents=True)
 # Insulate the runner from any ancestor build settings. Cratis.Testing supports
-# net10; it can reference a scaffold targeting an earlier supported framework.
+# net10 and net11; it can reference a scaffold targeting an earlier supported framework.
 (runner / 'Directory.Build.props').write_text('<Project />\n')
 csproj = ET.Element('Project', Sdk='Microsoft.NET.Sdk')
 props = ET.SubElement(csproj, 'PropertyGroup')
-for name, value in {'OutputType': 'Exe', 'TargetFramework': 'net10.0',
+for name, value in {'OutputType': 'Exe', 'TargetFramework': 'net11.0',
                     'ImplicitUsings': 'enable', 'Nullable': 'enable',
                     'TreatWarningsAsErrors': 'true',
                     'ManagePackageVersionsCentrally': 'false'}.items():
