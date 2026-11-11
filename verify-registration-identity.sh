@@ -63,6 +63,12 @@ for name, value in {'OutputType': 'Exe', 'TargetFramework': 'net11.0',
 items = ET.SubElement(csproj, 'ItemGroup')
 ET.SubElement(items, 'ProjectReference', Include=str(project))
 ET.SubElement(items, 'PackageReference', Include='Cratis.Testing', Version=versions[0])
+# Lift the NU1605 downgrades: Cratis.Testing pins these at 10.0.x while Arc.Chronicle.Testing needs 11.0.0.
+# Remove once Cratis.Testing is republished with matching versions.
+for package in ('System.Security.Cryptography.Pkcs', 'System.Security.Cryptography.Xml',
+                'Microsoft.Extensions.Configuration.FileExtensions', 'Microsoft.Extensions.DependencyModel',
+                'Microsoft.Extensions.Hosting', 'Microsoft.Extensions.Logging', 'Microsoft.Extensions.Logging.Debug'):
+    ET.SubElement(items, 'PackageReference', Include=package, Version='11.0.0')
 ET.indent(csproj)
 ET.ElementTree(csproj).write(runner / 'RegistrationIdentity.csproj', encoding='unicode')
 source = (repo / 'Verification/RegistrationIdentity/Program.cs.txt').read_text()
