@@ -28,6 +28,7 @@ on:
       - "Cratis.Templates.csproj"
       - "Cratis.Templates.Kotlin.csproj"
       - "Cratis.Templates.Java.csproj"
+      - "Cratis.Templates.Extensions.csproj"
       - "Templates/**"
       - "verify-asset-layout.sh"
       - "verify-registration-identity.sh"
@@ -40,6 +41,7 @@ on:
       - "Cratis.Templates.csproj"
       - "Cratis.Templates.Kotlin.csproj"
       - "Cratis.Templates.Java.csproj"
+      - "Cratis.Templates.Extensions.csproj"
       - "Templates/**"
       - "verify-asset-layout.sh"
       - "verify-registration-identity.sh"
@@ -457,3 +459,99 @@ jobs:
               npm run build
             )
           done
+
+  extension-templates:
+    # Validates the extension templates (cratis extension new): every combination is created with the Cratis CLI and with
+    # dotnet new, both must create the same files, and each package must pass cratis extension verify without edits.
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .Net
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET11_VERSION }}
+
+      - name: Install the Cratis CLI
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/cratis"
+          gh release download --repo Cratis/cli --pattern 'cratis-*-linux-x64.tar.gz' --dir "$RUNNER_TEMP/cratis"
+          tar -xzf "$RUNNER_TEMP"/cratis/cratis-*-linux-x64.tar.gz -C "$RUNNER_TEMP/cratis"
+          echo "$RUNNER_TEMP/cratis" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/cratis/cratis" --version
+
+      - name: Create every combination and verify it
+        shell: bash
+        run: Verification/Extensions/verify-extension-templates.sh generate
+
+  extension-template-builds:
+    # Builds and tests a package created from each backend, each frontend and each frontend-only component with its own
+    # scripts, then verifies the folder again as it ships. The SDKs that are not published yet are built from clones of
+    # Cratis/Stage and Cratis/Scene by build-local-sdks.sh, and a published SDK is used as it is.
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { mode: build, first: csharp, second: react }
+          - { mode: build, first: kotlin, second: mount }
+          - { mode: build, first: go, second: react }
+          - { mode: build, first: typescript, second: mount }
+          - { mode: build, first: none, second: screenplay }
+          - { mode: build-package, first: react, second: "" }
+          - { mode: build-package, first: mount, second: "" }
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .Net
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            ${{ env.DOTNET11_VERSION }}
+            10.0.x
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.26'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 'latest'
+          package-manager-cache: false
+
+      - name: Install the Cratis CLI
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/cratis"
+          gh release download --repo Cratis/cli --pattern 'cratis-*-linux-x64.tar.gz' --dir "$RUNNER_TEMP/cratis"
+          tar -xzf "$RUNNER_TEMP"/cratis/cratis-*-linux-x64.tar.gz -C "$RUNNER_TEMP/cratis"
+          echo "$RUNNER_TEMP/cratis" >> "$GITHUB_PATH"
+
+      - name: Build the SDKs that are not published yet
+        shell: bash
+        run: Verification/Extensions/build-local-sdks.sh "$RUNNER_TEMP/sdks" >> "$GITHUB_ENV"
+
+      - name: Create, test, build and verify
+        shell: bash
+        run: Verification/Extensions/verify-extension-templates.sh ${{ matrix.mode }} ${{ matrix.first }} ${{ matrix.second }}
