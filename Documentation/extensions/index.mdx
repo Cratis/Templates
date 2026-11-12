@@ -1,0 +1,101 @@
+---
+title: The Cratis extension templates
+description: Create a Cratis extension package that builds and verifies - a full extension with a C#, Kotlin, Go or TypeScript backend and React, mount or Screenplay components, or a frontend-only npm component package.
+---
+
+Start an extension package that already builds, passes its own specifications and passes `cratis extension verify`. An extension lets a Screenplay model reach something outside it: a `system` declares abilities, and an extension package realizes them. The templates in `Cratis.Templates.Extensions` create the two kinds of package.
+
+| Kind | Template | Published as | Choices |
+| --- | --- | --- | --- |
+| Full extension | `cratis-extension` | An OCI artifact: the contract, an optional backend and an optional frontend | `Backend`: `csharp`, `kotlin`, `go`, `typescript`, `none`. `Frontend`: `react`, `mount`, `screenplay`, `none`. |
+| Frontend-only package | `cratis-extension-package` | An npm package with components only | `Component`: `react`, `mount`. |
+
+Every combination of `Backend` and `Frontend` is valid, including `none` with `none`: an extension that only declares abilities.
+
+## Before you begin
+
+- The [Cratis CLI](https://github.com/Cratis/cli) 3.133 or later, or the .NET SDK for `dotnet new`.
+- What the choices you make need: the .NET 10 SDK for a C# backend, a JDK 17 for Kotlin, Go 1.26 for Go, and Node.js 20 or later for a TypeScript backend or any React or mount component.
+
+## Create a package
+
+With the Cratis CLI, which asks only what you did not answer:
+
+```bash
+cratis extension new -n Stripe --backend go --frontend react --publisher acme
+cratis extension new -n PaymentForm --kind package --component mount --publisher acme
+```
+
+With `dotnet new`, using the same symbols the CLI passes:
+
+```bash
+dotnet new install Cratis.Templates.Extensions
+dotnet new cratis-extension -n Stripe --Backend go --Frontend react --DisplayName "Stripe payments" --Description "Card payments with Stripe" --Publisher acme
+dotnet new cratis-extension-package -n PaymentForm --Component mount --Publisher acme
+```
+
+Both create the same files. [`cratis extension new`](https://github.com/Cratis/cli/blob/main/Documentation/reference/extension-new.md) documents the command and the agreement between the CLI and these templates.
+
+| Symbol | Meaning |
+| --- | --- |
+| `-n`, the name | The package name, a PascalCase identifier. It names the extension in `contract.play`, the components and the backend assembly. |
+| `Backend` | Full extension only. The language of the backend, or `none`. |
+| `Frontend` | Full extension only. The kind of component, or `none`. `screenplay` is a component authored as a Screenplay template. |
+| `Component` | Frontend-only package only. `react` or `mount`. |
+| `DisplayName`, `Description` | The manifest text. |
+| `Publisher` | The OCI namespace of a full extension, or the npm scope of a package. |
+
+## What every package contains
+
+- `contract.play` with its manifest: display name, description, icon, marketplace images and requirements. See [extension contracts](https://github.com/Cratis/Screenplay/blob/main/Documentation/screenplay/extension-contracts.md) for every line.
+- A placeholder icon and marketplace image under `assets/`, both SVG. Replace them with your own.
+- For each React or mount component, a static HTML placeholder under `placeholders/` that design tools draw in place of the component: no script, no event handlers, no external files.
+- A sample ability or component with specifications: an ability `Greet` and a public setting `greeting`, and a component `<Name>Panel` that shows its properties, the user and the locale, calls `Greet` and raises `greeted`.
+- `scripts/` that test, build, package, verify and publish, and a `.extensionignore` that names what the build does not ship.
+- A README for the package.
+
+The package's `contract.play` is at the root of the folder. A full extension's container build puts it at `/extension/contract.play`.
+
+## The backends
+
+Each backend uses the SDK for the extension protocol and keeps the ability in plain code that a specification can call without a host.
+
+| Backend | Layout | SDK | Specifications |
+| --- | --- | --- | --- |
+| `csharp` | `src/backend-csharp`, a solution with the backend and its specifications | [`Cratis.Stage.Extensions`](https://github.com/Cratis/Stage/blob/main/Documentation/extensions/csharp.md), published to `backend/` for the `dotnet 10` runtime | `Cratis.Specifications`, run with `dotnet test` |
+| `kotlin` | `src/backend-kotlin`, a Gradle build with the wrapper | [`io.cratis.stage:stage-extensions`](https://github.com/Cratis/Stage/blob/main/Documentation/extensions/kotlin.md), one jar in `backend/` for the `jvm 17` runtime | `kotlin.test`, run with `gradlew test` |
+| `go` | `src/backend-go`, a Go module | [The Go SDK](https://github.com/Cratis/Stage/blob/main/Documentation/extensions/go.md), one binary in `backend/` for the `go` runtime | `go test` |
+| `typescript` | `src/backend-typescript`, an npm package | [`@cratis/stage-extensions`](https://github.com/Cratis/Stage/blob/main/Documentation/extensions/typescript.md), one bundled module in `backend/` for the `node 22` runtime | `node:test` |
+
+Stage starts a backend and tells it where to listen with `STAGE_EXTENSION_LISTEN`; each sample reads it. See [connect a backend](https://github.com/Cratis/Stage/blob/main/Documentation/extensions/connect-a-backend.md) and the [protocol](https://github.com/Cratis/Stage/blob/main/Documentation/extensions/protocol.md).
+
+## The frontends
+
+`react` and `mount` create `src/frontend-react` or `src/frontend-mount`, an npm package that builds to `frontend/index.js` with React left external, as the host supplies it. Both samples run the [Scene conformance kit](https://github.com/Cratis/Scene/blob/main/Documentation/extensions/contract.md#conformance-kit) in their specifications, so the component is held to the same expectations whatever its kind. [Build an extension component](https://github.com/Cratis/Scene/blob/main/Documentation/extensions/build-a-component.md) explains both kinds.
+
+`screenplay` creates `ui/<Name>Panel.play`, a Screenplay template, and declares the component with `kind screenplay`.
+
+## Build, test and verify
+
+```bash
+cd Stripe
+scripts/test.sh      # the specifications of every part
+scripts/build.sh     # backend/ and frontend/
+scripts/package.sh   # dist/extension
+cratis extension verify .
+```
+
+`cratis extension verify` holds the folder to what `contract.play` declares, and the template passes it without edits. The `backend` and `frontend` checks report as skipped for now because the CLI does not run code yet; the package's own specifications run the conformance kit, and Stage performs the protocol handshake when it loads the package. See [`cratis extension verify`](https://github.com/Cratis/cli/blob/main/Documentation/reference/extension-verify.md).
+
+A frontend-only package uses `npm test`, `npm run build` and `npm run verify`, and `npm publish` publishes `contract.play`, `assets/`, `placeholders/` and `dist/`.
+
+## Until the SDKs are published
+
+`Cratis.Stage.Extensions` is on NuGet. The Kotlin, Go and TypeScript backend SDKs and `@cratis/scene.extensions` are not on their registries yet. The generated scripts accept `CRATIS_STAGE_SDK`, a clone of [Cratis/Stage](https://github.com/Cratis/Stage), and `CRATIS_SCENE_SDK`, the `@cratis/scene.extensions` tarball, and use those builds until the SDKs are published. The generated README says how. The repository's CI does the same.
+
+## Learn more
+
+- [Extension contracts](https://github.com/Cratis/Screenplay/blob/main/Documentation/screenplay/extension-contracts.md) in Screenplay: the contract file, the manifest and the lock.
+- [Extensions](https://github.com/Cratis/Stage/blob/main/Documentation/extensions/index.md) in Stage: the protocol, the host services, the SDKs and how packages load.
+- [The extension component contract](https://github.com/Cratis/Scene/blob/main/Documentation/extensions/contract.md) in Scene.
+- [`cratis extension new`](https://github.com/Cratis/cli/blob/main/Documentation/reference/extension-new.md) and [`cratis extension verify`](https://github.com/Cratis/cli/blob/main/Documentation/reference/extension-verify.md) in the CLI.
