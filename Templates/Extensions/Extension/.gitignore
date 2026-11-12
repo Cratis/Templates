@@ -1,0 +1,16 @@
+# Build output. scripts/build.sh recreates it.
+dist/
+backend/*
+frontend/index.js
+
+# Tools
+node_modules/
+bin/
+obj/
+build/
+.gradle/
+.kotlin/
+.vs/
+.idea/
+*.user
+.ai-work/

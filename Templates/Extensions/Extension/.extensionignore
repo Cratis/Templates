@@ -1,0 +1,9 @@
+# What the package folder holds that the package does not ship.
+# `cratis extension verify` holds the folder to what contract.play declares, so everything else is named here.
+src/
+scripts/
+dist/
+Dockerfile
+.gitignore
+# The Screenplay components in ui/ are packed into /extension/ui by scripts/package.sh.
+ui/

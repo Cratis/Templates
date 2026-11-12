@@ -1,0 +1,18 @@
+extension ExtensionName
+  display name "LITERAL_DISPLAY_NAME"
+  description "LITERAL_DESCRIPTION"
+  icon "assets/icon.svg"
+  image "assets/marketplace.svg"
+    caption "ExtensionName in a marketplace listing"
+  requires stage "^5"
+  requires platform web
+
+  component ExtensionNamePanel
+    kind COMPONENT_KIND
+    platform web
+    placeholder "placeholders/ExtensionNamePanel.html"
+    property label String
+    raises greeted
+      message String
+
+  frontend "dist/index.js"

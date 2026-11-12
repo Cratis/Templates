@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <AssemblyName>ExtensionName</AssemblyName>
+        <RootNamespace>ExtensionName</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- The backend SDK: the extension protocol, the handshake against contract.play and the host services. -->
+        <PackageReference Include="Cratis.Stage.Extensions" Version="*" />
+    </ItemGroup>
+</Project>

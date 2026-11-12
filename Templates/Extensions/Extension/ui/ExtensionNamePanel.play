@@ -1,0 +1,6 @@
+module ExtensionName
+  screen template ExtensionNamePanel
+    category card
+
+    heading
+    body

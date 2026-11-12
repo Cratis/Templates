@@ -1,0 +1,53 @@
+extension ExtensionName
+  display name "LITERAL_DISPLAY_NAME"
+  description "LITERAL_DESCRIPTION"
+  icon "assets/icon.svg"
+  image "assets/marketplace.svg"
+    caption "ExtensionName in a marketplace listing"
+  requires stage "^5"
+  requires platform web
+  activation on demand idle after 10 minutes
+
+  setting greeting public
+
+  ability Greet safe
+    name String
+    returns
+      message String
+//#if (Frontend == "react" || Frontend == "mount")
+
+  component ExtensionNamePanel
+    kind FRONTEND_KIND
+    platform web
+    placeholder "placeholders/ExtensionNamePanel.html"
+    property label String
+    raises greeted
+      message String
+    invokes Greet
+//#elseif (Frontend == "screenplay")
+
+  component ExtensionNamePanel
+    kind FRONTEND_KIND
+    platform web
+    property label String
+    raises greeted
+      message String
+    invokes Greet
+//#endif
+//#if (Backend == "csharp")
+
+  backend runtime dotnet 10 assembly "backend/ExtensionName.dll"
+//#elseif (Backend == "kotlin")
+
+  backend runtime jvm 17 assembly "backend/ExtensionName.jar"
+//#elseif (Backend == "go")
+
+  backend runtime go 1.26 assembly "backend/ExtensionName"
+//#elseif (Backend == "typescript")
+
+  backend runtime node 22 assembly "backend/index.js"
+//#endif
+//#if (Frontend == "react" || Frontend == "mount")
+
+  frontend "frontend/index.js"
+//#endif

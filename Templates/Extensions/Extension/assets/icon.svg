@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="Extension icon placeholder">
+  <rect width="256" height="256" rx="48" fill="#4f46e5"/>
+  <path d="M96 64h64a16 16 0 0 1 16 16v24h-16a16 16 0 0 0 0 32h16v24a16 16 0 0 1-16 16H96a16 16 0 0 1-16-16v-24h16a16 16 0 0 0 0-32H80V80a16 16 0 0 1 16-16z" fill="#ffffff"/>
+</svg>

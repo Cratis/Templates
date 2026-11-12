@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="ExtensionName/ExtensionName.csproj" />
+  <Project Path="ExtensionName.Specs/ExtensionName.Specs.csproj" />
+</Solution>

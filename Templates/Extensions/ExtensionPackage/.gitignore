@@ -1,0 +1,9 @@
+# Build output. npm run build recreates it.
+dist/
+
+# Tools
+node_modules/
+*.tgz
+.vs/
+.idea/
+.ai-work/
