@@ -16,6 +16,8 @@ The templates ship as three NuGet packages. `Cratis.Templates` contains every te
 | Cratis Aspire Application | `cratis-aspire` | The full-stack web application orchestrated with .NET Aspire |
 | Cratis Kotlin Application | `cratis --language Kotlin` | A full-stack web application with Arc and Chronicle on Spring Boot — Kotlin backend, TypeScript proxy generation through the Arc Gradle plugin, and a React + Vite frontend |
 | Cratis Java Application | `cratis --language Java` | The same full-stack application authored in Java — Spring Boot backend, TypeScript proxy generation through the Arc Gradle plugin, and a React + Vite frontend |
+| Cratis Extension | `cratis-extension` | A Cratis extension package (an OCI artifact): `contract.play`, an optional C#, Kotlin, Go or TypeScript backend and optional React, mount or Screenplay components. In the separate `Cratis.Templates.Extensions` package, which `cratis extension new` uses |
+| Cratis Extension Package | `cratis-extension-package` | A frontend-only extension package for npm with React or mount components. In `Cratis.Templates.Extensions` |
 
 ## Builds
 
@@ -215,6 +217,23 @@ With .NET 11 and Python 3 installed, check already-scaffolded application direct
 ```
 
 This regenerates proxies and checks their response type, executes the actual scaffolded registration command, compares its response to the appended event and projected `Listing.Id`, and runs a follow-up command using that response identity. It uses in-process Arc/Chronicle scenarios, not a running Chronicle server; the lookup scenario is seeded with the verified projected instance under its own identity. Test-only packages and runner files stay under the repository's ignored `.ai-work/`; they are not added to generated applications. CI runs this check for both templates.
+
+### Verify the extension templates
+
+```bash
+Verification/Extensions/verify-extension-templates.sh generate
+Verification/Extensions/verify-extension-templates.sh build go react
+Verification/Extensions/verify-extension-templates.sh build-package mount
+```
+
+The extension templates (`Templates/Extensions`, packed as `Cratis.Templates.Extensions`) are what
+`cratis extension new` instantiates. `generate` creates every `Backend` x `Frontend` combination and both
+`Component` kinds with the [Cratis CLI](https://github.com/Cratis/cli) (`CRATIS` names the command, default
+`cratis`) and with `dotnet new`, requires the two to create the same files, and requires every package to pass
+`cratis extension verify` without edits. `build` and `build-package` then run a generated package's own test,
+build and package scripts and verify the folder again as it ships. The SDKs that are not published yet are built
+by `Verification/Extensions/build-local-sdks.sh`, which prints the `CRATIS_STAGE_SDK` and `CRATIS_SCENE_SDK`
+variables the generated scripts read. See the [extension templates guide](https://github.com/Cratis/Templates/blob/main/Documentation/extensions/index.mdx).
 
 ### Uninstall the local template when finished
 

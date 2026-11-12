@@ -93,9 +93,11 @@ jobs:
           dotnet restore Cratis.Templates.csproj
           dotnet restore Cratis.Templates.Kotlin.csproj
           dotnet restore Cratis.Templates.Java.csproj
+          dotnet restore Cratis.Templates.Extensions.csproj
           dotnet pack Cratis.Templates.csproj --no-restore --configuration Release -o "${{ env.NUGET_OUTPUT }}" -p:PackageVersion=${{ steps.release.outputs.version }}
           dotnet pack Cratis.Templates.Kotlin.csproj --no-restore --configuration Release -o "${{ env.NUGET_OUTPUT }}" -p:PackageVersion=${{ steps.release.outputs.version }}
           dotnet pack Cratis.Templates.Java.csproj --no-restore --configuration Release -o "${{ env.NUGET_OUTPUT }}" -p:PackageVersion=${{ steps.release.outputs.version }}
+          dotnet pack Cratis.Templates.Extensions.csproj --no-restore --configuration Release -o "${{ env.NUGET_OUTPUT }}" -p:PackageVersion=${{ steps.release.outputs.version }}
 
       - name: NuGet trusted-publishing login
         if: steps.release.outputs.should-publish == 'true'
@@ -116,7 +118,7 @@ jobs:
         if: steps.release.outputs.should-publish == 'true'
         shell: bash
         env:
-          # Shared across all three packages; keep below the release job's 60-minute timeout.
+          # Shared across all four packages; keep below the release job's 60-minute timeout.
           NUGET_INDEX_TIMEOUT_SECONDS: ${{ vars.NUGET_INDEX_TIMEOUT_SECONDS || '1800' }}
         run: |
           set -euo pipefail
@@ -134,6 +136,7 @@ jobs:
             "cratis.templates"
             "cratis.templates.kotlin"
             "cratis.templates.java"
+            "cratis.templates.extensions"
           )
 
           for package in "${packages[@]}"; do
@@ -167,6 +170,10 @@ jobs:
           dotnet new cratis -n ValidatePublishedKotlin -o "$kotlin_root" --language Kotlin --packageManager none --allow-scripts Yes
           java_root="$RUNNER_TEMP/published-java-template"
           dotnet new cratis -n ValidatePublishedJava -o "$java_root" --language Java --packageManager none --allow-scripts Yes
+
+          # The extension templates are what cratis extension new instantiates: prove the published bits scaffold both.
+          dotnet new cratis-extension -n ValidatePublishedExtension -o "$RUNNER_TEMP/published-extension" --Backend go --Frontend react --DisplayName "Validate" --Description "Validate" --Publisher example
+          dotnet new cratis-extension-package -n ValidatePublishedPackage -o "$RUNNER_TEMP/published-extension-package" --Component mount --DisplayName "Validate" --Description "Validate" --Publisher example
 
       - name: Trigger Documentation Build
         if: steps.release.outputs.should-publish == 'true'

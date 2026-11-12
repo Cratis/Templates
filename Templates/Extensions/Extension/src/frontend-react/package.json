@@ -1,0 +1,23 @@
+{
+    "name": "extension-EXTENSION_KEBAB-frontend",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "description": "The React components of the ExtensionName extension",
+    "scripts": {
+        "typecheck": "tsc -p tsconfig.json",
+        "build": "esbuild src/index.ts --bundle --format=esm --target=es2022 --jsx=automatic --external:react --external:react-dom --external:react/jsx-runtime --external:react-dom/client --outfile=../../frontend/index.js",
+        "test": "vitest run"
+    },
+    "devDependencies": {
+        "@cratis/scene.extensions": "^1.0.0",
+        "@types/react": "^19.0.0",
+        "@types/react-dom": "^19.0.0",
+        "esbuild": "^0.25.0",
+        "jsdom": "^26.0.0",
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0",
+        "typescript": "^5.8.0",
+        "vitest": "^3.0.0"
+    }
+}

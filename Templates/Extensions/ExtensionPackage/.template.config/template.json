@@ -1,0 +1,88 @@
+{
+    "$schema": "http://json.schemastore.org/template",
+    "author": "Cratis",
+    "classifications": [
+        "Cratis",
+        "Extension",
+        "Scene",
+        "npm"
+    ],
+    "identity": "Cratis.Templates.Extensions.ExtensionPackage",
+    "name": "Cratis Extension Package",
+    "shortName": "cratis-extension-package",
+    "description": "A frontend-only Cratis extension package published to npm: a contract.play manifest and React or mount components, with no backend",
+    "tags": {
+        "type": "project"
+    },
+    "sourceName": "ExtensionName",
+    "preferNameDirectory": true,
+    "forms": {
+        "escapeBackslash": { "identifier": "replace", "pattern": "\\\\", "replacement": "\\\\" },
+        "escapeQuote": { "identifier": "replace", "pattern": "\"", "replacement": "\\\"" },
+        "playLiteral": { "identifier": "chain", "steps": [ "escapeBackslash", "escapeQuote" ] },
+        "kebabName": { "identifier": "kebabCase" }
+    },
+    "symbols": {
+        "Component": {
+            "type": "parameter",
+            "datatype": "choice",
+            "description": "The kind of component the package contributes.",
+            "choices": [
+                { "choice": "react", "description": "A React component rendered in the host's own React tree" },
+                { "choice": "mount", "description": "A framework-neutral component that draws into a host element" }
+            ],
+            "defaultValue": "react",
+            "replaces": "COMPONENT_KIND"
+        },
+        "DisplayName": {
+            "type": "parameter",
+            "datatype": "text",
+            "description": "The name a person sees in the manifest.",
+            "defaultValue": "My extension package",
+            "replaces": "TEXT_DISPLAY_NAME"
+        },
+        "Description": {
+            "type": "parameter",
+            "datatype": "text",
+            "description": "What the package does, for the manifest.",
+            "defaultValue": "A Cratis extension package",
+            "replaces": "TEXT_DESCRIPTION"
+        },
+        "Publisher": {
+            "type": "parameter",
+            "datatype": "text",
+            "description": "The publisher: the npm scope the package is published under, without the @.",
+            "defaultValue": "example",
+            "replaces": "PUBLISHER"
+        },
+        "displayNameLiteral": {
+            "type": "derived",
+            "valueSource": "DisplayName",
+            "valueTransform": "playLiteral",
+            "replaces": "LITERAL_DISPLAY_NAME"
+        },
+        "descriptionLiteral": {
+            "type": "derived",
+            "valueSource": "Description",
+            "valueTransform": "playLiteral",
+            "replaces": "LITERAL_DESCRIPTION"
+        },
+        "extensionKebab": {
+            "type": "derived",
+            "valueSource": "name",
+            "valueTransform": "kebabName",
+            "replaces": "EXTENSION_KEBAB"
+        }
+    },
+    "sources": [
+        {
+            "exclude": [
+                "**/.template.config/**"
+            ],
+            "modifiers": [
+                { "condition": "(Component != \"react\")", "exclude": [ "src/ExtensionNamePanel.tsx", "test/ExtensionNamePanel.test.tsx" ] },
+                { "condition": "(Component != \"mount\")", "exclude": [ "src/ExtensionNamePanel.ts", "test/ExtensionNamePanel.test.ts" ] }
+            ]
+        }
+    ]
+}

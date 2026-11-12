@@ -1,0 +1,153 @@
+{
+    "$schema": "http://json.schemastore.org/template",
+    "author": "Cratis",
+    "classifications": [
+        "Cratis",
+        "Extension",
+        "Stage",
+        "Screenplay"
+    ],
+    "identity": "Cratis.Templates.Extensions.Extension",
+    "name": "Cratis Extension",
+    "shortName": "cratis-extension",
+    "description": "A Cratis extension: an OCI package with a contract.play manifest, an optional backend in C#, Kotlin, Go or TypeScript, and optional React, mount or Screenplay components",
+    "tags": {
+        "type": "project"
+    },
+    "sourceName": "ExtensionName",
+    "preferNameDirectory": true,
+    "forms": {
+        "escapeBackslash": { "identifier": "replace", "pattern": "\\\\", "replacement": "\\\\" },
+        "escapeQuote": { "identifier": "replace", "pattern": "\"", "replacement": "\\\"" },
+        "playLiteral": { "identifier": "chain", "steps": [ "escapeBackslash", "escapeQuote" ] },
+        "kebabName": { "identifier": "kebabCase" }
+    },
+    "symbols": {
+        "Backend": {
+            "type": "parameter",
+            "datatype": "choice",
+            "description": "The language of the extension backend, or none for an extension that declares abilities and components without one.",
+            "choices": [
+                { "choice": "csharp", "description": "C# on .NET with the Cratis.Stage.Extensions SDK" },
+                { "choice": "kotlin", "description": "Kotlin on the JVM with the io.cratis.stage:stage-extensions SDK" },
+                { "choice": "go", "description": "Go with the Cratis Stage extensions SDK" },
+                { "choice": "typescript", "description": "TypeScript on Node.js with the @cratis/stage-extensions SDK" },
+                { "choice": "none", "description": "No backend" }
+            ],
+            "defaultValue": "none",
+            "replaces": "BACKEND_KIND"
+        },
+        "Frontend": {
+            "type": "parameter",
+            "datatype": "choice",
+            "description": "The kind of frontend component the extension contributes, or none.",
+            "choices": [
+                { "choice": "react", "description": "A React component rendered in the host's own React tree" },
+                { "choice": "mount", "description": "A framework-neutral component that draws into a host element" },
+                { "choice": "screenplay", "description": "A component authored as a Screenplay template" },
+                { "choice": "none", "description": "No frontend" }
+            ],
+            "defaultValue": "none",
+            "replaces": "FRONTEND_KIND"
+        },
+        "DisplayName": {
+            "type": "parameter",
+            "datatype": "text",
+            "description": "The name a person sees in the manifest.",
+            "defaultValue": "My extension",
+            "replaces": "TEXT_DISPLAY_NAME"
+        },
+        "Description": {
+            "type": "parameter",
+            "datatype": "text",
+            "description": "What the extension does, for the manifest.",
+            "defaultValue": "A Cratis extension",
+            "replaces": "TEXT_DESCRIPTION"
+        },
+        "Publisher": {
+            "type": "parameter",
+            "datatype": "text",
+            "description": "The publisher: the OCI namespace the package is published under.",
+            "defaultValue": "example",
+            "replaces": "PUBLISHER"
+        },
+        "displayNameLiteral": {
+            "type": "derived",
+            "valueSource": "DisplayName",
+            "valueTransform": "playLiteral",
+            "replaces": "LITERAL_DISPLAY_NAME"
+        },
+        "descriptionLiteral": {
+            "type": "derived",
+            "valueSource": "Description",
+            "valueTransform": "playLiteral",
+            "replaces": "LITERAL_DESCRIPTION"
+        },
+        "extensionKebab": {
+            "type": "derived",
+            "valueSource": "name",
+            "valueTransform": "kebabName",
+            "replaces": "EXTENSION_KEBAB"
+        }
+    },
+    "SpecialCustomOperations": {
+        "**/*.play": {
+            "operations": [
+                {
+                    "type": "conditional",
+                    "configuration": {
+                        "if": [ "//#if" ],
+                        "else": [ "//#else" ],
+                        "elseif": [ "//#elseif" ],
+                        "endif": [ "//#endif" ],
+                        "trim": true,
+                        "wholeLine": true,
+                        "evaluator": "C++"
+                    }
+                }
+            ]
+        }
+    },
+    "sources": [
+        {
+            "exclude": [
+                "**/.template.config/**"
+            ],
+            "modifiers": [
+                { "condition": "(Backend != \"csharp\")", "exclude": [ "src/backend-csharp/**", "backend/ExtensionName.dll" ] },
+                { "condition": "(Backend != \"kotlin\")", "exclude": [ "src/backend-kotlin/**", "backend/ExtensionName.jar" ] },
+                { "condition": "(Backend != \"go\")", "exclude": [ "src/backend-go/**", "backend/ExtensionName" ] },
+                { "condition": "(Backend != \"typescript\")", "exclude": [ "src/backend-typescript/**", "backend/index.js" ] },
+                { "condition": "(Frontend != \"react\")", "exclude": [ "src/frontend-react/**" ] },
+                { "condition": "(Frontend != \"mount\")", "exclude": [ "src/frontend-mount/**" ] },
+                { "condition": "(Frontend != \"react\" && Frontend != \"mount\")", "exclude": [ "placeholders/**", "frontend/**" ] },
+                { "condition": "(Frontend != \"screenplay\")", "exclude": [ "ui/**" ] }
+            ]
+        }
+    ],
+    "postActions": [
+        {
+            "description": "Make the build scripts executable.",
+            "manualInstructions": [
+                { "text": "Run 'chmod +x scripts/*.sh'" }
+            ],
+            "actionId": "cb9a6cf3-4f5c-4860-b9d2-03a574959774",
+            "args": {
+                "+x": "scripts/*.sh"
+            },
+            "continueOnError": true
+        },
+        {
+            "description": "Make gradlew executable.",
+            "manualInstructions": [
+                { "text": "Run 'chmod +x src/backend-kotlin/gradlew'" }
+            ],
+            "actionId": "cb9a6cf3-4f5c-4860-b9d2-03a574959774",
+            "condition": "(Backend == \"kotlin\")",
+            "args": {
+                "+x": "src/backend-kotlin/gradlew"
+            },
+            "continueOnError": true
+        }
+    ]
+}

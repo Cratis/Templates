@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cratis.Templates.Kotlin", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cratis.Templates.Java", "Cratis.Templates.Java.csproj", "{A9D63831-73F9-45A2-863C-59B7B5F3A2C8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cratis.Templates.Extensions", "Cratis.Templates.Extensions.csproj", "{40077D36-56D7-43C1-9D5D-8F709CCC24A1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{A9D63831-73F9-45A2-863C-59B7B5F3A2C8}.Release|x64.Build.0 = Release|Any CPU
 		{A9D63831-73F9-45A2-863C-59B7B5F3A2C8}.Release|x86.ActiveCfg = Release|Any CPU
 		{A9D63831-73F9-45A2-863C-59B7B5F3A2C8}.Release|x86.Build.0 = Release|Any CPU
+		{40077D36-56D7-43C1-9D5D-8F709CCC24A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40077D36-56D7-43C1-9D5D-8F709CCC24A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40077D36-56D7-43C1-9D5D-8F709CCC24A1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{40077D36-56D7-43C1-9D5D-8F709CCC24A1}.Debug|x64.Build.0 = Debug|Any CPU
+		{40077D36-56D7-43C1-9D5D-8F709CCC24A1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{40077D36-56D7-43C1-9D5D-8F709CCC24A1}.Debug|x86.Build.0 = Debug|Any CPU
+		{40077D36-56D7-43C1-9D5D-8F709CCC24A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40077D36-56D7-43C1-9D5D-8F709CCC24A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40077D36-56D7-43C1-9D5D-8F709CCC24A1}.Release|x64.ActiveCfg = Release|Any CPU
+		{40077D36-56D7-43C1-9D5D-8F709CCC24A1}.Release|x64.Build.0 = Release|Any CPU
+		{40077D36-56D7-43C1-9D5D-8F709CCC24A1}.Release|x86.ActiveCfg = Release|Any CPU
+		{40077D36-56D7-43C1-9D5D-8F709CCC24A1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-label="Marketplace image placeholder">
+  <rect width="1280" height="720" fill="#eef2ff"/>
+  <rect x="320" y="160" width="640" height="400" rx="24" fill="#ffffff" stroke="#c7d2fe" stroke-width="4"/>
+  <rect x="368" y="208" width="256" height="32" rx="8" fill="#4f46e5"/>
+  <rect x="368" y="272" width="544" height="16" rx="8" fill="#c7d2fe"/>
+  <rect x="368" y="312" width="480" height="16" rx="8" fill="#c7d2fe"/>
+  <text x="640" y="640" text-anchor="middle" font-family="sans-serif" font-size="32" fill="#4f46e5">Replace this with a screenshot of your extension</text>
+</svg>

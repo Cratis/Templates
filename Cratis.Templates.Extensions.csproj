@@ -1,0 +1,69 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net11.0</TargetFramework>
+        <PackageType>Template</PackageType>
+        <PackageId>Cratis.Templates.Extensions</PackageId>
+        <PackageVersion>1.0.0</PackageVersion>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <Title>Cratis Extension Templates</Title>
+        <Description>Templates for Cratis extension packages: a full extension (an OCI package with a contract.play manifest, an optional backend in C#, Kotlin, Go or TypeScript and optional React, mount or Screenplay components) and a frontend-only npm component package. Used by cratis extension new.</Description>
+        <Author>Cratis</Author>
+        <Authors>Cratis</Authors>
+        <PackageTags>dotnet;templates;cratis;extension;stage;screenplay;scene</PackageTags>
+        <PackageProjectUrl>https://www.cratis.io/templates/</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/Cratis/Templates</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageIcon>logo.png</PackageIcon>
+        <IncludeContentInPack>true</IncludeContentInPack>
+        <NoWarn>$(NoWarn);CS8805;CS0103;IDE0073;SA1512;SA1515;SA1005</NoWarn>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
+
+        <!--
+            Template content includes files whose names start with a dot - .gitignore and
+            .extensionignore - that the scaffolded package needs. NuGet leaves those out unless
+            default excludes are turned off; the Content Remove items below keep local tool
+            output out instead.
+        -->
+        <NoDefaultExcludes>true</NoDefaultExcludes>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Remove="Templates\**\*" />
+        <None Remove="Templates\**\*" />
+    </ItemGroup>
+
+    <!--
+        Testing/ is gitignored scratch space for locally scaffolded applications. Nothing under
+        it is packed.
+    -->
+    <ItemGroup>
+        <Compile Remove="Testing\**\*" />
+        <None Remove="Testing\**\*" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="Templates/Extensions/**/*" />
+
+        <!--
+            The Include above is a filesystem glob, so it also picks up anything a local build has
+            left inside a template folder. CI packs from a fresh checkout and never sees these, but
+            a maintainer packing locally would otherwise ship compiled output inside the template
+            content, and scaffold it back out into consumers' packages.
+        -->
+        <Content Remove="Templates/Extensions/**/bin/**" />
+        <Content Remove="Templates/Extensions/**/obj/**" />
+        <Content Remove="Templates/Extensions/**/build/**" />
+        <Content Remove="Templates/Extensions/**/.gradle/**" />
+        <Content Remove="Templates/Extensions/**/.kotlin/**" />
+        <Content Remove="Templates/Extensions/**/node_modules/**" />
+        <Content Remove="Templates/Extensions/**/dist/extension/**" />
+        <Content Remove="Templates/Extensions/**/package-lock.json" />
+        <Content Remove="Templates/Extensions/**/.DS_Store" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="README.md" Pack="true" PackagePath="/" />
+        <None Include="logo.png" Pack="true" PackagePath="/" />
+    </ItemGroup>
+</Project>

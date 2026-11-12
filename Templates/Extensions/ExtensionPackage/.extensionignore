@@ -1,0 +1,10 @@
+# What the package folder holds that the package does not ship.
+# `cratis extension verify` holds the folder to what contract.play declares, so everything else is named here.
+# The package ships what package.json "files" lists: contract.play, assets, placeholders and dist.
+src/
+test/
+package.json
+package-lock.json
+tsconfig.json
+vitest.config.ts
+.gitignore

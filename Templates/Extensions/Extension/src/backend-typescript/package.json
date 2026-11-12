@@ -1,0 +1,23 @@
+{
+    "name": "extension-EXTENSION_KEBAB-backend",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "description": "The backend of the ExtensionName extension",
+    "engines": {
+        "node": ">=20"
+    },
+    "scripts": {
+        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "build": "esbuild src/main.ts --bundle --platform=node --format=esm --target=node20 --outfile=../../backend/index.js --banner:js=\"import { createRequire } from 'node:module'; const require = createRequire(import.meta.url);\"",
+        "test": "tsc -p tsconfig.json && node --test dist/test/*.test.js"
+    },
+    "dependencies": {
+        "@cratis/stage-extensions": "^1.0.0"
+    },
+    "devDependencies": {
+        "@types/node": "^22.0.0",
+        "esbuild": "^0.25.0",
+        "typescript": "^5.8.0"
+    }
+}

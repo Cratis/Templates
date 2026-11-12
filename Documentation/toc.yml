@@ -14,3 +14,5 @@
   href: chronicle-web/toc.yml
 - name: Cratis Aspire
   href: cratis-aspire/toc.yml
+- name: Cratis Extensions
+  href: extensions/toc.yml

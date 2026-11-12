@@ -67,6 +67,11 @@
         <Content Remove="Templates/**/node_modules/**" />
         <Content Remove="Templates/**/.gradle/**" />
         <Content Remove="Templates/**/chronicle-data/**" />
+        <!--
+            The extension templates are the separate Cratis.Templates.Extensions package, versioned and
+            installed on its own by cratis extension new.
+        -->
+        <Content Remove="Templates/Extensions/**" />
         <Content Remove="Templates/Cratis.Kotlin/**/build/**" />
         <Content Remove="Templates/Cratis.Java/**/build/**" />
     </ItemGroup>
