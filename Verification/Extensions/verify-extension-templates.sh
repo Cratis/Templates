@@ -49,13 +49,13 @@ fail() {
     failures=$((failures + 1))
 }
 
-cratis() { $cratis_command "$@"; }
+run_cratis() { $cratis_command "$@"; }
 
 # Creates a package with the Cratis CLI. Arguments: kind output-folder name then the choices as flags.
 create_with_cli() {
     local output="$1"
     shift
-    cratis extension new --template-path "$templates" --no-prompts -o "$output" \
+    run_cratis extension new --template-path "$templates" --no-prompts -o "$output" \
         --display-name 'Sample "display" name' --description 'What the \sample does' --publisher acme "$@" > "$output.log" 2>&1
 }
 
@@ -69,7 +69,7 @@ create_with_dotnet() {
 
 verify_folder() {
     local folder="$1" label="$2"
-    if cratis extension verify "$folder" > "$folder.verify.log" 2>&1; then
+    if run_cratis extension verify "$folder" > "$folder.verify.log" 2>&1; then
         examined=$((examined + 1))
         pass "$label passes cratis extension verify"
     else
@@ -150,7 +150,7 @@ generate_all() {
     local ui_checked=0
     for backend in "${backends[@]}"; do
         local folder="$work_dir/cli/$backend-screenplay"
-        if cratis screenplay validate "$folder/ui" > "$folder.ui.log" 2>&1; then
+        if run_cratis screenplay validate "$folder/ui" > "$folder.ui.log" 2>&1; then
             ui_checked=$((ui_checked + 1))
         else
             fail "ui/ of ($backend, screenplay) does not compile"
