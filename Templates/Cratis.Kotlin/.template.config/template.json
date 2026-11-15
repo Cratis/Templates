@@ -212,6 +212,24 @@
             "description": "Package manager to use for frontend dependencies",
             "prompt": "Select frontend package manager"
         },
+        "yarnPackageManager": {
+            "type": "generated",
+            "generator": "switch",
+            "replaces": "\"packageManager\": \"yarn@4.18.0\",",
+            "parameters": {
+                "evaluator": "C++",
+                "cases": [
+                    {
+                        "condition": "(packageManager == \"yarn\")",
+                        "value": "\"packageManager\": \"yarn@4.18.0\","
+                    },
+                    {
+                        "condition": "(packageManager != \"yarn\")",
+                        "value": ""
+                    }
+                ]
+            }
+        },
         "packageManagerInstallCommand": {
             "type": "generated",
             "generator": "switch",

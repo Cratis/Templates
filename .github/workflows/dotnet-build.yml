@@ -71,8 +71,10 @@ jobs:
           node-version: 'latest'
           package-manager-cache: false
 
-      - name: Install Yarn
-        run: npm install -g yarn
+      - name: Enable Corepack
+        run: |
+          npm install -g corepack
+          corepack enable
 
       - name: Generate NuGet.config
         shell: bash
@@ -101,6 +103,51 @@ jobs:
           dotnet pack Cratis.Templates.csproj --no-build --no-restore --configuration Release -o ./Artifacts/NuGet -p:PackageVersion=0.0.0-ci
           dotnet pack Cratis.Templates.Kotlin.csproj --no-build --no-restore --configuration Release -o ./Artifacts/NuGet -p:PackageVersion=0.0.0-ci
           dotnet pack Cratis.Templates.Java.csproj --no-build --no-restore --configuration Release -o ./Artifacts/NuGet -p:PackageVersion=0.0.0-ci
+
+      - name: Validate non-interactive scaffold and pinned Yarn
+        timeout-minutes: 5
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { spawnSync } from 'node:child_process';
+          import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+          import { resolve } from 'node:path';
+          const root = resolve('.ai-work/scaffold-ci');
+          mkdirSync(root, { recursive: true });
+          const env = { ...process.env, DOTNET_CLI_HOME: `${root}/cli-home`, CI: '1', YARN_ENABLE_IMMUTABLE_INSTALLS: 'false' };
+          const hive = ['--debug:custom-hive', `${root}/hive`];
+          function run(label, executable, args, cwd = root, expected = 0, timeout = 60000) {
+            // Bound closed-stdin commands so a prompt loop cannot fill disk.
+            const result = spawnSync(executable, args, { cwd, env, input: '', encoding: 'utf8', timeout, maxBuffer: 1024 * 1024 });
+            const output = `${result.stdout ?? ''}${result.stderr ?? ''}`;
+            writeFileSync(`${root}/${label}.log`, output);
+            console.log(`${label}: exit=${result.status}, lines=${output.split('\n').length}, bytes=${Buffer.byteLength(output)}`);
+            assert.ifError(result.error);
+            assert.equal(result.status, expected, `${label}: inspect ${root}/${label}.log`);
+            return result.stdout.trim();
+          }
+          run('install', 'dotnet', ['new', 'install', resolve('Artifacts/NuGet/Cratis.Templates.0.0.0-ci.nupkg'), ...hive]);
+          let checked = 0;
+          for (const language of ['C#', 'Kotlin', 'Java']) {
+            for (const manager of ['yarn', 'npm', 'pnpm', 'none']) {
+              const name = `Scaffold${checked++}`;
+              const app = `${root}/${name}`;
+              // SDK 11.0.100 returns 105 for a deliberately skipped script.
+              run(name, 'dotnet', ['new', 'cratis', '--language', language, '-n', name, '-o', app, '--packageManager', manager, '--allow-scripts', 'no', ...hive], root, manager === 'none' ? 0 : 105);
+              const manifest = JSON.parse(readFileSync(`${app}/package.json`, 'utf8'));
+              assert.equal(manifest.packageManager, manager === 'yarn' ? 'yarn@4.18.0' : undefined);
+            }
+          }
+          const aspire = `${root}/ScaffoldAspire`;
+          run('aspire', 'dotnet', ['new', 'cratis-aspire', '-n', 'ScaffoldAspire', '-o', aspire, ...hive]);
+          assert.equal(JSON.parse(readFileSync(`${aspire}/ScaffoldAspire/package.json`, 'utf8')).packageManager, undefined);
+          const app = `${root}/Scaffold0`;
+          assert.equal(run('yarn-version', 'yarn', ['--version'], app), '4.18.0');
+          // A first scaffold has no lockfile; disable CI's immutable default.
+          run('yarn-install', 'yarn', ['install', '--mode=skip-build'], app, 0, 180000);
+          console.log(`Checked ${checked + 1} scaffolds and a clean pinned Yarn install`);
+          NODE
 
       - name: Validate templates generate buildable projects
         timeout-minutes: 35
