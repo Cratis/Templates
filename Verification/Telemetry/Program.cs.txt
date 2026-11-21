@@ -1,0 +1,88 @@
+// Copyright (c) Cratis. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using System.Diagnostics;
+using Cratis.Arc.Chronicle.Testing.Commands;
+using Cratis.Arc.Testing.Commands;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
+using TEMPLATE_NAMESPACE.SomeModule.SomeFeature;
+using TEMPLATE_NAMESPACE.SomeModule.SomeFeature.Registration;
+
+namespace Cratis.Templates.Verification;
+
+public static class VerifyTelemetry
+{
+    const string CommandSpan = "cratis.arc.command.execute";
+    const string ArcSource = "Cratis.Arc";
+
+    public static async Task<int> Main()
+    {
+        // The scaffold's own service defaults, exactly as its Program.cs applies them.
+        var builder = Host.CreateApplicationBuilder();
+        builder.AddServiceDefaults();
+
+        var providerTypes = new[] { typeof(TracerProvider), typeof(MeterProvider), typeof(LoggerProvider) };
+        foreach (var providerType in providerTypes)
+        {
+            var registrations = builder.Services.Count(descriptor => descriptor.ServiceType == providerType);
+            if (registrations != 1)
+            {
+                return Fail($"Expected one {providerType.Name} registration from AddServiceDefaults, found {registrations}");
+            }
+        }
+
+        // Capture in memory, alongside whatever the service defaults configured.
+        var exported = new List<Activity>();
+        builder.Services.ConfigureOpenTelemetryTracerProvider(tracing => tracing.AddInMemoryExporter(exported));
+
+        using var host = builder.Build();
+        var tracerProvider = host.Services.GetRequiredService<TracerProvider>();
+
+        // A representative Cratis operation: the scaffolded Register command through Arc's command pipeline.
+        await using (var registration = new CommandScenario<Register>())
+        {
+            var result = await registration.Execute(new Register(new SomeName("Telemetry check")));
+            if (!result.IsSuccess)
+            {
+                return Fail($"Registration failed: {string.Join("; ", result.ExceptionMessages)}");
+            }
+        }
+
+        tracerProvider.ForceFlush();
+
+        var seen = string.Join(", ", exported.Select(activity => $"{activity.Source.Name}/{activity.OperationName} {activity.SpanId}<-{activity.ParentSpanId}"));
+
+        // A duplicated processor or exporter hands the same span over more than once.
+        var duplicates = exported.Count - exported.Select(activity => activity.SpanId).Distinct().Count();
+        if (duplicates != 0)
+        {
+            return Fail($"{duplicates} span(s) were exported more than once, so telemetry is registered more than once. Captured: [{seen}]");
+        }
+
+        // Arc may nest further command executions inside the command, so only the root identifies it.
+        var roots = exported.Where(activity => activity.OperationName == CommandSpan && activity.ParentSpanId == default).ToList();
+        if (roots.Count != 1)
+        {
+            return Fail($"Expected exactly one root {CommandSpan} span for one command, captured {roots.Count}. Captured: [{seen}]");
+        }
+
+        var span = roots[0];
+        if (span.Source.Name != ArcSource)
+        {
+            return Fail($"Span {CommandSpan} came from source {span.Source.Name}, expected {ArcSource}");
+        }
+
+        Console.WriteLine($"PASS: one root {CommandSpan} span from {span.Source.Name} among {exported.Count} unique spans; one tracer, meter and logger provider registered");
+        return 0;
+    }
+
+    static int Fail(string message)
+    {
+        Console.Error.WriteLine(message);
+        return 1;
+    }
+}

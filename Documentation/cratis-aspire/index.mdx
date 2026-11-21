@@ -31,7 +31,7 @@ The web application, app host, and shared service defaults each have their own p
 | --- | --- |
 | `<App>` | The full-stack web application: Arc backend, Chronicle client, React frontend, and the same `SomeModule/SomeFeature` slices |
 | `<App>.Composition` | The Aspire app host: starts Chronicle with `AddCratisChronicle()` and any database, launches the backend, and passes it the Chronicle and read-model connections |
-| `<App>.Infrastructure` | Shared service defaults: OpenTelemetry, health checks, resilience, and service discovery |
+| `<App>.Infrastructure` | Shared service defaults: OpenTelemetry through the shared `Cratis.OpenTelemetry` setup, health checks, resilience, and service discovery |
 
 ## Run it
 
@@ -47,7 +47,7 @@ dotnet run --project MyStore.Composition
 
 Aspire starts the containers and backend and prints the dashboard address with a one-time login token, for example `https://localhost:57075/login?t=…`. Open the link from your terminal because the port changes between runs. Use the backend and Chronicle resource logs there to investigate startup or connection failures; reaching the dashboard is not yet a check of the application.
 
-In a second terminal, run `yarn dev` from the nested `MyStore` web-project folder: MyStore/MyStore relative to where you scaffolded. Vite serves on `http://localhost:9000` and forwards `/api`, `/.cratis`, and `/swagger` to `http://localhost:5000`. Open **Demo**, select **Register**, and enter a name. The backend reactor logs `Registered: <name>`; look for the name in the list to check the projected read result separately. Follow [the web template's sample slices](/templates/cratis-web/#the-sample-slices-teach-the-conventions) to trace that command, event, and query in the web project.
+In a second terminal, run `yarn dev` from the nested `MyStore` web-project folder: MyStore/MyStore relative to where you scaffolded. Vite serves on `http://localhost:9000` and forwards `/api`, `/.cratis`, and `/swagger` to `http://localhost:5000`. Open **Demo**, select **Register**, and enter a name. The backend reactor logs `Registered: <name>`; look for the name in the list to check the projected read result separately. In the dashboard's **Traces** view, the backend shows a `cratis.arc.command.execute` span for that command. Follow [the web template's sample slices](/templates/cratis-web/#the-sample-slices-teach-the-conventions) to trace that command, event, and query in the web project.
 
 When you finish, stop Vite and then the app host in their terminals. This setup is managed by the app host, not Compose; do not apply the plain web template's Compose cleanup commands to it.
 
