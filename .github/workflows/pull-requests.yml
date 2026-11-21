@@ -1,4 +1,5 @@
 name: PR Prerelease
+# Exercise run for the split pack/publish jobs; this draft pull request is closed without merging.
 
 env:
   NUGET_OUTPUT: ./Artifacts/NuGet
