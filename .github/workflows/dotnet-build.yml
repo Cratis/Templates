@@ -317,6 +317,14 @@ jobs:
             "$validation_root/ValidateCratis" \
             "$validation_root/ValidateCratisAspire/ValidateCratisAspire"
 
+      - name: Validate Aspire telemetry uses the shared Cratis setup
+        timeout-minutes: 10
+        shell: bash
+        run: |
+          Verification/Telemetry/verify-telemetry.sh \
+            "$validation_root/ValidateCratisAspire" \
+            "$validation_root/ValidateCratisAspirePostgreSql"
+
       - name: Install and lint latest frontend dependencies
         timeout-minutes: 10
         shell: bash

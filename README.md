@@ -222,6 +222,16 @@ With .NET 11 and Python 3 installed, check already-scaffolded application direct
 
 This regenerates proxies and checks their response type, executes the actual scaffolded registration command, compares its response to the appended event and projected `Listing.Id`, and runs a follow-up command using that response identity. It uses in-process Arc/Chronicle scenarios, not a running Chronicle server; the lookup scenario is seeded with the verified projected instance under its own identity. Test-only packages and runner files stay under the repository's ignored `.ai-work/`; they are not added to generated applications. CI runs this check for both templates.
 
+### Verify the Aspire telemetry
+
+The `cratis-aspire` service defaults take their telemetry from the shared `Cratis.OpenTelemetry` package. With .NET 11 and Node.js installed, check already-scaffolded and restored Aspire solution directories:
+
+```bash
+Verification/Telemetry/verify-telemetry.sh path/to/MyAspireApp
+```
+
+This checks that the Infrastructure project references `Cratis.OpenTelemetry` and no OpenTelemetry package directly, that restore resolved one concrete version of each OpenTelemetry package, and that `Extensions.cs` configures no pipeline of its own. It then applies the scaffold's `AddServiceDefaults()` to a host, runs the scaffolded registration command in an in-process Arc/Chronicle scenario, and captures its spans in memory. It expects one tracer, meter, and logger provider, one root `cratis.arc.command.execute` span from `Cratis.Arc`, and no span exported twice. Like the registration check, the runner stays under `.ai-work/`, and CI runs it for both Aspire scaffolds.
+
 ### Verify the extension templates
 
 ```bash

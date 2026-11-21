@@ -7,12 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Cratis.OpenTelemetry" Version="*" />
         <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="*" />
         <PackageReference Include="Microsoft.Extensions.ServiceDiscovery" Version="*" />
-        <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="*" />
-        <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="*" />
-        <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="*" />
-        <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="*" />
-        <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="*" />
     </ItemGroup>
 </Project>
