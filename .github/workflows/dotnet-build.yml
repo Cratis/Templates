@@ -123,6 +123,7 @@ jobs:
             const output = `${result.stdout ?? ''}${result.stderr ?? ''}`;
             writeFileSync(`${root}/${label}.log`, output);
             console.log(`${label}: exit=${result.status}, lines=${output.split('\n').length}, bytes=${Buffer.byteLength(output)}`);
+            if (result.error || result.status !== expected) console.error(output.split('\n').slice(-40).join('\n'));
             assert.ifError(result.error);
             assert.equal(result.status, expected, `${label}: inspect ${root}/${label}.log`);
             return result.stdout.trim();
