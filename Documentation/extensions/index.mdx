@@ -89,9 +89,9 @@ cratis extension verify .
 
 A frontend-only package uses `npm test`, `npm run build` and `npm run verify`, and `npm publish` publishes `contract.play`, `assets/`, `placeholders/` and `dist/`.
 
-## Until the SDKs are published
+## Published and local SDKs
 
-`Cratis.Stage.Extensions` is on NuGet. The Kotlin, Go and TypeScript backend SDKs and `@cratis/scene.extensions` are not on their registries yet. The generated scripts accept `CRATIS_STAGE_SDK`, a clone of [Cratis/Stage](https://github.com/Cratis/Stage), and `CRATIS_SCENE_SDK`, the `@cratis/scene.extensions` tarball, and use those builds until the SDKs are published. The generated README says how. The repository's CI does the same.
+`Cratis.Stage.Extensions` is on NuGet and `@cratis/scene.extensions` is on npm. The Kotlin, Go and TypeScript backend SDKs are not on their registries yet. The generated scripts accept `CRATIS_STAGE_SDK`, a clone of [Cratis/Stage](https://github.com/Cratis/Stage), for those local builds. `CRATIS_SCENE_SDK`, an `@cratis/scene.extensions` tarball, is an optional override for testing a local component SDK; otherwise the scripts and CI use npm. The generated README says how.
 
 ## Learn more
 
