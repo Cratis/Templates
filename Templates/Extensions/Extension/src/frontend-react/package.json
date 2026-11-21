@@ -10,7 +10,7 @@
         "test": "vitest run"
     },
     "devDependencies": {
-        "@cratis/scene.extensions": "^1.0.0",
+        "@cratis/scene.extensions": "^6.1.0",
         "@types/react": "^19.0.0",
         "@types/react-dom": "^19.0.0",
         "esbuild": "^0.25.0",

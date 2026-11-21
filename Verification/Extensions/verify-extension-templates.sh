@@ -16,7 +16,7 @@ set -euo pipefail
 #   CRATIS               The command that runs the Cratis CLI (default: cratis). It needs `extension new` and
 #                        `extension verify`.
 #   CRATIS_STAGE_SDK     A clone of Cratis/Stage, for the SDKs that are not published yet (see sdks.sh).
-#   CRATIS_SCENE_SDK     The @cratis/scene.extensions tarball, for the same reason.
+#   CRATIS_SCENE_SDK     Optional @cratis/scene.extensions tarball override; otherwise resolved from npm.
 #   KEEP                 Set to keep the generated folders and print where they are.
 #
 # Every phase prints how many packages it examined, and the script exits 1 when any check failed, 2 when it could not run.

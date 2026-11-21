@@ -37,12 +37,12 @@ npm run verify       # cratis extension verify .
 
 `npm publish` builds the package (`prepack`) and publishes `contract.play`, `assets/`, `placeholders/` and `dist/`.
 
-### Until the component contract is published
+### Test a local component SDK
 
-`@cratis/scene.extensions` is not on npm yet. Until it is, build the tarball from a clone of [Cratis/Scene](https://github.com/Cratis/Scene) (`npm pack` in `Source/JavaScript/extensions`) and install it in place of the dependency:
+`@cratis/scene.extensions` is published on npm and is installed by default. To test a local build, create a tarball from a clone of [Cratis/Scene](https://github.com/Cratis/Scene) (`npm pack` in `Source/JavaScript/extensions`) and install it in place of the dependency:
 
 ```bash
-npm install --save-dev ../path/to/cratis-scene.extensions-1.0.0.tgz
+npm install --save-dev ../path/to/cratis-scene.extensions-6.1.0.tgz
 ```
 
 Do not commit that change to `package.json`.

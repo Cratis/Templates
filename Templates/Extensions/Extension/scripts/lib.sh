@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Shared by the build scripts. Source it; it does nothing on its own.
 #
-# The backend and frontend SDKs are resolved from their registries. Until they are published, point these at a local build:
+# SDKs are resolved from their registries when published. These optional overrides point at a local build:
 #   CRATIS_STAGE_SDK  a clone of https://github.com/Cratis/Stage (Kotlin and Go use it as it is; for TypeScript, run
 #                     `npm install && npm run build` in Source/Extensions/TypeScript first)
 #   CRATIS_SCENE_SDK  the @cratis/scene.extensions package as a tarball (`npm pack` in Source/JavaScript/extensions of a

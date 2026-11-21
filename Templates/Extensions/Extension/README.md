@@ -65,9 +65,9 @@ scripts/verify.sh    # cratis extension verify .
 `scripts/publish.sh <version>` builds, packages and pushes the package as an OCI image to `ghcr.io/PUBLISHER/extension-EXTENSION_KEBAB`. Sign it as the Stage's trust policy requires.
 <!--#if (Backend == "kotlin" || Backend == "go" || Backend == "typescript" || Frontend == "react" || Frontend == "mount") -->
 
-### Until the SDKs are published
+### Local SDK builds
 
-The Kotlin, Go and TypeScript backend SDKs and `@cratis/scene.extensions` are not on their registries yet. Until they are, point the scripts at a local build:
+`@cratis/scene.extensions` is published on npm and is installed by default. The Kotlin, Go and TypeScript backend SDKs are not on their registries yet. Until they are, point `CRATIS_STAGE_SDK` at a local build. `CRATIS_SCENE_SDK` is an optional override for testing a local component SDK:
 
 | Variable | Points at |
 | --- | --- |
