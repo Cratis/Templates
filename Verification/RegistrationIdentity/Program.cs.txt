@@ -6,9 +6,7 @@ using Cratis.Arc.Commands;
 using Cratis.Arc.Commands.ModelBound;
 using Cratis.Arc.Testing.Commands;
 using Cratis.Chronicle.Events;
-using Cratis.Chronicle.ReadModels;
 using Cratis.Chronicle.Testing.ReadModels;
-using Microsoft.Extensions.DependencyInjection;
 using TEMPLATE_NAMESPACE.SomeModule.SomeFeature;
 using TEMPLATE_NAMESPACE.SomeModule.SomeFeature.Listing;
 using TEMPLATE_NAMESPACE.SomeModule.SomeFeature.Registration;
@@ -50,12 +48,10 @@ public static class VerifyRegistration
             return Fail("The event did not project a Listing with the returned identity and registered name");
         }
 
-        // The projection scenario does not automatically persist its result for command-side lookups.
-        // Seed that actual result under its own projected identity, not under a fabricated response key.
-        var persisted = new ReadModelScenario<Listing>();
-        await persisted.Given.ForEventSourceId((EventSourceId)listing.Id).ReadModel(listing);
+        // Seed the actual projected result under its own identity through the command scenario,
+        // preserving protected read enrollment rather than replacing the scenario's read-model service.
         await using var lookup = new CommandScenario<FindRegistered>();
-        lookup.Services.AddSingleton<IReadModels>(persisted.ReadModels);
+        lookup.Given.ForEventSource((EventSourceId)listing.Id).ReadModel(listing);
         var lookupResult = await lookup.Execute(new FindRegistered(response));
         if (!lookupResult.IsSuccess || lookupResult is not CommandResult<bool> { Response: true })
         {
