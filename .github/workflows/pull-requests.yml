@@ -102,10 +102,15 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET9_VERSION }}
 
+      - name: Add GitHub Package Registry to NuGet
+        env:
+          NUGET_API_KEY: ${{ secrets.GITHUB_TOKEN }}
+        run: dotnet nuget add source --name github --username cratis --password "$NUGET_API_KEY" --store-password-in-clear-text "$NUGET_SOURCE"
+
       - name: Push NuGet package
         env:
           NUGET_API_KEY: ${{ secrets.GITHUB_TOKEN }}
-        run: dotnet nuget push "$NUGET_OUTPUT/*.nupkg" --skip-duplicate --timeout 900 --api-key "$NUGET_API_KEY" --source "$NUGET_SOURCE"
+        run: dotnet nuget push "$NUGET_OUTPUT/*.nupkg" --skip-duplicate --timeout 900 --api-key "$NUGET_API_KEY" --source "github"
 
       - name: Add comment for NuGet package
         uses: mshick/add-pr-comment@v1
