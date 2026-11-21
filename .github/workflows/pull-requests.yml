@@ -42,19 +42,20 @@ jobs:
         id: release
         uses: cratis/release-action@v1
 
-  publish-nuget-package:
+  # Packs the pull request's code with a read-only token; publishing happens in a separate job that runs no pull request code.
+  pack-nuget-package:
     if: needs.release.outputs.publish == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     needs: [release]
     permissions:
       contents: read
-      packages: write
-      pull-requests: write
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Setup .Net
         uses: actions/setup-dotnet@v4
@@ -70,14 +71,46 @@ jobs:
       - name: Restore
         run: dotnet restore Cratis.Templates.csproj
 
-      - name: Add GitHub Package Registry to NuGet
-        run: dotnet nuget add source --name github --username cratis --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text ${{ env.NUGET_SOURCE }}
-
       - name: Create NuGet package
         run: dotnet pack Cratis.Templates.csproj --no-build --configuration Debug -o ${{ env.NUGET_OUTPUT }} -p:PackageVersion=${{ needs.release.outputs.version }}
 
+      - name: Upload NuGet package
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-package
+          path: ${{ env.NUGET_OUTPUT }}/*.nupkg
+          retention-days: 1
+          if-no-files-found: error
+
+  publish-nuget-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs: [release, pack-nuget-package]
+    permissions:
+      packages: write
+      pull-requests: write
+
+    steps:
+      - name: Download NuGet package
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-package
+          path: ${{ env.NUGET_OUTPUT }}
+
+      - name: Setup .Net
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET9_VERSION }}
+
+      - name: Add GitHub Package Registry to NuGet
+        env:
+          NUGET_API_KEY: ${{ secrets.GITHUB_TOKEN }}
+        run: dotnet nuget add source --name github --username cratis --password "$NUGET_API_KEY" --store-password-in-clear-text "$NUGET_SOURCE"
+
       - name: Push NuGet package
-        run: dotnet nuget push '${{ env.NUGET_OUTPUT }}/*.nupkg' --skip-duplicate --timeout 900 --api-key ${{ secrets.GITHUB_TOKEN }} --source "github"
+        env:
+          NUGET_API_KEY: ${{ secrets.GITHUB_TOKEN }}
+        run: dotnet nuget push "$NUGET_OUTPUT/*.nupkg" --skip-duplicate --timeout 900 --api-key "$NUGET_API_KEY" --source "github"
 
       - name: Add comment for NuGet package
         uses: mshick/add-pr-comment@v1
