@@ -43,6 +43,14 @@ Read the [Cratis documentation](https://www.cratis.io), or join the [Cratis Disc
 
    Vite serves the frontend on `http://localhost:9000` and forwards `/api`, `/.cratis`, and `/swagger` to `http://localhost:5000`.
 
+## Telemetry
+
+The backend reports traces, metrics, and logs through the shared Cratis OpenTelemetry setup (`AddCratisOpenTelemetry` in `CratisAspire.Infrastructure/Extensions.cs`). It listens to every `Cratis.*` activity source and meter, such as the `cratis.arc.command.execute` span for each command, alongside ASP.NET Core, HTTP client, and runtime instrumentation.
+
+To see it, run the app host as in step 2 and open the dashboard link from the terminal. Use **Traces** for Cratis and request spans, **Metrics** for meters, and **Structured logs** for application logs; filter on the backend resource to hide Chronicle and database noise.
+
+Aspire sets `OTEL_EXPORTER_OTLP_ENDPOINT` for every project it starts, which turns on OTLP export to the dashboard. Without that setting, for example when you run the backend on its own, the backend collects telemetry but exports nothing.
+
 ## Choosing a database
 
 MongoDB is the default. To use another database, pass `--Database` when you create the solution:
@@ -126,7 +134,7 @@ The Aspire AppHost project orchestrates all services. It defines how Chronicle, 
 
 Shared infrastructure configuration applied to all services:
 
-- **OpenTelemetry** — distributed tracing, metrics, and structured logging
+- **OpenTelemetry** — distributed tracing, metrics, and structured logging through the shared `Cratis.OpenTelemetry` setup
 - **Health checks** — `/health` and `/alive` endpoints, mapped in the Development environment only
 - **Service discovery** — automatic service resolution via Aspire
 - **HTTP resilience** — retry policies and circuit breakers

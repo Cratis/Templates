@@ -1,11 +1,8 @@
+using Cratis.OpenTelemetry;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Logging;
-using OpenTelemetry;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Trace;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -36,35 +33,17 @@ public static class Extensions
     }
 
     /// <summary>
-    /// Configures OpenTelemetry for metrics, tracing, and logging.
+    /// Configures OpenTelemetry for metrics, tracing, and logging through the shared Cratis setup.
     /// </summary>
+    /// <remarks>
+    /// Subscribes to every Cratis activity source and meter, adds ASP.NET Core, HTTP client and runtime
+    /// instrumentation, and exports over OTLP only when an endpoint such as OTEL_EXPORTER_OTLP_ENDPOINT
+    /// is configured, which Aspire does for every project it starts.
+    /// </remarks>
     /// <param name="builder">The <see cref="IHostApplicationBuilder"/> to configure.</param>
     /// <returns>The <see cref="IHostApplicationBuilder"/> for chaining.</returns>
-    public static IHostApplicationBuilder ConfigureOpenTelemetry(this IHostApplicationBuilder builder)
-    {
-        builder.Logging.AddOpenTelemetry(logging =>
-        {
-            logging.IncludeFormattedMessage = true;
-            logging.IncludeScopes = true;
-        });
-
-        builder.Services.AddOpenTelemetry()
-            .WithMetrics(metrics =>
-            {
-                metrics.AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation()
-                    .AddRuntimeInstrumentation();
-            })
-            .WithTracing(tracing =>
-            {
-                tracing.AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation();
-            });
-
-        builder.AddOpenTelemetryExporters();
-
-        return builder;
-    }
+    public static IHostApplicationBuilder ConfigureOpenTelemetry(this IHostApplicationBuilder builder) =>
+        builder.AddCratisOpenTelemetry(options => options.ServiceName = builder.Environment.ApplicationName);
 
     /// <summary>
     /// Adds default health check registrations.
@@ -96,17 +75,5 @@ public static class Extensions
         }
 
         return app;
-    }
-
-    static IHostApplicationBuilder AddOpenTelemetryExporters(this IHostApplicationBuilder builder)
-    {
-        var useOtlpExporter = !string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
-
-        if (useOtlpExporter)
-        {
-            builder.Services.AddOpenTelemetry().UseOtlpExporter();
-        }
-
-        return builder;
     }
 }
