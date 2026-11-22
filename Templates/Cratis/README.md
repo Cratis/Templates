@@ -60,7 +60,13 @@ To stop, press Ctrl+C in both terminals and run `docker compose down`. With Mong
 > [!CAUTION]
 > The compose file publishes its ports on every network interface, and Chronicle runs with well-known development credentials. Use it only on a trusted machine, or prefix each port mapping with `127.0.0.1:` to keep it local.
 
+### Non-interactive scaffolding
+
+When creating this project in a script or with closed stdin, always pass `--allow-scripts yes` or `--allow-scripts no` to `dotnet new cratis`. Without an explicit choice, some SDK versions repeatedly prompt. `no` skips script actions; SDK 11.0.100 reports exit code 105 for a skipped action even though it creates the project. Use `--packageManager none --allow-scripts no` to omit the frontend install action altogether, then install dependencies manually.
+
 ### Yarn 2 and later
+
+When Yarn is selected during scaffolding, `package.json` declares Yarn 4.18.0. Run `corepack enable` before installing (install Corepack first if needed), so the `yarn` command uses that release. Keep the TypeScript compatibility alias rather than forcing installation.
 
 The project's `.yarnrc.yml` sets `nodeLinker: node-modules`, because the TypeScript 7 compiler used by the frontend build cannot resolve Yarn's default Plug'n'Play installs. Keep it if you use Yarn 2 or later; npm, pnpm, and Yarn 1 ignore it.
 

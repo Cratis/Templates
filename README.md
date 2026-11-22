@@ -66,13 +66,13 @@ dotnet new <shortname> -n MyApp -o MyApp
 >
 > Keep frontend dependencies on their latest published releases. The declarations set explicit minimum versions rather than relying only on npm's `latest` tag, which can resolve an older version while satisfying peer dependencies. Components 4 supplies the starter's provider, widgets, and styles directly; no PrimeReact adapter is required. Commit the generated application's lockfile to record the versions you installed. The frontend templates include a `.yarnrc.yml` with `nodeLinker: node-modules`, because the TypeScript 7 compiler cannot resolve Yarn Plug'n'Play installs. Incompatibilities between current releases should be reported and fixed, not bypassed with `--force` or worked around by downgrading.
 >
-> In an interactive terminal, `dotnet new` asks before running post-creation actions. When scaffolding **non-interactively** — CI pipelines, scripts, devcontainer `postCreateCommand`, or any context where stdin is not a TTY — opt in explicitly:
+> In an interactive terminal, `dotnet new` asks before running post-creation actions. With closed stdin, some SDK versions repeatedly prompt instead of stopping. When scaffolding a regular `cratis` template **non-interactively** — CI pipelines, scripts, devcontainer `postCreateCommand`, or any context where stdin is not a TTY — always pass `--allow-scripts yes` or `--allow-scripts no`. To opt in:
 >
 > ```bash
 > dotnet new cratis -n MyApp -o MyApp --allow-scripts yes
 > ```
 >
-> To pin NuGet package versions but skip the regular `cratis` frontend install, pass both `--allow-scripts yes` and `--packageManager none`. The `cratis-aspire` template does not auto-install frontend dependencies; follow the `yarn install` step in its generated `README.md`.
+> To decline script actions, use `--allow-scripts no`; SDK 11.0.100 returns exit code 105 when it skips a declared script action, even though the project is created. To skip declaring a frontend install action altogether, use `--packageManager none --allow-scripts no`. To pin NuGet package versions but skip the regular `cratis` frontend install, pass both `--allow-scripts yes` and `--packageManager none`. The `cratis-aspire` template does not auto-install frontend dependencies; follow the `yarn install` step in its generated `README.md`.
 
 ### AI setup in generated projects
 
@@ -180,6 +180,10 @@ cd path/to/generated/app
 npm install
 npm run dev
 ```
+
+### Yarn version
+
+The regular C#, Kotlin, and Java Yarn scaffolds declare `packageManager: yarn@4.18.0` so Corepack selects the same release for every install. Enable Corepack before scaffolding with Yarn (`corepack enable`; install Corepack first if your Node distribution does not include it). Keep the TypeScript compatibility alias and use the declared Yarn release rather than forcing an install. The npm, pnpm, and `none` choices omit the Yarn declaration. Aspire does not declare a package manager, so its documented Yarn and pnpm paths remain available.
 
 ### TypeScript compiler and lint tooling
 
