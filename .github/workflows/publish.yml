@@ -65,7 +65,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       # release-action creates the GitHub release from its success-only post step. Keep every
       # publication and verification step below the action in this same job: if NuGet rejects the
@@ -79,7 +79,7 @@ jobs:
 
       - name: Setup .NET
         if: steps.release.outputs.should-publish == 'true'
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
         with:
           dotnet-version: |
             ${{ env.DOTNET8_VERSION }}
@@ -177,7 +177,7 @@ jobs:
 
       - name: Trigger Documentation Build
         if: steps.release.outputs.should-publish == 'true'
-        uses: peter-evans/repository-dispatch@v3
+        uses: peter-evans/repository-dispatch@ff45666b9427631e3450c54a1bcbee4d9ff4d7c0 # v3
         with:
           token: ${{ secrets.PAT_DOCUMENTATION }}
           repository: cratis/documentation
