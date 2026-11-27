@@ -36,7 +36,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Release
         id: release
@@ -53,12 +53,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
 
       - name: Setup .Net
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
         with:
           dotnet-version: |
             ${{ env.DOTNET8_VERSION }}
@@ -75,7 +75,7 @@ jobs:
         run: dotnet pack Cratis.Templates.csproj --no-build --configuration Debug -o ${{ env.NUGET_OUTPUT }} -p:PackageVersion=${{ needs.release.outputs.version }}
 
       - name: Upload NuGet package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: nuget-package
           path: ${{ env.NUGET_OUTPUT }}/*.nupkg
@@ -92,13 +92,13 @@ jobs:
 
     steps:
       - name: Download NuGet package
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: nuget-package
           path: ${{ env.NUGET_OUTPUT }}
 
       - name: Setup .Net
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
         with:
           dotnet-version: ${{ env.DOTNET9_VERSION }}
 
@@ -113,7 +113,7 @@ jobs:
         run: dotnet nuget push "$NUGET_OUTPUT/*.nupkg" --skip-duplicate --timeout 900 --api-key "$NUGET_API_KEY" --source "github"
 
       - name: Add comment for NuGet package
-        uses: mshick/add-pr-comment@v1
+        uses: mshick/add-pr-comment@a96c578acba98b60f16c6866d5f20478dc4ef68b # v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
